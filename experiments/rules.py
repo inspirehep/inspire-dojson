@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for experiments."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -29,16 +29,32 @@ import six
 from dojson import utils
 from dojson.errors import IgnoreKey
 
-from ..model import experiments
-from ...utils import force_single_element, get_record_ref
-
 from inspirehep.utils.helpers import force_force_list
+
+from .model import experiments
+from ..utils import force_single_element, get_record_ref
+
+
+@experiments.over('_date_started', '^046..')
+def date_started(self, key, value):
+    values = force_force_list(value)
+
+    for val in values:
+        if val.get('q'):
+            self['date_proposed'] = val.get('q')
+        if val.get('r'):
+            self['date_approved'] = val.get('r')
+        if val.get('s'):
+            self['date_started'] = val.get('s')
+        if val.get('t'):
+            self['date_completed'] = val.get('t')
+
+    raise IgnoreKey
 
 
 @experiments.over('experiment_names', '^119..')
 @utils.for_each_value
 def experiment_names(self, key, value):
-    """Experiment names."""
     if value.get('u'):
         self.setdefault('affiliations', [])
 
@@ -59,22 +75,17 @@ def experiment_names(self, key, value):
     }
 
 
-@experiments.over('titles', '^245[10_][0_]')
-@utils.for_each_value
+@experiments.over('titles', '^(245|419)..')
 def titles(self, key, value):
-    """Titles."""
-    return {
-        'title': value.get('a'),
-    }
+    titles = self.get('titles', [])
 
+    for value in force_force_list(value):
+        if key.startswith('245'):
+            titles.insert(0, {'title': value.get('a')})
+        else:
+            titles.append({'title': value.get('a')})
 
-@experiments.over('title_variants', '^419..')
-@utils.for_each_value
-def title_variants(self, key, value):
-    """Title variants."""
-    return {
-        'title': value.get('a')
-    }
+    return titles
 
 
 @experiments.over('contact_details', '^270..')
@@ -89,23 +100,51 @@ def contact_details(self, key, value):
     }
 
 
+@experiments.over('related_experiments', '^510..')
+@utils.for_each_value
+def related_experiments(self, key, value):
+    def _get_record(zero_values):
+        zero_value = force_single_element(zero_values)
+        try:
+            recid = int(zero_value)
+            return get_record_ref(recid, 'experiments')
+        except (TypeError, ValueError):
+            return None
+
+    def _classify_relation_type(w_values):
+        w_value = force_single_element(w_values)
+        return {'a': 'predecessor', 'b': 'successor'}.get(w_value, '')
+
+    record = _get_record(value.get('0'))
+
+    return {
+        'name': force_single_element(value.get('a')),
+        'record': record,
+        'relation': _classify_relation_type(value.get('w')),
+        'curated_relation': record is not None,
+    }
+
+
 @experiments.over('description', '^520..')
 @utils.for_each_value
 def description(self, key, value):
-    """Description of experiment."""
-    return value.get("a")
+    return value.get('a')
+
+
+@experiments.over('accelerator', '^693..')
+def accelerator(self, key, value):
+    return value.get('a')
 
 
 @experiments.over('spokespersons', '^702..')
 @utils.for_each_value
 def spokespersons(self, key, value):
-    """Spokespersons of the experiment."""
     def _get_inspire_id(i_values):
         i_value = force_single_element(i_values)
         if i_value:
             return [
                 {
-                    'type': 'INSPIRE ID',
+                    'schema': 'INSPIRE ID',
                     'value': i_value,
                 },
             ]
@@ -133,7 +172,6 @@ def spokespersons(self, key, value):
 
 @experiments.over('collaboration', '^710..')
 def collaboration(self, key, value):
-    """Collaboration of experiment."""
     values = force_force_list(self.get('collaboration'))
     values.extend(self.get('collaboration_alternative_names', []))
     values.extend(el.get('g') for el in force_force_list(value))
@@ -143,53 +181,3 @@ def collaboration(self, key, value):
         self['collaboration_alternative_names'] = collaborations[1:]
     if collaborations:
         return collaborations[0]
-
-
-@experiments.over('related_experiments', '^510')
-@utils.for_each_value
-def related_experiments(self, key, value):
-    """Related experiments."""
-    def _get_record(zero_values):
-        zero_value = force_single_element(zero_values)
-        try:
-            recid = int(zero_value)
-            return get_record_ref(recid, 'experiments')
-        except (TypeError, ValueError):
-            return None
-
-    def _classify_relation_type(w_values):
-        w_value = force_single_element(w_values)
-        return {'a': 'predecessor', 'b': 'successor'}.get(w_value, '')
-
-    record = _get_record(value.get('0'))
-
-    return {
-        'name': force_single_element(value.get('a')),
-        'record': record,
-        'relation': _classify_relation_type(value.get('w')),
-        'curated_relation': record is not None,
-    }
-
-
-@experiments.over('_date_started', '^046..')
-def date_started(self, key, value):
-    """Date started and completed."""
-    values = force_force_list(value)
-
-    for val in values:
-        if val.get('q'):
-            self['date_proposed'] = val.get('q')
-        if val.get('r'):
-            self['date_approved'] = val.get('r')
-        if val.get('s'):
-            self['date_started'] = val.get('s')
-        if val.get('t'):
-            self['date_completed'] = val.get('t')
-
-    raise IgnoreKey
-
-
-@experiments.over('accelerator', '^693')
-def accelerator(self, key, value):
-    """Field code."""
-    return value.get('a')

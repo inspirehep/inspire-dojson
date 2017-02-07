@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition for HepNames records."""
+"""DoJSON rules for HEPNames."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -28,15 +28,16 @@ import re
 
 from dojson import utils
 
-from ..model import hepnames, hepnames2marc
-from ...utils import (
+from inspire_schemas.utils import load_schema
+from inspirehep.utils.helpers import force_force_list
+
+from .model import hepnames, hepnames2marc
+from ..utils import (
     classify_rank,
     force_single_element,
     get_record_ref,
     get_recid_from_ref
 )
-
-from inspirehep.utils.helpers import force_force_list
 
 
 INSPIRE_BAI = re.compile('(\w+\.)+\d+')
@@ -44,75 +45,10 @@ LOOKS_LIKE_CERN = re.compile('^\d+$|^CER[MN]?-|^CNER-|^CVERN-', re.I)
 NON_DIGIT = re.compile('[^\d]+')
 
 
-@hepnames.over('name', '^100..')
-def name(self, key, value):
-    """Name information.
-
-    Please note that MARC field for an author's name is splitted into two
-    fields, `last_name` and `first_name`. The same situation occurs for
-    the date fields, in JSON it is splitted into `birth_year` and `death_year`.
-
-    Admissible string values for `100__g`:
-    + active
-    + departed
-    + retired
-    + deceased
-
-    The only accepted value in `100__c` field is:
-    + Sir
-
-    Values accepted for `100__b:
-    + Jr.
-    + Sr.
-    + roman numbers (like VII)
-    """
-    value = force_force_list(value)
-    self.setdefault('dates', value[0].get('d'))
-    return {
-        'value': value[0].get('a'),
-        'numeration': value[0].get('b'),
-        'title': value[0].get('c'),
-        'status': value[0].get('g'),
-        'preferred_name': value[0].get('q'),
-    }
-
-
-@hepnames2marc.over('100', '^name$')
-def name2marc(self, key, value):
-    """Name information.
-
-    Please note that MARC field for an author's name is splitted into two
-    fields, `last_name` and `first_name`. The same situation occurs for
-    the date fields, in JSON it is splitted into `birth_year` and `death_year`.
-
-    Admissible string values for `100__g`:
-    + active
-    + departed
-    + retired
-    + deceased
-
-    The only accepted value in `100__c` field is:
-    + Sir
-
-    Values accepted for `100__b:
-    + Jr.
-    + Sr.
-    + roman numbers (like VII)
-    """
-    return {
-        'a': value.get('value'),
-        'b': value.get('numeration'),
-        'c': value.get('title'),
-        'g': value.get('status'),
-        'q': value.get('preferred_name'),
-    }
-
-
 @hepnames.over('ids', '^035..')
 @utils.for_each_value
 def ids(self, key, value):
-    """All identifiers, both internal and external."""
-    def _get_type(value):
+    def _get_schema(value):
         IDS_MAP = {
             'ARXIV': 'ARXIV',
             'BAI': 'INSPIRE BAI',
@@ -132,35 +68,35 @@ def ids(self, key, value):
 
         return IDS_MAP.get(value.get('9', '').upper())
 
-    def _guess_type_from_value(a_value):
+    def _guess_schema_from_value(a_value):
         if a_value is None:
             return
 
         if INSPIRE_BAI.match(a_value):
             return 'INSPIRE BAI'
 
-    def _try_to_correct_value(type_, a_value):
+    def _try_to_correct_value(schema, a_value):
         if a_value is None:
             return a_value
 
-        if type_ == 'CERN' and LOOKS_LIKE_CERN.match(a_value):
+        if schema == 'CERN' and LOOKS_LIKE_CERN.match(a_value):
             return 'CERN-' + NON_DIGIT.sub('', a_value)
-        elif type_ == 'KAKEN':
+        elif schema == 'KAKEN':
             return 'KAKEN-' + a_value
         else:
             return a_value
 
     a_value = force_single_element(value.get('a'))
 
-    type_ = _get_type(value)
-    if type_ is None:
-        type_ = _guess_type_from_value(a_value)
+    schema = _get_schema(value)
+    if schema is None:
+        schema = _guess_schema_from_value(a_value)
 
-    a_value = _try_to_correct_value(type_, a_value)
+    a_value = _try_to_correct_value(schema, a_value)
 
-    if type_ and a_value:
+    if schema and a_value:
         return {
-            'type': type_,
+            'schema': schema,
             'value': a_value,
         }
 
@@ -168,79 +104,51 @@ def ids(self, key, value):
 @hepnames2marc.over('035', '^ids$')
 @utils.for_each_value
 def ids2marc(self, key, value):
-    """All identifiers, both internal and external."""
+    def _get_9_value(value):
+        schema = value.get('schema')
+
+        if schema == 'INSPIRE ID':
+            return 'INSPIRE'
+        elif schema == 'INSPIRE BAI':
+            return 'BAI'
+        return schema
+
     return {
         'a': value.get('value'),
-        '9': value.get('type'),
+        '9': _get_9_value(value),
     }
 
 
-@hepnames.over('other_names', '^400..')
-def other_names(self, key, value):
-    """Other variation of names.
+@hepnames.over('name', '^100..')
+def name(self, key, value):
+    self['status'] = force_single_element(value.get('g', '')).lower()
 
-    Usually a different form of writing the primary name.
-    """
-    other_names = self.get('other_names', [])
-    other_names.extend(force_force_list(value.get('a')))
-
-    return other_names
-
-
-@hepnames2marc.over('400', '^other_names$')
-@utils.for_each_value
-def other_names2marc(self, key, value):
-    """Other variation of names.
-
-    Usually a different form of writing the primary name.
-    """
     return {
-        'a': value
+        'numeration': force_single_element(value.get('b', '')),
+        'preferred_name': force_single_element(value.get('q', '')),
+        'title': force_single_element(value.get('c', '')),
+        'value': force_single_element(value.get('a', '')),
     }
 
 
-@hepnames.over('native_name', '^880..')
-@utils.for_each_value
-def native_name(self, key, value):
-    """Name in native form."""
-    return value.get('a')
-
-
-@hepnames2marc.over('880', '^native_name$')
-def native_name2marc(self, key, value):
-    """Name in native form."""
+@hepnames2marc.over('100', '^name$')
+def name2marc(self, key, value):
     return {
-        'a': value
+        'a': value.get('value'),
+        'b': value.get('numeration'),
+        'c': value.get('title'),
+        'q': value.get('preferred_name'),
     }
 
 
-@hepnames.over('private_current_emails', '^595..')
-@utils.for_each_value
-def private_current_emails(self, key, value):
-    """Hidden information."""
-    if 'o' in value:
-        self.setdefault('private_old_emails', []).append(value['o'])
-    if 'a' in value:
-        self.setdefault('_private_note', []).append(value['a'])
-    return value.get('m')
-
-
-@hepnames2marc.over('595', '^(private_current_emails|_private_note|private_old_emails)$')
-@utils.for_each_value
-def hidden_notes2marc(self, key, value):
-    return {
-        'a': value if key == '_private_note' else None,
-        'm': value if key == 'private_current_emails' else None,
-        'o': value if key == 'private_old_emails' else None,
-    }
-
-setattr(hidden_notes2marc, '__extend__', True)
+@hepnames2marc.over('100', '^status$')
+def status2marc(self, key, value):
+    return {'g': value}
 
 
 @hepnames.over('positions', '^371..')
 @utils.for_each_value
 def positions(self, key, value):
-    """Positions that an author held during their career."""
     curated = False
     current = False
     recid = None
@@ -281,7 +189,6 @@ def positions(self, key, value):
 @hepnames2marc.over('371', '^positions$')
 @utils.for_each_value
 def positions2marc(self, key, value):
-    """Positions that an author held during their career."""
     return {
         'a': value.get('institution', {}).get('name'),
         'r': value.get('_rank'),
@@ -293,28 +200,136 @@ def positions2marc(self, key, value):
     }
 
 
-@hepnames2marc.over('65017', '^inspire_categories')
+@hepnames.over('other_names', '^400..')
+@utils.flatten
+@utils.for_each_value
+def other_names(self, key, value):
+    return force_force_list(value.get('a'))
+
+
+@hepnames2marc.over('400', '^other_names$')
+@utils.for_each_value
+def other_names2marc(self, key, value):
+    return {'a': value}
+
+
+@hepnames.over('arxiv_categories', '^65017')
+def arxiv_categories(self, key, value):
+    """Populate the ``arxiv_categories`` key.
+
+    Also populates the ``inspire_categories`` key through side effects.
+    """
+    def _is_arxiv(category):
+        schema = load_schema('elements/arxiv_categories')
+        valid_arxiv_categories = schema['enum']
+
+        return category in valid_arxiv_categories
+
+    def _is_inspire(category):
+        schema = load_schema('elements/inspire_field')
+        valid_inspire_categories = schema['properties']['term']['enum']
+
+        return category in valid_inspire_categories
+
+    def _normalize(a_value):
+        schema = load_schema('elements/arxiv_categories')
+        valid_arxiv_categories = schema['enum']
+
+        for category in valid_arxiv_categories:
+            if a_value.lower() == category.lower():
+                return category
+
+        schema = load_schema('elements/inspire_field')
+        valid_inspire_categories = schema['properties']['term']['enum']
+
+        for category in valid_inspire_categories:
+            if a_value.lower() == category.lower():
+                return category
+
+        field_codes_to_inspire_categories = {
+            'a': 'Astrophysics',
+            'b': 'Accelerators',
+            'c': 'Computing',
+            'e': 'Experiment-HEP',
+            'g': 'Gravitation and Cosmology',
+            'i': 'Instrumentation',
+            'l': 'Lattice',
+            'm': 'Math and Math Physics',
+            'n': 'Theory-Nucl',
+            'o': 'Other',
+            'p': 'Phenomenology-HEP',
+            'q': 'General Physics',
+            't': 'Theory-HEP',
+            'x': 'Experiment-Nucl',
+        }
+
+        return field_codes_to_inspire_categories.get(a_value.lower())
+
+    arxiv_categories = self.get('arxiv_categories', [])
+    inspire_categories = self.get('inspire_categories', [])
+
+    for value in force_force_list(value):
+        for a_value in force_force_list(value.get('a')):
+            normalized_a_value = _normalize(a_value)
+
+            if _is_arxiv(normalized_a_value):
+                arxiv_categories.append(normalized_a_value)
+            elif _is_inspire(normalized_a_value):
+                inspire_categories.append({'term': normalized_a_value})
+
+    self['inspire_categories'] = inspire_categories
+    return arxiv_categories
+
+
+@hepnames2marc.over('65017', '^arxiv_categories$')
+@utils.for_each_value
+def arxiv_categories2marc(self, key, value):
+    return {
+        '2': 'arXiv',
+        'a': value,
+    }
+
+
+@hepnames2marc.over('65017', '^inspire_categories$')
 @utils.for_each_value
 def inspire_categories2marc(self, key, value):
     return {
+        '2': 'INSPIRE',
         'a': value.get('term'),
-        '2': value.get('source') or "INSPIRE",
+    }
+
+
+@hepnames.over('public_notes', '^667..')
+@utils.for_each_value
+def _public_notes(self, key, value):
+    return {
+        'source': value.get('9'),
+        'value': value.get('a'),
+    }
+
+
+@hepnames2marc.over('667', '^public_notes$')
+@utils.for_each_value
+def _public_notes2marc(self, key, value):
+    return {
+        'a': value.get('value'),
+        '9': value.get('source'),
     }
 
 
 @hepnames.over('source', '^670..')
 def source(self, key, value):
-    def get_value(value):
+    def _get_source(value):
         return {
             'name': value.get('a'),
             'date_verified': value.get('d'),
         }
+
     source = self.get('source', [])
 
-    value = force_force_list(value)
-
-    for val in value:
-        source.append(get_value(val))
+    values = force_force_list(value)
+    for value in values:
+        source.append(_get_source(value))
 
     return source
 
@@ -337,45 +352,11 @@ def prizes(self, key, value):
 @hepnames2marc.over('678', '^prizes$')
 @utils.for_each_value
 def prizes2marc(self, key, value):
-    return {
-        'a': value
-    }
-
-
-@hepnames.over('_public_note', '^680..')
-@utils.for_each_value
-def _public_note(self, key, value):
-    return value.get('i')
-
-
-@hepnames2marc.over('680', '^_public_note$')
-@utils.for_each_value
-def _public_note2marc(self, key, value):
-    return {
-        'i': value
-    }
-
-
-@hepnames.over('_curators_note', '^667..')
-@utils.for_each_value
-def _curators_note(self, key, value):
-    return value.get('a')
-
-
-@hepnames2marc.over('667', '^_curators_note$')
-@utils.for_each_value
-def _curators_note2marc(self, key, value):
-    return {
-        'a': value
-    }
+    return {'a': value}
 
 
 @hepnames.over('experiments', '^693..')
 def experiments(self, key, values):
-    """Information about experiments.
-
-    FIXME: use the flatten decorator once DoJSON 1.3.0 is released.
-    """
     def _int_or_none(maybe_int):
         try:
             return int(maybe_int)
@@ -415,10 +396,6 @@ def experiments(self, key, values):
 
 @hepnames2marc.over('693', '^experiments$')
 def experiments2marc(self, key, values):
-    """Information about experiments.
-
-    FIXME: use the flatten decorator once DoJSON 1.3.0 is released.
-    """
     def _get_marc_experiment(json_dict):
         marc = {
             'e': json_dict.get('name'),
@@ -445,22 +422,18 @@ def experiments2marc(self, key, values):
 @hepnames.over('advisors', '^701..')
 @utils.for_each_value
 def advisors(self, key, value):
-    """The advisors for all types of degrees.
-
-    FIXME: handle identifiers in 701__i and 701__w.
-    """
     DEGREE_TYPES_MAP = {
-        'Bachelor': 'Bachelor',
-        'UG': 'Bachelor',
-        'MAS': 'Master',
-        'master': 'Master',
-        'Master': 'Master',
-        'PhD': 'PhD',
-        'PHD': 'PhD',
+        'Bachelor': 'bachelor',
+        'UG': 'bachelor',
+        'MAS': 'master',
+        'master': 'master',
+        'Master': 'master',
+        'PhD': 'phd',
+        'PHD': 'phd',
     }
 
     _degree_type = force_single_element(value.get('g'))
-    degree_type = DEGREE_TYPES_MAP.get(_degree_type, 'Other')
+    degree_type = DEGREE_TYPES_MAP.get(_degree_type, 'other')
 
     recid = force_single_element(value.get('x'))
     record = get_record_ref(recid, 'authors')
@@ -468,7 +441,6 @@ def advisors(self, key, value):
     return {
         'name': value.get('a'),
         'degree_type': degree_type,
-        '_degree_type': _degree_type,
         'record': record,
         'curated_relation': value.get('y') == '1'
     }
@@ -477,20 +449,58 @@ def advisors(self, key, value):
 @hepnames2marc.over('701', '^advisors$')
 @utils.for_each_value
 def advisors2marc(self, key, value):
-    """The advisors for all types of degrees."""
     return {
         'a': value.get('name'),
-        'g': value.get('_degree_type'),
+        'g': value.get('degree_type'),
         'x': get_recid_from_ref(value.get('record')),
         'y': '1' if value.get('curated_relation') else '0',
     }
 
 
-@hepnames2marc.over('8564', 'url')
+@hepnames.over('native_name', '^880..')
 @utils.for_each_value
-def url2marc(self, key, value):
-    """URL to external resource."""
-    return {
-        'u': value.get('value'),
-        'y': value.get('description'),
-    }
+def native_name(self, key, value):
+    return value.get('a')
+
+
+@hepnames2marc.over('880', '^native_name$')
+@utils.for_each_value
+def native_name2marc(self, key, value):
+    return {'a': value}
+
+
+@hepnames.over('deleted', '^980..')
+def deleted(self, key, value):
+    """Populate the ``deleted`` key.
+
+    Also populates the ``stub`` key through side effects.
+    """
+    def _is_deleted(value):
+        return force_single_element(value.get('c', '')).upper() == 'DELETED'
+
+    def _is_stub(value):
+        return not (force_single_element(value.get('a', '')).upper() == 'USEFUL')
+
+    deleted = self.get('deleted')
+    stub = self.get('stub')
+
+    for value in force_force_list(value):
+        deleted = not deleted and _is_deleted(value)
+        stub = not stub and _is_stub(value)
+
+    self['stub'] = stub
+    return deleted
+
+
+@hepnames2marc.over('980', '^deleted$')
+@utils.for_each_value
+def deleted2marc(self, key, value):
+    if value:
+        return {'c': 'DELETED'}
+
+
+@hepnames2marc.over('980', '^stub$')
+@utils.for_each_value
+def stub2marc(self, key, value):
+    if not value:
+        return {'a': 'USEFUL'}

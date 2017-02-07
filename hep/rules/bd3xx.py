@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,4 +20,19 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
+"""DoJSON rules for MARC fields in 3xx."""
+
 from __future__ import absolute_import, division, print_function
+
+from ..model import hep, hep2marc
+from ...utils import force_single_element
+
+
+@hep.over('number_of_pages', '^300..')
+def number_of_pages(self, key, value):
+    return int(force_single_element(value.get('a')))
+
+
+@hep2marc.over('300', '^number_of_pages$')
+def number_of_pages2marc(self, key, value):
+    return {'a': value}

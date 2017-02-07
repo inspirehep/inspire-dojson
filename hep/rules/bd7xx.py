@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for MARC fields in 7xx."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -38,10 +38,39 @@ from ...utils import (
 )
 
 
+@hep.over('collaborations', '^710[10_2][_2]')
+def collaboration(self, key, value):
+    value = force_force_list(value)
+
+    def get_value(value):
+        recid = None
+        if '0' in value:
+            try:
+                recid = int(value.get('0'))
+            except:
+                pass
+        return {
+            'value': value.get('g'),
+            'record': get_record_ref(recid, 'experiments')
+        }
+    collaboration = self.get('collaborations', [])
+
+    filtered_value = value
+    for element in filtered_value:
+        collaboration.append(get_value(element))
+
+    return collaboration
+
+
+@hep2marc.over('710', 'collaborations')
+@utils.for_each_value
+def collaborations2marc(self, key, value):
+    return {'g': value.get('value')}
+
+
 @hep.over('publication_info', '^773..')
 @utils.for_each_value
 def publication_info(self, key, value):
-    """Publication info about record."""
     def get_int_value(val):
         if val:
             out = force_force_list(val)[0]
@@ -86,7 +115,6 @@ def publication_info(self, key, value):
 @hep2marc.over('773', 'publication_info')
 @utils.for_each_value
 def publication_info2marc(self, key, value):
-    """Publication info about record."""
     page_artid = []
     if value.get('page_start') and value.get('page_end'):
         page_artid.append('{page_start}-{page_end}'.format(**value))
@@ -114,7 +142,6 @@ def publication_info2marc(self, key, value):
 
 @hep.over('succeeding_entry', '^785..')
 def succeeding_entry(self, key, value):
-    """Succeeding Entry."""
     if isinstance(value, (tuple, list)):
         # Too bad: there can only be one succeeding entry.
         value = value[0]
@@ -128,7 +155,6 @@ def succeeding_entry(self, key, value):
 
 @hep2marc.over('785', 'succeeding_entry')
 def succeeding_entry2marc(self, key, value):
-    """Succeeding Entry."""
     return {
         'r': value.get('relationship_code'),
         'w': get_recid_from_ref(value.get('record')),

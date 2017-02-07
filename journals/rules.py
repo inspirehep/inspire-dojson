@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,20 +20,19 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for journals."""
 
 from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 from idutils import normalize_issn
 
-from ..model import journals
+from .model import journals
 
 
 @journals.over('issn', '^022..')
 @utils.for_each_value
 def issn(self, key, value):
-    """ISSN, its medium and an additional comment."""
     try:
         issn = normalize_issn(value['a'])
     except KeyError:
@@ -60,49 +59,40 @@ def issn(self, key, value):
         comment = b
 
     return {
+        'comment': comment,
         'medium': medium,
         'value': issn,
-        'comment': comment,
     }
 
 
 @journals.over('coden', '^030..')
 @utils.for_each_value
 def coden(self, key, value):
-    """CODEN Statement."""
-    return value.get("a")
+    return value.get('a')
 
 
-@journals.over('publisher', '^643..')
+@journals.over('journal_titles', '^130..')
 @utils.for_each_value
-def publisher(self, key, value):
-    """Title used in breadcrum and html title."""
-    return value.get('b')
-
-
-@journals.over('titles', '^130..')
-@utils.for_each_value
-def titles(self, key, value):
-    """Titles."""
+def journal_titles(self, key, value):
     return {
         'title': value.get('a'),
         'subtitle': value.get('b'),
     }
 
 
+@journals.over('publisher', '^643..')
+@utils.for_each_value
+def publisher(self, key, value):
+    return value.get('b')
+
+
 @journals.over('short_titles', '^711..')
 @utils.for_each_value
 def short_titles(self, key, value):
-    """Short titles."""
-    return {
-        'title': value.get('a'),
-    }
+    return {'title': value.get('a')}
 
 
 @journals.over('title_variants', '^730..')
 @utils.for_each_value
 def title_variants(self, key, value):
-    """Title variants."""
-    return {
-        'title': value.get('a'),
-    }
+    return {'title': value.get('a')}

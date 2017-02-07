@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015 CERN.
+# Copyright (C) 2014, 2015, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for MARC fields in 4xx."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -29,11 +29,19 @@ from dojson import utils
 from ..model import hep, hep2marc
 
 
-@hep2marc.over('8564', 'urls')
+@hep.over('book_series', '^490[10_].')
 @utils.for_each_value
-def urls2marc(self, key, value):
-    """URL to external resource."""
+def book_series(self, key, value):
     return {
-        'u': value.get('value'),
-        'y': value.get('description'),
+        'title': value.get('a'),
+        'volume': value.get('v'),
+    }
+
+
+@hep2marc.over('490', 'book_series')
+@utils.for_each_value
+def book_series2marc(self, key, value):
+    return {
+        'a': value.get('title'),
+        'v': value.get('volume'),
     }

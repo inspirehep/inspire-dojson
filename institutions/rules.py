@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,22 +20,26 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for Institutions."""
 
 from __future__ import absolute_import, division, print_function
 
+import re
+
 from dojson import utils
 
-from ..model import institutions
-from ...utils import force_single_element, get_record_ref
-from ...utils.geo import parse_institution_address
-
 from inspirehep.utils.helpers import force_force_list
+
+from .model import institutions
+from ..utils import force_single_element, get_record_ref
+from ..utils.geo import parse_institution_address
+
+
+ACRONYM = re.compile(r'\s*\((.*)\)\s*$')
 
 
 @institutions.over('location', '^034..')
 def location(self, key, value):
-    """GPS location info."""
     def _get_float(value, c):
         try:
             return float(value[c])
@@ -52,68 +56,85 @@ def location(self, key, value):
         }
 
 
-@institutions.over('ids', '^035..')
+@institutions.over('external_system_identifiers', '^035..')
 @utils.for_each_value
-def ids(self, key, value):
-    """All identifiers, both internal and external."""
+def external_system_identifiers(self, key, value):
     return {
-        'type': force_single_element(value.get('9')),
+        'schema': force_single_element(value.get('9')),
         'value': force_single_element(value.get('a')),
     }
 
 
-@institutions.over('timezone', '^043..')
-@utils.for_each_value
-def timezone(self, key, value):
-    """Timezone."""
-    return value.get('t')
+@institutions.over('ICN', '^110..')
+def ICN(self, key, value):
+    def _split_acronym(value):
+        try:
+            acronym = ACRONYM.search(value).group(1)
+        except AttributeError:
+            acronym = None
 
+        return ACRONYM.sub('', value), acronym
 
-@institutions.over('name', '^110..')
-@utils.for_each_value
-def name(self, key, value):
-    """List of names."""
-    def set_value(key, val):
-        val = force_force_list(val)
-        if val:
-            self.setdefault(key, [])
-            self[key].extend(val)
+    ICN = self.get('ICN', [])
+    legacy_ICN = self.get('legacy_ICN')
 
-    set_value('institution', value.get('a'))
-    set_value('department', value.get('b'))
-    set_value('ICN', value.get('u'))
-    set_value('new_ICN', value.get('t'))
+    department = self.get('department', [])
+    department_acronym = self.get('department_acronym')
 
-    superseded_icns = force_force_list(value.get('x'))
-    superseded_recids = force_force_list(value.get('z'))
-    related_institutes = []
-    if len(superseded_icns) == len(superseded_recids):
-        for icn, recid in zip(superseded_icns, superseded_recids):
-            related_institutes.append({
-                'curated_relation': True,
-                'name': icn,
-                'record': get_record_ref(recid, endpoint='institutions'),
-                'relation_type': 'superseded',
-            })
-    else:
-        for icn in superseded_icns:
-            related_institutes.append({
-                'curated_relation': False,
-                'name': icn,
-                'relation_type': 'superseded',
-            })
-    set_value('related_institutes', related_institutes)
+    institution = self.get('institution', [])
+    institution_acronym = self.get('institution_acronym')
 
-    names = force_force_list(value.get('a'))
-    names.extend(force_force_list(value.get('u')))
-    names.extend(force_force_list(value.get('t')))
-    return names
+    related_institutes = self.get('related_institutes', [])
+
+    for value in force_force_list(value):
+        a_values = force_force_list(value.get('a'))
+        if a_values and not institution_acronym:
+            a_values[0], institution_acronym = _split_acronym(a_values[0])
+        institution.extend(a_values)
+
+        b_values = force_force_list(value.get('b'))
+        if b_values and not department_acronym:
+            b_values[0], department_acronym = _split_acronym(b_values[0])
+        department.extend(b_values)
+
+        ICN.extend(force_force_list(value.get('t')))
+
+        if not legacy_ICN:
+            legacy_ICN = force_single_element(value.get('u'))
+
+        x_values = force_force_list(value.get('x'))
+        z_values = force_force_list(value.get('z'))
+        if len(x_values) == len(z_values):
+            for icn, recid in zip(x_values, z_values):
+                related_institutes.append({
+                    'curated_relation': True,
+                    'name': icn,
+                    'record': get_record_ref(recid, 'institutions'),
+                    'relation_type': 'superseded',
+                })
+        else:
+            for icn in x_values:
+                related_institutes.append({
+                    'curated_relation': False,
+                    'name': icn,
+                    'relation_type': 'superseded',
+                })
+
+    self['related_institutes'] = related_institutes
+
+    self['institution'] = institution
+    self['institution_acronym'] = institution_acronym
+
+    self['department'] = department
+    self['department_acronym'] = department_acronym
+
+    self['legacy_ICN'] = legacy_ICN
+    return ICN
 
 
 @institutions.over('address', '^371..')
 @utils.for_each_value
 def address(self, key, value):
-    """Address info."""
     return parse_institution_address(
         value.get('a'),
         value.get('b'),
@@ -127,7 +148,6 @@ def address(self, key, value):
 @institutions.over('field_activity', '^372..')
 @utils.for_each_value
 def field_activity(self, key, value):
-    """Field of activity."""
     FIELD_ACTIVITIES_MAP = {
         'Company': 'Company',
         'Research center': 'Research Center',
@@ -147,12 +167,12 @@ def field_activity(self, key, value):
 
 @institutions.over('name_variants', '^410..')
 def name_variants(self, key, value):
-    """Variants of the name."""
     valid_sources = [
-        "DESY_AFF",
-        "ADS",
-        "INSPIRE"
+        'DESY_AFF',
+        'ADS',
+        'INSPIRE'
     ]
+
     if value.get('9') and value.get('9') not in valid_sources:
         return self.get('name_variants', [])
 
@@ -160,57 +180,21 @@ def name_variants(self, key, value):
         self.setdefault('extra_words', [])
         self['extra_words'].extend(force_force_list(value.get('g')))
 
-    values = self.get('name_variants', [])
-    values.append({
-        'source': value.get('9'),
-        'value': force_force_list(value.get('a', [])),
-    })
+    name_variants = self.get('name_variants', [])
 
-    return values
+    source = force_single_element(value.get('9'))
+    for name_variant in force_force_list(value.get('a')):
+        name_variants.append({
+            'source': source,
+            'value': name_variant,
+        })
 
-
-@institutions.over('core', '^690C.')
-def core(self, key, value):
-    """Check if it is a CORE institution."""
-    return value.get('a', "").upper() == "CORE"
-
-
-@institutions.over('non_public_notes', '^667..')
-@utils.for_each_value
-def non_public_notes(self, key, value):
-    """Hidden note."""
-    return value.get('a')
-
-
-@institutions.over('hidden_notes', '^595..')
-def hidden_notes(self, key, value):
-    """Hidden note."""
-    values = self.get('hidden_notes', [])
-    values.extend(el for el in force_force_list(value.get('a')))
-
-    return values
-
-
-@institutions.over('public_notes', '^680..')
-@utils.for_each_value
-def public_notes(self, key, value):
-    """Hidden note."""
-    return value.get('i')
-
-
-@institutions.over('historical_data', '^6781.')
-def historical_data(self, key, value):
-    """Historical data."""
-    values = self.get('historical_data', [])
-    values.extend(el for el in force_force_list(value.get('a')))
-
-    return values
+    return name_variants
 
 
 @institutions.over('related_institutes', '^510..')
 @utils.for_each_value
 def related_institutes(self, key, value):
-    """Related institutes."""
     def _classify_relation_type(c):
         if c == 'a':
             return 'predecessor'
@@ -229,3 +213,16 @@ def related_institutes(self, key, value):
         'relation_type': _classify_relation_type(value.get('w')),
         'record': get_record_ref(value.get('0'), endpoint='institutions'),
     }
+
+
+@institutions.over('historical_data', '^6781.')
+def historical_data(self, key, value):
+    values = self.get('historical_data', [])
+    values.extend(el for el in force_force_list(value.get('a')))
+
+    return values
+
+
+@institutions.over('core', '^690C.')
+def core(self, key, value):
+    return value.get('a', '').upper() == 'CORE'

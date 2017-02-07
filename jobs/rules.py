@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for jobs."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -32,8 +32,8 @@ from dojson import utils
 
 from inspirehep.utils.helpers import force_force_list
 
-from ..model import jobs
-from ...utils import (
+from .model import jobs
+from ..utils import (
     classify_rank,
     force_single_element,
     get_record_ref,
@@ -43,9 +43,8 @@ from ...utils import (
 COMMA_OR_SLASH = re.compile('\s*[/,]\s*')
 
 
-@jobs.over('date_closed', '^046..')
+@jobs.over('closed_date', '^046..')
 def date_closed(self, key, value):
-    """Date the job was closed."""
     def _contains_email(val):
         return '@' in val
 
@@ -91,7 +90,6 @@ def contact_details(self, key, value):
 
 @jobs.over('regions', '^043..')
 def regions(self, key, value):
-    """Regions."""
     REGIONS_MAP = {
         'AF': 'Africa',
         'Africa': 'Africa',
@@ -120,7 +118,6 @@ def regions(self, key, value):
 
 @jobs.over('experiments', '^693..')
 def experiments(self, key, value):
-    """Experiments associated with Job."""
     experiments = self.get('experiments', [])
 
     name = value.get('e')
@@ -138,7 +135,6 @@ def experiments(self, key, value):
 
 @jobs.over('institutions', '^110..')
 def institutions(self, key, value):
-    """Institutions info."""
     institutions = self.get('institutions', [])
 
     a_values = force_force_list(value.get('a'))
@@ -166,26 +162,20 @@ def institutions(self, key, value):
 
 @jobs.over('description', '^520..')
 def description(self, key, value):
-    """Contact person."""
     return value.get('a')
 
 
 @jobs.over('position', '^245..')
 def position(self, key, value):
-    """Contact person."""
     return value.get('a')
 
 
 @jobs.over('ranks', '^656..')
-@utils.for_each_value
 def ranks(self, key, value):
-    """Ranks."""
-    self.setdefault('_ranks', [])
-    self.setdefault('ranks', [])
+    ranks = self.get('ranks', [])
 
-    values = force_force_list(value)
-    for el in values:
-        _ranks = force_force_list(el.get('a'))
-        for _rank in _ranks:
-            self['_ranks'].append(_rank)
-            self['ranks'].append(classify_rank(_rank))
+    for value in force_force_list(value):
+        for rank in force_force_list(value.get('a')):
+            ranks.append(classify_rank(rank))
+
+    return ranks

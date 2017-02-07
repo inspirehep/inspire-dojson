@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""MARC 21 model definition."""
+"""DoJSON rules for Conferences."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -28,18 +28,16 @@ import six
 
 from dojson import utils
 
-from ..model import conferences
-from ...utils import force_single_element
-from ...utils.geo import parse_conference_address
-
 from inspirehep.utils.helpers import force_force_list
+
+from .model import conferences
+from ..utils import force_single_element
+from ..utils.geo import parse_conference_address
 
 
 @conferences.over('acronym', '^111')
 @utils.for_each_value
 def acronym(self, key, value):
-    """Conference acronym."""
-    self['date'] = value.get('d')
     self['opening_date'] = value.get('x')
     self['closing_date'] = value.get('y')
 
@@ -66,23 +64,9 @@ def acronym(self, key, value):
     return value.get('e')
 
 
-@conferences.over('alternative_titles', '^711')
-@utils.for_each_value
-def alternative_titles(self, key, value):
-    """Alternative titles.
-
-    711__b is for indexing, and is not intended to be displayed.
-    """
-    return {
-        'title': value.get('a'),
-        'searchable_title': value.get('b'),
-    }
-
-
 @conferences.over('contact_details', '^270')
 @utils.for_each_value
 def contact_details(self, key, value):
-    """Contact details."""
     extra_place_info = value.get('b')
     if extra_place_info:
         address = parse_conference_address(extra_place_info)
@@ -97,9 +81,17 @@ def contact_details(self, key, value):
     }
 
 
+@conferences.over('short_description', '^520')
+@utils.for_each_value
+def short_description(self, key, value):
+    return {
+        'value': value.get('a'),
+        'source': value.get('9')
+    }
+
+
 @conferences.over('keywords', '^6531')
 def keywords(self, key, value):
-    """Field code."""
     def get_value(value):
         return {
             'value': value.get('a'),
@@ -112,16 +104,8 @@ def keywords(self, key, value):
     return keywords
 
 
-@conferences.over('note', '^500')
-@utils.for_each_value
-def note(self, key, value):
-    """Public note."""
-    return value.get('a')
-
-
 @conferences.over('series', '^411')
 def series(self, key, value):
-    """Conference series."""
     def _get_name(value):
         return force_single_element(value.get('a'))
 
@@ -151,11 +135,11 @@ def series(self, key, value):
     return series
 
 
-@conferences.over('short_description', '^520')
+@conferences.over('alternative_titles', '^711')
+@utils.flatten
 @utils.for_each_value
-def short_description(self, key, value):
-    """Conference short_description."""
-    return {
-        'value': value.get('a'),
-        'source': value.get('9')
-    }
+def alternative_titles(self, key, value):
+    return [
+        {'title': value.get('a')},
+        {'title': value.get('b')},
+    ]
