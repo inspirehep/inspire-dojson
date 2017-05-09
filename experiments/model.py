@@ -27,9 +27,15 @@ from __future__ import absolute_import, division, print_function
 from ..model import FilterOverdo, add_collection, add_schema, clean_record
 
 
+def add_project_type(record, blob):
+    record['project_type'] = ['experiment']
+    return record
+
+
 filters = [
     add_schema('experiments.json'),
     add_collection('Experiments'),
+    add_project_type,
     clean_record,
 ]
 
