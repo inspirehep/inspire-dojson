@@ -38,6 +38,7 @@ from inspire_schemas.utils import LocalRefResolver
 
 from ..utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from ..utils.helpers import force_list
+from ..utils.text import encode_for_xml
 
 
 def classify_field(value):
@@ -127,7 +128,6 @@ def legacy_export_as_marc(json, tabsize=4):
     """Create the MARCXML representation using the producer rules."""
 
     def encode_for_marcxml(value):
-        from invenio_utils.text import encode_for_xml
         if isinstance(value, unicode):
             value = value.encode('utf8')
         return encode_for_xml(str(value), wash=True)

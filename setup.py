@@ -35,7 +35,6 @@ install_requires = [
     'dojson>=1.3.0',
     'idutils>=0.2.1',
     'inspire-schemas~=40.0,>=40.0.3',
-    'invenio-utils==0.2.0',  # Not fully Invenio 3 ready
     'langdetect>=1.0.6',
     'pycountry>=17.1.8',
 ]
