@@ -29,7 +29,7 @@ import re
 from dojson import utils
 
 from inspire_schemas.utils import load_schema
-from inspirehep.utils.helpers import force_list, maybe_int
+from ..utils.helpers import force_list, maybe_int
 
 from .model import hepnames, hepnames2marc
 from ..utils import (

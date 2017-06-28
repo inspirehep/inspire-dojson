@@ -24,5 +24,5 @@
 
 from __future__ import absolute_import, division, print_function
 
-from . import rules
-from .model import institutions
+from . import rules  # noqa
+from .model import institutions  # noqa

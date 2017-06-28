@@ -24,7 +24,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from .rules import (
+from .rules import (  # noqa
     bd0xx,
     bd1xx,
     bd2xx,
@@ -35,4 +35,4 @@ from .rules import (
     bd7xx,
     bd9xx,
 )
-from .model import hep, hep2marc
+from .model import hep, hep2marc  # noqa

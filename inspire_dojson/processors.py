@@ -24,16 +24,15 @@
 
 from __future__ import absolute_import, division, print_function
 
-from inspirehep.dojson.conferences import conferences
-from inspirehep.dojson.data import data
-from inspirehep.dojson.experiments import experiments
-from inspirehep.dojson.hep import hep
-from inspirehep.dojson.hepnames import hepnames
-from inspirehep.dojson.institutions import institutions
-from inspirehep.dojson.jobs import jobs
-from inspirehep.dojson.journals import journals
-
-from inspirehep.utils.helpers import force_list
+from .conferences import conferences
+from .data import data
+from .experiments import experiments
+from .hep import hep
+from .hepnames import hepnames
+from .institutions import institutions
+from .jobs import jobs
+from .journals import journals
+from .utils.helpers import force_list
 
 
 def overdo_marc_dict(record):

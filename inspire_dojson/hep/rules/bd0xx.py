@@ -32,10 +32,10 @@ from dojson import utils
 from idutils import is_doi, is_handle, normalize_doi
 
 from inspire_schemas.utils import load_schema
-from inspirehep.utils.helpers import force_list
 
 from ..model import hep, hep2marc
 from ...utils import force_single_element
+from ...utils.helpers import force_list
 
 
 RE_LANGUAGE = re.compile('\/| or | and |,|=|\s+')

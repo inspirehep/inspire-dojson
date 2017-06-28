@@ -35,8 +35,9 @@ except ImportError:  # pragma: no cover
 from jsonschema import validate as jsonschema_validate
 
 from inspire_schemas.utils import LocalRefResolver
-from inspirehep.utils.dedupers import dedupe_list, dedupe_list_of_dicts
-from inspirehep.utils.helpers import force_list
+
+from ..utils.dedupers import dedupe_list, dedupe_list_of_dicts
+from ..utils.helpers import force_list
 
 
 def classify_field(value):
