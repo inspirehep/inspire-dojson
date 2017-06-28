@@ -24,11 +24,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-from inspirehep.utils.helpers import force_list
-from inspirehep.utils.record import get_value
 
 from ..model import FilterOverdo, add_schema, add_collection, clean_record
 from ..utils import classify_field
+from ..utils.helpers import force_list
+from ..utils.record import get_value
 
 
 def add_arxiv_categories(record, blob):

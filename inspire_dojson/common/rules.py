@@ -30,7 +30,6 @@ from datetime import datetime
 from dojson import utils
 
 from inspire_schemas.api import load_schema
-from inspirehep.utils.helpers import force_list
 
 from ..conferences.model import conferences
 from ..experiments.model import experiments
@@ -45,6 +44,7 @@ from ..utils import (
     get_recid_from_ref,
     get_record_ref,
 )
+from ..utils.helpers import force_list
 
 
 IS_INTERNAL_UID = re.compile('^(inspire:uid:)?\d{5}$')

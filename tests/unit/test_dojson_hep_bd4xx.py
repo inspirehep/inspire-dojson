@@ -20,22 +20,37 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""DoJSON rules for MARC fields in 3xx."""
-
 from __future__ import absolute_import, division, print_function
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element
-from ...utils.helpers import maybe_int
+from dojson.contrib.marc21.utils import create_record
+
+from inspire_schemas.utils import load_schema
+
+from inspire_dojson.hep import hep, hep2marc
+from inspire_dojson.utils import validate
 
 
-@hep.over('number_of_pages', '^300..')
-def number_of_pages(self, key, value):
-    result = maybe_int(force_single_element(value.get('a', '')))
-    if result and result > 0:
-        return result
+def test_book_series_from_490__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['book_series']
 
+    snippet = (
+        '<datafield tag="490" ind1=" " ind2=" ">'
+        '  <subfield code="a">Graduate Texts in Physics</subfield>'
+        '</datafield>'
+    )  # record/1508903
 
-@hep2marc.over('300', '^number_of_pages$')
-def number_of_pages2marc(self, key, value):
-    return {'a': value}
+    expected = [
+        {'title': 'Graduate Texts in Physics'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['book_series'], subschema) is None
+    assert expected == result['book_series']
+
+    expected = [
+        {'a': 'Graduate Texts in Physics'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['490']

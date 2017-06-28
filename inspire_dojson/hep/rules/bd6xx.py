@@ -28,10 +28,9 @@ import six
 
 from dojson import utils
 
-from inspirehep.utils.helpers import force_list
-
 from ..model import hep, hep2marc
 from ...utils import force_single_element, get_record_ref
+from ...utils.helpers import force_list
 
 
 ENERGY_RANGES_MAP = {

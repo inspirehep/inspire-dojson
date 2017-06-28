@@ -30,7 +30,6 @@ import six
 
 from dojson import utils
 
-from inspirehep.utils.helpers import force_list
 
 from .model import jobs
 from ..utils import (
@@ -38,7 +37,7 @@ from ..utils import (
     force_single_element,
     get_record_ref,
 )
-
+from ..utils.helpers import force_list
 
 COMMA_OR_SLASH = re.compile('\s*[/,]\s*')
 

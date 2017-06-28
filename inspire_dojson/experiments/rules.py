@@ -30,10 +30,10 @@ from dojson import utils
 from dojson.errors import IgnoreKey
 
 from inspire_schemas.utils import load_schema
-from inspirehep.utils.helpers import force_list, maybe_int
 
 from .model import experiments
 from ..utils import force_single_element, get_record_ref
+from ..utils.helpers import force_list, maybe_int
 
 
 @experiments.over('_dates', '^046..')

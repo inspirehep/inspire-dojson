@@ -20,22 +20,16 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""DoJSON rules for MARC fields in 3xx."""
-
 from __future__ import absolute_import, division, print_function
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element
-from ...utils.helpers import maybe_int
+from inspire_dojson.model import FilterOverdo
+from inspire_dojson.experiments.model import add_project_type
 
 
-@hep.over('number_of_pages', '^300..')
-def number_of_pages(self, key, value):
-    result = maybe_int(force_single_element(value.get('a', '')))
-    if result and result > 0:
-        return result
+def test_add_project_type():
+    model = FilterOverdo(filters=[add_project_type])
 
+    expected = {'project_type': ['experiment']}
+    result = model.do({})
 
-@hep2marc.over('300', '^number_of_pages$')
-def number_of_pages2marc(self, key, value):
-    return {'a': value}
+    assert expected == result
