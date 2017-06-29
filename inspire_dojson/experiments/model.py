@@ -28,7 +28,9 @@ from ..model import FilterOverdo, add_collection, add_schema, clean_record
 
 
 def add_project_type(record, blob):
-    record['project_type'] = ['experiment']
+    if not record.get('project_type'):
+        record['project_type'] = ['experiment']
+
     return record
 
 
