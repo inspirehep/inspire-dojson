@@ -28,8 +28,7 @@ from mock import patch
 from inspire_schemas.utils import load_schema
 
 from inspire_dojson.utils import (
-    classify_field,
-    classify_rank,
+    normalize_rank,
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
@@ -40,78 +39,41 @@ from inspire_dojson.utils import (
 )
 
 
-def test_classify_field_returns_none_on_falsy_value():
-    assert classify_field('') is None
+def test_normalize_rank_returns_none_on_falsy_value():
+    assert normalize_rank('') is None
 
 
-def test_classify_field_returns_none_on_non_string_value():
-    assert classify_field(0) is None
-
-
-def test_classify_field_returns_category_if_found_among_keys():
-    expected = 'Math and Math Physics'
-    result = classify_field('alg-geom')
-
-    assert expected == result
-
-
-def test_classify_field_returns_category_if_found_among_values():
-    expected = 'Astrophysics'
-    result = classify_field('Astrophysics')
-
-    assert expected == result
-
-
-def test_classify_field_ignores_case():
-    expected = 'Astrophysics'
-    result = classify_field('ASTRO-PH.CO')
-
-    assert expected == result
-
-
-def test_classify_field_returns_none_on_unknown_values():
-    assert classify_field('FOO') is None
-
-
-def test_classify_rank_returns_none_on_falsy_value():
-    assert classify_rank('') is None
-
-
-def test_classify_rank_returns_none_on_non_string_value():
-    assert classify_rank(0) is None
-
-
-def test_classify_rank_returns_uppercase_value_if_found_in_rank_types():
+def test_normalize_rank_returns_uppercase_value_if_found_in_rank_types():
     expected = 'STAFF'
-    result = classify_rank('staff')
+    result = normalize_rank('staff')
 
     assert expected == result
 
 
-def test_classify_rank_ignores_periods_in_value():
+def test_normalize_rank_ignores_periods_in_value():
     expected = 'PHD'
-    result = classify_rank('Ph.D.')
+    result = normalize_rank('Ph.D.')
 
     assert expected == result
 
 
-def test_classify_rank_allows_alternative_names():
+def test_normalize_rank_allows_alternative_names():
     expected = 'VISITOR'
-    result = classify_rank('VISITING SCIENTIST')
+    result = normalize_rank('VISITING SCIENTIST')
 
     assert expected == result
 
 
-def test_classify_rank_allows_abbreviations():
+def test_normalize_rank_allows_abbreviations():
     expected = 'POSTDOC'
-    result = classify_rank('PD')
+    result = normalize_rank('PD')
 
     assert expected == result
 
 
-def test_classify_rank_falls_back_on_other():
+def test_normalize_rank_falls_back_on_other():
     expected = 'OTHER'
-    result = classify_rank('FOO')
+    result = normalize_rank('FOO')
 
     assert expected == result
 
