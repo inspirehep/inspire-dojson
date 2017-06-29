@@ -30,13 +30,13 @@ from setuptools import find_packages, setup
 URL = 'https://github.com/inspirehep/inspire-dojson'
 
 install_requires = [
-    'Flask>=0.11.1',
-    'autosemver',
-    'dojson>=1.3.0',
-    'idutils>=0.2.1',
+    'Flask~=0.0,>=0.12.2',
+    'IDUtils~=0.0,>=0.2.4',
+    'autosemver~=0.0,>=0.5.1',
+    'dojson~=1.0,>=1.3.1',
     'inspire-schemas~=40.0,>=40.0.3',
-    'langdetect>=1.0.6',
-    'pycountry>=17.1.8',
+    'langdetect~=1.0,>=1.0.7',
+    'pycountry~=17.0,>=17.5.4',
 ]
 
 docs_require = []
