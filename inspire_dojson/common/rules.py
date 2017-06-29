@@ -39,11 +39,11 @@ from ..institutions.model import institutions
 from ..jobs.model import jobs
 from ..journals.model import journals
 from ..utils import (
-    classify_field,
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
 )
+from ..utils.arxiv import classify_field
 from ..utils.helpers import force_list
 
 

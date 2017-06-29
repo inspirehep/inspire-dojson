@@ -33,9 +33,9 @@ from dojson import utils
 
 from .model import jobs
 from ..utils import (
-    classify_rank,
     force_single_element,
     get_record_ref,
+    normalize_rank,
 )
 from ..utils.helpers import force_list
 
@@ -175,6 +175,6 @@ def ranks(self, key, value):
 
     for value in force_list(value):
         for rank in force_list(value.get('a')):
-            ranks.append(classify_rank(rank))
+            ranks.append(normalize_rank(rank))
 
     return ranks

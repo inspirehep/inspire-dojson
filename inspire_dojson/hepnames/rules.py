@@ -34,10 +34,10 @@ from ..utils.arxiv import normalize_arxiv_category, valid_arxiv_categories
 
 from .model import hepnames, hepnames2marc
 from ..utils import (
-    classify_rank,
     force_single_element,
     get_record_ref,
-    get_recid_from_ref
+    get_recid_from_ref,
+    normalize_rank
 )
 
 
@@ -207,7 +207,7 @@ def positions(self, key, value):
     old_emails = [el for el in force_list(value.get('o'))]
 
     _rank = value.get('r')
-    rank = classify_rank(_rank)
+    rank = normalize_rank(_rank)
 
     return {
         'institution': institution if institution['name'] else None,

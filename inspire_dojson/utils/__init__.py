@@ -41,44 +41,34 @@ from ..utils.helpers import force_list
 from ..utils.text import encode_for_xml
 
 
-def classify_field(value):
-    """Classify value as a key of ARXIV_TO_INSPIRE_CATEGORY_MAPPING."""
-    if not value:
+def normalize_rank(rank):
+    """Normalize the rank in order to be schema-compliant
+    """
+    normalized_ranks = {
+        'BA': 'UNDERGRADUATE',
+        'BACHELOR': 'UNDERGRADUATE',
+        'BS': 'UNDERGRADUATE',
+        'BSC': 'UNDERGRADUATE',
+        'JUNIOR': 'JUNIOR',
+        'MAS': 'MASTER',
+        'MASTER': 'MASTER',
+        'MS': 'MASTER',
+        'MSC': 'MASTER',
+        'PD': 'POSTDOC',
+        'PHD': 'PHD',
+        'POSTDOC': 'POSTDOC',
+        'SENIOR': 'SENIOR',
+        'STAFF': 'STAFF',
+        'STUDENT': 'PHD',
+        'UG': 'UNDERGRADUATE',
+        'UNDERGRADUATE': 'UNDERGRADUATE',
+        'VISITING SCIENTIST': 'VISITOR',
+        'VISITOR': 'VISITOR',
+    }
+    if not rank:
         return None
-    elif not isinstance(value, six.string_types):
-        return None
-    else:
-        casted_value = value.upper()
-        for name, category in six.iteritems(current_app.config['ARXIV_TO_INSPIRE_CATEGORY_MAPPING']):
-            if name.upper() == casted_value:
-                return category
-            elif category.upper() == casted_value:
-                return category
-        return None
-
-
-def classify_rank(value):
-    """Classify raw string as one of the keys in INSPIRE_RANK_TYPES."""
-    if not value:
-        return None
-    elif not isinstance(value, six.string_types):
-        return None
-    else:
-        casted_value = value.upper().replace('.', '')
-        for rank_name, rank_mapping in current_app.config['INSPIRE_RANK_TYPES'].items():
-            if rank_name in casted_value:
-                return rank_name
-            else:
-                if rank_mapping.get('alternative_names'):
-                    for alternative in rank_mapping['alternative_names']:
-                        if alternative in casted_value:
-                            return rank_name
-                if rank_mapping.get('abbreviations'):
-                    for abbrev in rank_mapping['abbreviations']:
-                        if abbrev == casted_value:
-                            return rank_name
-
-        return 'OTHER'
+    rank = rank.upper().replace('.', '')
+    return normalized_ranks.get(rank, 'OTHER')
 
 
 def force_single_element(obj):

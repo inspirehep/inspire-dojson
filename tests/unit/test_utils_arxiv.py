@@ -7,6 +7,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
+#
 # INSPIRE is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -21,29 +22,33 @@
 
 from __future__ import absolute_import, division, print_function
 
-import pytest
-from langdetect import DetectorFactory
-from flask import Flask
+from inspire_dojson.utils.arxiv import classify_field
 
 
-CONFIG = {
-    'SERVER_NAME': 'localhost:5000',
-}
+def test_classify_field_returns_none_on_falsy_value():
+    assert classify_field('') is None
 
 
-@pytest.fixture(autouse=True, scope='session')
-def app():
-    app = Flask(__name__)
-    app.config.update(CONFIG)
-    with app.app_context():
-        yield app
+def test_classify_field_returns_none_on_non_string_value():
+    assert classify_field(0) is None
 
 
-@pytest.fixture(scope='function')
-def stable_langdetect(app):
-    """Ensure that ``langdetect`` always returns the same thing.
+def test_classify_field_returns_category_if_found_among_keys():
+    expected = 'Math and Math Physics'
+    result = classify_field('alg-geom')
 
-    See: https://github.com/Mimino666/langdetect#basic-usage."""
-    DetectorFactory.seed = 0
+    assert expected == result
 
-    yield
+
+def test_classify_field_returns_category_if_found_among_values():
+    expected = 'Astrophysics'
+    result = classify_field('Astrophysics')
+
+    assert expected == result
+
+
+def test_classify_field_ignores_case():
+    expected = 'Astrophysics'
+    result = classify_field('ASTRO-PH.CO')
+
+    assert expected == result
