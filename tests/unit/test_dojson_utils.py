@@ -28,6 +28,7 @@ from mock import patch
 from inspire_schemas.utils import load_schema
 
 from inspire_dojson.utils import (
+    normalize_rank,
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
@@ -36,6 +37,45 @@ from inspire_dojson.utils import (
     strip_empty_values,
     validate,
 )
+
+
+def test_normalize_rank_returns_none_on_falsy_value():
+    assert normalize_rank('') is None
+
+
+def test_normalize_rank_returns_uppercase_value_if_found_in_rank_types():
+    expected = 'STAFF'
+    result = normalize_rank('staff')
+
+    assert expected == result
+
+
+def test_normalize_rank_ignores_periods_in_value():
+    expected = 'PHD'
+    result = normalize_rank('Ph.D.')
+
+    assert expected == result
+
+
+def test_normalize_rank_allows_alternative_names():
+    expected = 'VISITOR'
+    result = normalize_rank('VISITING SCIENTIST')
+
+    assert expected == result
+
+
+def test_normalize_rank_allows_abbreviations():
+    expected = 'POSTDOC'
+    result = normalize_rank('PD')
+
+    assert expected == result
+
+
+def test_normalize_rank_falls_back_on_other():
+    expected = 'OTHER'
+    result = normalize_rank('FOO')
+
+    assert expected == result
 
 
 def test_force_single_element_returns_first_element_on_a_list():
