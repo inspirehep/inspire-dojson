@@ -30,6 +30,7 @@ from dojson import utils
 
 from inspire_schemas.utils import load_schema
 from ..utils.helpers import force_list, maybe_int
+from ..utils.arxiv import normalize_arxiv_category, valid_arxiv_categories
 
 from .model import hepnames, hepnames2marc
 from ..utils import (
@@ -270,10 +271,7 @@ def arxiv_categories(self, key, value):
     Also populates the ``inspire_categories`` key through side effects.
     """
     def _is_arxiv(category):
-        schema = load_schema('elements/arxiv_categories')
-        valid_arxiv_categories = schema['enum']
-
-        return category in valid_arxiv_categories
+        return category in valid_arxiv_categories()
 
     def _is_inspire(category):
         schema = load_schema('elements/inspire_field')
@@ -282,12 +280,9 @@ def arxiv_categories(self, key, value):
         return category in valid_inspire_categories
 
     def _normalize(a_value):
-        schema = load_schema('elements/arxiv_categories')
-        valid_arxiv_categories = schema['enum']
-
-        for category in valid_arxiv_categories:
+        for category in valid_arxiv_categories():
             if a_value.lower() == category.lower():
-                return category
+                return normalize_arxiv_category(category)
 
         schema = load_schema('elements/inspire_field')
         valid_inspire_categories = schema['properties']['term']['enum']

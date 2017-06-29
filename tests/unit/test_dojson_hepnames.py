@@ -1173,6 +1173,36 @@ def test_arxiv_categories_from_65017a_2():
     assert expected == result['65017']
 
 
+def test_arxiv_categories_from_65017a_2_obsolete_category():
+    schema = load_schema('authors')
+    subschema = schema['properties']['arxiv_categories']
+
+    snippet = (
+        '<datafield tag="650" ind1="1" ind2="7">'
+        '  <subfield code="2">INSPIRE</subfield>'
+        '  <subfield code="a">ATOM-PH</subfield>'
+        '</datafield>'
+    )  # record/1010819
+
+    expected = [
+        'physics.atom-ph',
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['arxiv_categories'], subschema) is None
+    assert expected == result['arxiv_categories']
+
+    expected = [
+        {
+            '2': 'arXiv',
+            'a': 'physics.atom-ph',
+        },
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['65017']
+
+
 def test_inspire_categories_from_65017a_2():
     schema = load_schema('authors')
     subschema = schema['properties']['inspire_categories']

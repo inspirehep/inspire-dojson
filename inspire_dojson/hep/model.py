@@ -27,6 +27,7 @@ from __future__ import absolute_import, division, print_function
 
 from ..model import FilterOverdo, add_schema, add_collection, clean_record
 from ..utils import classify_field
+from ..utils.arxiv import normalize_arxiv_category
 from ..utils.helpers import force_list
 from ..utils.record import get_value
 
@@ -37,7 +38,9 @@ def add_arxiv_categories(record, blob):
 
     for category in force_list(get_value(blob, '65017')):
         if category.get('2') == 'arXiv' and category.get('a'):
-            record['arxiv_eprints'][0]['categories'].append(category['a'])
+            record['arxiv_eprints'][0]['categories'].append(
+                normalize_arxiv_category(category['a'])
+            )
 
     return record
 

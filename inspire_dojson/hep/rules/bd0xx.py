@@ -36,6 +36,7 @@ from inspire_schemas.utils import load_schema
 from ..model import hep, hep2marc
 from ...utils import force_single_element
 from ...utils.helpers import force_list
+from ...utils.arxiv import normalize_arxiv_category
 
 
 RE_LANGUAGE = re.compile('\/| or | and |,|=|\s+')
@@ -292,7 +293,8 @@ def arxiv_eprints(self, key, value):
     for value in values:
         id_ = force_single_element(value.get('a', ''))
         other_id = force_single_element(value.get('z', ''))
-        categories = force_list(value.get('c'))
+        categories = [normalize_arxiv_category(category) for category
+                      in force_list(value.get('c'))]
         source = force_single_element(value.get('9', ''))
 
         if _is_arxiv_eprint(id_, source):

@@ -635,6 +635,43 @@ def test_arxiv_eprints_from_037__a_c_9():
     assert expected == result['037']
 
 
+def test_arxiv_eprints_from_037__a_c_9_obsolete_category():
+    schema = load_schema('hep')
+    subschema = schema['properties']['arxiv_eprints']
+
+    snippet = (
+        '<datafield tag="037" ind1=" " ind2=" ">'
+        '  <subfield code="a">funct-an/9710003</subfield>'
+        '  <subfield code="9">arXiv</subfield>'
+        '  <subfield code="c">funct-an</subfield>'
+        '</datafield>'
+    )  # record/450571
+
+    expected = [
+        {
+            'categories': [
+                'math.FA',
+            ],
+            'value': 'funct-an/9710003'
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['arxiv_eprints'], subschema) is None
+    assert expected == result['arxiv_eprints']
+
+    expected = [
+        {
+            '9': 'arXiv',
+            'a': 'arXiv:funct-an/9710003',
+            'c': 'math.FA',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['037']
+
+
 def test_report_numbers_from_037__a():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
