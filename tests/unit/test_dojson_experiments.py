@@ -123,9 +123,9 @@ def test_dates_from_046__s_and_046__t_and_046__x():
     assert expected_date_completed == result['date_completed']
 
 
-def test_experiment_and_institutions_from_119__a_u_z():
+def test_legacy_name_and_institutions_from_119__a_u_z():
     schema = load_schema('experiments')
-    experiment_schema = schema['properties']['experiment']
+    legacy_name_schema = schema['properties']['legacy_name']
     institutions_schema = schema['properties']['institutions']
 
     snippet = (
@@ -136,7 +136,7 @@ def test_experiment_and_institutions_from_119__a_u_z():
         '</datafield>'
     )  # record/1108206
 
-    expected_experiment = {'legacy_name': 'CERN-ALPHA'}
+    expected_legacy_name = 'CERN-ALPHA'
     expected_institutions = [
         {
             'curated_relation': True,
@@ -148,16 +148,16 @@ def test_experiment_and_institutions_from_119__a_u_z():
     ]
     result = experiments.do(create_record(snippet))
 
-    assert validate(result['experiment'], experiment_schema) is None
-    assert expected_experiment == result['experiment']
+    assert validate(result['legacy_name'], legacy_name_schema) is None
+    assert expected_legacy_name == result['legacy_name']
 
     assert validate(result['institutions'], institutions_schema) is None
     assert expected_institutions == result['institutions']
 
 
-def test_experiment_and_institutions_from_119__a_and_multiple_119__u_z():
+def test_legacy_name_and_institutions_from_119__a_and_multiple_119__u_z():
     schema = load_schema('experiments')
-    experiment_schema = schema['properties']['experiment']
+    legacy_name_schema = schema['properties']['legacy_name']
     institutions_schema = schema['properties']['institutions']
 
     snippet = (
@@ -200,7 +200,7 @@ def test_experiment_and_institutions_from_119__a_and_multiple_119__u_z():
         '</record>'
     )  # record/1228417
 
-    expected_experiment = {'legacy_name': 'LATTICE-UKQCD'}
+    expected_legacy_name = 'LATTICE-UKQCD'
     expected_institutions = [
         {
             'curated_relation': True,
@@ -261,8 +261,8 @@ def test_experiment_and_institutions_from_119__a_and_multiple_119__u_z():
     ]
     result = experiments.do(create_record(snippet))
 
-    assert validate(result['experiment'], experiment_schema) is None
-    assert expected_experiment == result['experiment']
+    assert validate(result['legacy_name'], legacy_name_schema) is None
+    assert expected_legacy_name == result['legacy_name']
 
     assert validate(result['institutions'], institutions_schema) is None
     assert expected_institutions == result['institutions']
@@ -517,3 +517,27 @@ def test_core_from_multiple_980__a():
 
     assert validate(result['core'], subschema) is None
     assert expected == result['core']
+
+
+def test_project_type_from_double_980__a_recognizes_accelerators():
+    schema = load_schema('experiments')
+    subschema = schema['properties']['project_type']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">ACCELERATOR</subfield>'
+        '  </datafield>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">EXPERIMENT</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1607855
+
+    expected = [
+        'accelerator',
+    ]
+    result = experiments.do(create_record(snippet))
+
+    assert validate(result['project_type'], subschema) is None
+    assert expected == result['project_type']

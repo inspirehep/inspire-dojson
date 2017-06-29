@@ -57,20 +57,22 @@ def dates(self, key, values):
 def experiment(self, key, values):
     """Populate the ``experiment`` key.
 
-    Also populates the ``accelerator`` and the ``institutions`` key
-    through side effects.
+    Also populates the ``legacy_name``, the ``accelerator``, and the
+    ``institutions`` keys through side effects.
     """
     experiment = self.get('experiment', {})
+    legacy_name = self.get('legacy_name', '')
     accelerator = self.get('accelerator', {})
     institutions = self.get('institutions', [])
 
     for value in force_list(values):
-        if value.get('a'):
-            experiment['legacy_name'] = value.get('a')
         if value.get('c'):
             experiment['value'] = value.get('c')
         if value.get('d'):
             experiment['short_name'] = value.get('d')
+
+        if value.get('a'):
+            legacy_name = value.get('a')
 
         if value.get('b'):
             accelerator['value'] = value.get('b')
@@ -85,6 +87,7 @@ def experiment(self, key, values):
                 institution['record'] = record
         institutions.append(institution)
 
+    self['legacy_name'] = legacy_name
     self['accelerator'] = accelerator
     self['institutions'] = institutions
     return experiment
@@ -159,10 +162,12 @@ def collaboration(self, key, value):
 def core(self, key, value):
     """Populate the ``core`` key.
 
-    Also populates the ``deleted`` key through side effects.
+    Also populates the ``deleted`` and ``project_type`` keys through side
+    effects.
     """
     core = self.get('core')
     deleted = self.get('deleted')
+    project_type = self.get('project_type', [])
 
     if not core:
         normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
@@ -172,5 +177,11 @@ def core(self, key, value):
         normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
         deleted = 'DELETED' in normalized_c_values
 
+    if not project_type:
+        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
+        if 'ACCELERATOR' in normalized_a_values:
+            project_type.append('accelerator')
+
+    self['project_type'] = project_type
     self['deleted'] = deleted
     return core
