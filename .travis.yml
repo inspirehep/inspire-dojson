@@ -45,7 +45,7 @@ install:
 script:
   - py.test inspire_dojson tests/unit
 
-after_script:
+after_success:
   - coveralls
 
 deploy:
