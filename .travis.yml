@@ -41,7 +41,7 @@ before_install:
   - travis_retry pip install coveralls
 
 install:
-  - pip install -e .[tests]
+  - travis_retry pip install -e .[tests]
 
 script:
   - py.test inspire_dojson tests/unit
