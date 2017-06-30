@@ -37,10 +37,11 @@ matrix:
   fast_finish: true
 
 before_install:
+  - travis_retry pip install --upgrade pip setuptools
   - travis_retry pip install coveralls
 
 install:
-  - pip install -e .[tests]
+  - travis_retry pip install -e .[tests]
 
 script:
   - py.test inspire_dojson tests/unit
@@ -50,6 +51,7 @@ after_success:
 
 deploy:
   provider: pypi
+  server: "https://upload.pypi.org/legacy/"
   user: inspirehep
   password:
     secure: "faQiewsrTwjJPZ6apZRnrxQNOvIUa3BX9Zaopo+oTdUFd6VYGyZi+YUwnWlXQu8+H8LkycjmDeCZ2O1b3mBO5a7+lNsiMh4d/qde0WQPBy6c/uBdb++eLrCsCOY6ILzyRhZpSYSeT4GytW3FYD9WUvROxCuivzGit9av6DpPITxJMcgOiCOUoYf3PdI4t23t+zHPj0eLYOSVuuuZUd5KPR7KL6dVy6wc7CN6bmS4Z6iAP2o2TWaeA0asI04DXkGif1hP861wbJqPvIPa2v8Cbk+srrEdsiN5lQwHvlvUUVYopJvrncR1VvRi4pXwvxLNK+lKIo4cOGTVLyUdHytNAUl/Jq30Ozq+HSYXYzp5r0sGQCSJftNBfJPxEqeku3D4eTsTvj7GmFX6LAjiDjeeSEAZLdi2HM+p+/YQmAfoziii+dEon52bcTL8KCee3Xa9BWBnITTgAZtTg+IAH3z72YBNEtzH0VrQe9I9aNhVLKTPlr0uV5V/ldkwBlhE9HV+srR1DCdnbt402wZ97+tZCF1mmSdLfLrXsiJhrleygd1EgMkgaujGo4nMtSdVpPpCdHtzFjHtaZQJTHXaQlJrLBnx5uVNRFnDR0Y+lqNujvmsCV7MYS7ggznFnd0JwI5Amuht5dfF2pu9LEA3QZaGN8YyV159qtB+tugeRoSEzp8="
