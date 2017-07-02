@@ -24,9 +24,11 @@ from __future__ import absolute_import, division, print_function
 
 import re
 
+import six
+
 
 try:
-    unichr(0x100000)
+    six.unichr(0x100000)
     RE_ALLOWED_XML_1_0_CHARS = re.compile(
         u'[^\U00000009\U0000000A\U0000000D\U00000020-'
         u'\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]')
@@ -71,9 +73,10 @@ def wash_for_xml(text, xml_version='1.0'):
     :param xml_version: version of the XML for which we wash the
         input. Value for this parameter can be '1.0' or '1.1'
     """
+    if not isinstance(text, six.text_type):
+        text = six.text_type(text.decode('utf8', 'ignore'))
+
     if xml_version == '1.0':
-        return RE_ALLOWED_XML_1_0_CHARS.sub(
-            '', unicode(text, 'utf-8')).encode('utf-8')
+        return RE_ALLOWED_XML_1_0_CHARS.sub('', text)
     else:
-        return RE_ALLOWED_XML_1_1_CHARS.sub(
-            '', unicode(text, 'utf-8')).encode('utf-8')
+        return RE_ALLOWED_XML_1_1_CHARS.sub('', text)

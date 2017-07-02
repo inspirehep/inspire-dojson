@@ -134,7 +134,10 @@ def test_citeable_from_980__a_citeable():
     ]
     result = hep2marc.do(result)
 
-    assert sorted(expected) == sorted(result['980'])
+    for el in expected:
+        assert el in result['980']
+    for el in result['980']:
+        assert el in expected
 
 
 def test_core_from_980__a_core():
@@ -323,7 +326,10 @@ def test_collections_and_special_collections_from_980__a():
     ]
     result = hep2marc.do(result)
 
-    assert sorted(expected) == sorted(result['980'])
+    for el in expected:
+        assert el in result['980']
+    for el in result['980']:
+        assert el in expected
 
 
 def test_refereed_from_980__a_published():

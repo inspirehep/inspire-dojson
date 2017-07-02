@@ -25,13 +25,11 @@
 from __future__ import absolute_import, division, print_function
 
 import re
+
 import six
-
 from flask import current_app
-
-from six.moves import urllib
-
 from jsonschema import validate as jsonschema_validate
+from six.moves import urllib
 
 from inspire_schemas.utils import LocalRefResolver
 
@@ -115,12 +113,6 @@ def get_record_ref(recid, endpoint='record'):
 
 def legacy_export_as_marc(json, tabsize=4):
     """Create the MARCXML representation using the producer rules."""
-
-    def encode_for_marcxml(value):
-        if isinstance(value, unicode):
-            value = value.encode('utf8')
-        return encode_for_xml(str(value), wash=True)
-
     export = ['<record>\n']
 
     for key, value in sorted(six.iteritems(json)):
@@ -132,7 +124,7 @@ def legacy_export_as_marc(json, tabsize=4):
                 value = value[0]
             export += ['\t<controlfield tag="%s">%s'
                        '</controlfield>\n'.expandtabs(tabsize)
-                       % (key, encode_for_marcxml(value))]
+                       % (key, encode_for_xml(value, wash=True))]
         else:
             tag = key[:3]
             try:
@@ -156,12 +148,12 @@ def legacy_export_as_marc(json, tabsize=4):
                                 for val in subfieldvalue:
                                     export += ['\t\t<subfield code="%s">%s'
                                                '</subfield>\n'.expandtabs(tabsize)
-                                               % (code, encode_for_marcxml(val))]
+                                               % (code, encode_for_xml(val, wash=True))]
                             else:
                                 export += ['\t\t<subfield code="%s">%s'
                                            '</subfield>\n'.expandtabs(tabsize)
                                            % (code,
-                                              encode_for_marcxml(subfieldvalue))]
+                                              encode_for_xml(subfieldvalue, wash=True))]
                 export += ['\t</datafield>\n'.expandtabs(tabsize)]
     export += ['</record>\n']
     return "".join(export)
@@ -170,15 +162,12 @@ def legacy_export_as_marc(json, tabsize=4):
 def strip_empty_values(obj):
     """Recursively strips empty values."""
     if isinstance(obj, dict):
+        new_obj = {}
         for key, val in obj.items():
             new_val = strip_empty_values(val)
-            # There are already lots of leaks in the callers of this function,
-            # there's no need to make it idempotent and double memory.
             if new_val is not None:
-                obj[key] = new_val
-            else:
-                del obj[key]
-        return obj or None
+                new_obj[key] = new_val
+        return new_obj or None
     elif isinstance(obj, (list, tuple, set)):
         new_obj = []
         for val in obj:
@@ -196,9 +185,10 @@ def dedupe_all_lists(obj):
     """Recursively remove duplucates from all lists."""
     squared_dedupe_len = 10
     if isinstance(obj, dict):
+        new_obj = {}
         for key, value in obj.items():
-            obj[key] = dedupe_all_lists(value)
-        return obj
+            new_obj[key] = dedupe_all_lists(value)
+        return new_obj
     elif isinstance(obj, (list, tuple, set)):
         new_elements = [dedupe_all_lists(v) for v in obj]
         if len(new_elements) < squared_dedupe_len:
