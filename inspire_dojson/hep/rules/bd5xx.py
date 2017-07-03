@@ -273,16 +273,19 @@ def copyright2marc(self, key, value):
 def _private_notes(self, key, value):
     """Populate the ``_private_notes`` key.
 
-    Also populates the ``export_to`` key through side effects.
+    Also populates the ``_export_to`` key through side effects.
     """
     def _is_for_cds(value):
-        return value.get('c', '').upper() == 'CDS'
+        normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
+        return 'CDS' in normalized_c_values
 
     def _is_for_hal(value):
-        return value.get('c', '').upper() == 'HAL'
+        normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
+        return 'HAL' in normalized_c_values
 
     def _is_not_for_hal(value):
-        return value.get('c', '').upper() == 'NOT HAL'
+        normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
+        return 'NOT HAL' in normalized_c_values
 
     _private_notes = self.get('_private_notes', [])
     _export_to = self.get('_export_to', {})
@@ -290,7 +293,8 @@ def _private_notes(self, key, value):
     for value in force_list(value):
         if _is_for_cds(value):
             _export_to['CDS'] = True
-        elif _is_for_hal(value):
+
+        if _is_for_hal(value):
             _export_to['HAL'] = True
         elif _is_not_for_hal(value):
             _export_to['HAL'] = False
@@ -348,7 +352,8 @@ def _export_to2marc(self, key, value):
 
     if _is_for_cds(value):
         result.append({'c': 'CDS'})
-    elif _is_for_hal(value):
+
+    if _is_for_hal(value):
         result.append({'c': 'HAL'})
     elif _is_not_for_hal(value):
         result.append({'c': 'not HAL'})
