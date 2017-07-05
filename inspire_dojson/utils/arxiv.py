@@ -30,24 +30,24 @@ from inspire_schemas.utils import load_schema
 
 # list produced from https://arxiv.org/archive/
 _NEW_CATEGORIES = {
-        'acc-phys': 'physics.acc-ph',
-        'adap-org': 'nlin.AO',
-        'alg-geom': 'math.AG',
-        'ao-sci': 'physics.ao-ph',
-        'atom-ph': 'physics.atom-ph',
-        'bayes-an': 'physics.data-an',
-        'chao-dyn': 'nlin.CD',
-        'chem-ph': 'physics.chem-ph',
-        'cmp-lg': 'cs.CL',
-        'comp-gas': 'nlin.CG',
-        'dg-ga': 'math.DG',
-        'funct-an': 'math.FA',
-        'mtrl-th': 'cont-mat.mtrl-sci',
-        'patt-sol': 'nlin.PS',
-        'plasm-ph': 'physics.plasm-ph',
-        'q-alg': 'math.QA',
-        'solv-int': 'nlin.SI',
-        'supr-con': 'cond-mat.supr-con',
+    'acc-phys': 'physics.acc-ph',
+    'adap-org': 'nlin.AO',
+    'alg-geom': 'math.AG',
+    'ao-sci': 'physics.ao-ph',
+    'atom-ph': 'physics.atom-ph',
+    'bayes-an': 'physics.data-an',
+    'chao-dyn': 'nlin.CD',
+    'chem-ph': 'physics.chem-ph',
+    'cmp-lg': 'cs.CL',
+    'comp-gas': 'nlin.CG',
+    'dg-ga': 'math.DG',
+    'funct-an': 'math.FA',
+    'mtrl-th': 'cont-mat.mtrl-sci',
+    'patt-sol': 'nlin.PS',
+    'plasm-ph': 'physics.plasm-ph',
+    'q-alg': 'math.QA',
+    'solv-int': 'nlin.SI',
+    'supr-con': 'cond-mat.supr-con',
 }
 
 
@@ -217,18 +217,24 @@ ARXIV_TO_INSPIRE_CATEGORY_MAPPING = {
 
 
 def normalize_arxiv_category(category):
-    """Normalize arXiv category by converting an obsolete arXiv category to its
-    current equivalent.
+    """Normalize arXiv category to be schema compliant.
+
+    This properly capitalizes the category and, if it is obsolete, converts it
+    to its current equivalent.
 
     Example:
         >>> normalize_arxiv_category('funct-an')
         'math.FA'
     """
-    return _NEW_CATEGORIES.get(category.lower(), category)
+    category = _NEW_CATEGORIES.get(category.lower(), category)
+    for valid_category in valid_arxiv_categories():
+        if category.lower() == valid_category.lower():
+            return valid_category
+    return category  # XXX: will fail validation and be logged
 
 
 def valid_arxiv_categories():
-    """List of all arXiv categories that ever existed
+    """List of all arXiv categories that ever existed.
 
     Example:
         >>> 'funct-an' in valid_arxiv_categories()
@@ -242,7 +248,7 @@ def valid_arxiv_categories():
 
 
 def classify_field(value):
-    """Translate an arXiv category to the corresponding Inspire category
+    """Translate an arXiv category to the corresponding Inspire category.
 
     Args:
         value: arXiv category to translate

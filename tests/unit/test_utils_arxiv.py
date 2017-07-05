@@ -22,7 +22,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from inspire_dojson.utils.arxiv import classify_field
+from inspire_dojson.utils.arxiv import (classify_field,
+                                        normalize_arxiv_category)
 
 
 def test_classify_field_returns_none_on_falsy_value():
@@ -50,5 +51,33 @@ def test_classify_field_returns_category_if_found_among_values():
 def test_classify_field_ignores_case():
     expected = 'Astrophysics'
     result = classify_field('ASTRO-PH.CO')
+
+    assert expected == result
+
+
+def test_normalize_arxiv_category_returns_input_for_correct_category():
+    expected = 'hep-th'
+    result = normalize_arxiv_category('hep-th')
+
+    assert expected == result
+
+
+def test_normalize_arxiv_category_returns_input_for_inexistent_category():
+    expected = u'😃'
+    result = normalize_arxiv_category(u'😃')
+
+    assert expected == result
+
+
+def test_normalize_arxiv_category_returns_existing_category_for_obsolete():
+    expected = 'math.FA'
+    result = normalize_arxiv_category('funct-an')
+
+    assert expected == result
+
+
+def test_normalize_arxiv_category_returns_existing_category_for_wrong_caps():
+    expected = 'hep-th'
+    result = normalize_arxiv_category('HeP-Th')
 
     assert expected == result
