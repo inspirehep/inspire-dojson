@@ -680,6 +680,66 @@ def test_external_system_numbers_from_035__a_d_h_m_9():
     assert expected == result['035']
 
 
+def test_external_system_numbers_from_035__9_discards_incomplete_datafields():
+    snippet = (
+        '<datafield tag="035" ind1=" " ind2=" ">'
+        '  <subfield code="9">OSTI</subfield>'
+        '</datafield>'
+    )
+
+    result = hep.do(create_record(snippet))
+
+    assert 'external_system_identifiers' not in result
+
+
+def test_external_system_numbers_from_035__a_9_and_035__z_9():
+    schema = load_schema('hep')
+    subschema = schema['properties']['external_system_identifiers']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">OSTI</subfield>'
+        '    <subfield code="a">892532</subfield>'
+        '  </datafield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">OSTI</subfield>'
+        '    <subfield code="z">897192</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/700376
+
+    expected = [
+        {
+            'value': '892532',
+            'schema': 'OSTI',
+        },
+        {
+            'value': '897192',
+            'schema': 'OSTI',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['external_system_identifiers'], subschema) is None
+    assert expected == result['external_system_identifiers']
+
+    expected = [
+        {
+            'a': '892532',
+            '9': 'OSTI',
+        },
+        {
+            'z': '897192',
+            '9': 'OSTI',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['035']
+    assert 'id_dict' not in result
+
+
 def test_arxiv_eprints_from_037__a_c_9():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']

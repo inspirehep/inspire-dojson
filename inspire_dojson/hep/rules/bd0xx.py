@@ -25,6 +25,7 @@
 from __future__ import absolute_import, division, print_function
 
 import re
+from collections import defaultdict
 
 import pycountry
 from isbn import ISBN
@@ -184,12 +185,6 @@ def texkeys(self, key, value):
     def _is_arxiv(id_, schema):
         return id_ and schema in ('arXiv',)
 
-    def _is_cernkey(id_, schema):
-        return id_ and schema in ('CERNKEY',)
-
-    def _is_desy(id_, schema):
-        return id_ and schema in ('DESY',)
-
     def _is_texkey(id_, schema):
         return id_ and schema in ('INSPIRETeX', 'SPIRESTeX')
 
@@ -198,31 +193,39 @@ def texkeys(self, key, value):
 
     values = force_list(value)
     for value in values:
-        id_ = force_single_element(value.get('a', ''))
-        other_id = force_single_element(value.get('z', ''))
+        ids = force_list(value.get('a', ''))
+        other_ids = force_list(value.get('z', ''))
         schema = force_single_element(value.get('9', ''))
 
-        if _is_texkey(id_, schema):
-            texkeys.insert(0, id_)
-        elif _is_texkey(other_id, schema):
-            texkeys.append(other_id)
-        elif _is_cernkey(other_id, schema):
-            external_system_identifiers.append({
-                'schema': 'CERNKEY',
-                'value': other_id,
-            })
-        elif _is_desy(other_id, schema):
-            external_system_identifiers.append({
-                'schema': 'DESY',
-                'value': other_id,
-            })
-        elif _is_arxiv(id_, schema) or _is_arxiv(other_id, schema):
-            continue  # XXX: ignored.
-        else:
-            external_system_identifiers.append({
-                'schema': schema,
-                'value': id_,
-            })
+        for id_ in ids:
+            id_ = id_.strip()
+            if not id_:
+                continue
+
+            if _is_texkey(id_, schema):
+                texkeys.insert(0, id_)
+            elif _is_arxiv(id_, schema):
+                continue  # XXX: ignored.
+            else:
+                external_system_identifiers.insert(0, {
+                    'schema': schema,
+                    'value': id_,
+                })
+
+        for id_ in other_ids:
+            id_ = id_.strip()
+            if not id_:
+                continue
+
+            if _is_texkey(id_, schema):
+                texkeys.append(id_)
+            elif _is_arxiv(id_, schema):
+                continue  # XXX: ignored.
+            else:
+                external_system_identifiers.append({
+                    'schema': schema,
+                    'value': id_,
+                })
 
     self['external_system_identifiers'] = external_system_identifiers
     return texkeys
@@ -253,7 +256,9 @@ def texkeys2marc(self, key, value):
 def external_system_identifiers2marc(self, key, value):
     """Populate the ``035`` MARC field.
 
-    Also populates the ``970`` MARC field through side effects.
+    Also populates the ``970`` MARC field through side effects and an extra
+    ``id_dict`` dictionary that holds potentially duplicate IDs that are
+    post-processed in a filter.
     """
     def _is_scheme_cernkey(id_, schema):
         return schema == 'CERNKEY'
@@ -262,6 +267,7 @@ def external_system_identifiers2marc(self, key, value):
         return schema == 'SPIRES'
 
     result_035 = self.get('035', [])
+    id_dict = self.get('id_dict', defaultdict(list))
     result_970 = self.get('970', [])
 
     values = force_list(value)
@@ -279,12 +285,10 @@ def external_system_identifiers2marc(self, key, value):
                 'z': id_,
             })
         else:
-            result_035.append({
-                '9': schema,
-                'a': id_,
-            })
+            id_dict[schema].append(id_)
 
     self['970'] = result_970
+    self['id_dict'] = id_dict
     return result_035
 
 
