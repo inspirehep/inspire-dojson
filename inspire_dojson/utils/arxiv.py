@@ -219,8 +219,9 @@ ARXIV_TO_INSPIRE_CATEGORY_MAPPING = {
 def normalize_arxiv_category(category):
     """Normalize arXiv category to be schema compliant.
 
-    This properly capitalizes the category and, if it is obsolete, converts it
-    to its current equivalent.
+    This properly capitalizes the category and replaces the dash by a dot if
+    needed. If the category is obsolete, it also gets converted it to its
+    current equivalent.
 
     Example:
         >>> normalize_arxiv_category('funct-an')
@@ -228,7 +229,8 @@ def normalize_arxiv_category(category):
     """
     category = _NEW_CATEGORIES.get(category.lower(), category)
     for valid_category in valid_arxiv_categories():
-        if category.lower() == valid_category.lower():
+        if (category.lower() == valid_category.lower() or
+                category.lower().replace('-', '.') == valid_category.lower()):
             return valid_category
     return category  # XXX: will fail validation and be logged
 

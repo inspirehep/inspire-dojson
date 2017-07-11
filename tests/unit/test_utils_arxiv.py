@@ -81,3 +81,10 @@ def test_normalize_arxiv_category_returns_existing_category_for_wrong_caps():
     result = normalize_arxiv_category('HeP-Th')
 
     assert expected == result
+
+
+def test_normalize_arxiv_category_returns_existing_category_when_dot_is_dash():
+    expected = 'math.FA'
+    result = normalize_arxiv_category('math-fa')
+
+    assert expected == result
