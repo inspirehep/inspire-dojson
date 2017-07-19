@@ -58,7 +58,8 @@ def add_schema(schema):
 
 def add_collection(name):
     def _add_collection(record, blob):
-        record['_collections'] = [name]
+        if 'special_collections' not in record:
+            record['_collections'] = [name]
         return record
 
     return _add_collection
