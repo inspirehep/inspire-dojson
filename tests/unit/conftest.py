@@ -28,6 +28,7 @@ from flask import Flask
 
 CONFIG = {
     'SERVER_NAME': 'localhost:5000',
+    'LEGACY_BASE_URL': 'http://inspirehep.net',
 }
 
 

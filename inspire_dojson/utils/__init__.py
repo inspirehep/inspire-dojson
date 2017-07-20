@@ -27,17 +27,16 @@ from __future__ import absolute_import, division, print_function
 import re
 import six
 
-try:
-    from flask import current_app
-except ImportError:  # pragma: no cover
-    current_app = None
+from flask import current_app
+
+from six.moves import urllib
 
 from jsonschema import validate as jsonschema_validate
 
 from inspire_schemas.utils import LocalRefResolver
 
 from ..utils.dedupers import dedupe_list, dedupe_list_of_dicts
-from ..utils.helpers import force_list
+from ..utils.helpers import force_list, maybe_int
 from ..utils.text import encode_for_xml
 
 
@@ -82,16 +81,25 @@ def force_single_element(obj):
 def get_recid_from_ref(ref_obj):
     """Retrieve recid from jsonref reference object.
 
-    If no recid can be parsed, return None.
+    If no recid can be parsed, returns None.
     """
     if not isinstance(ref_obj, dict):
         return None
     url = ref_obj.get('$ref', '')
-    try:
-        res = int(url.split('/')[-1])
-    except ValueError:
-        res = None
-    return res
+    return maybe_int(url.split('/')[-1])
+
+
+def absolute_url(relative_url):
+    """Returns an absolute URL from a URL relative to the server root.
+
+    The base URL is taken from the Flask app config if present, otherwise it
+    falls back to ``http://inspirehep.net``.
+    """
+    default_server = 'http://inspirehep.net'
+    server = current_app.config.get('SERVER_NAME', default_server)
+    if not re.match('^https?://', server):
+        server = 'http://{}'.format(server)
+    return urllib.parse.urljoin(server, relative_url)
 
 
 def get_record_ref(recid, endpoint='record'):
@@ -102,16 +110,7 @@ def get_record_ref(recid, endpoint='record'):
     """
     if recid is None:
         return None
-    default_server = 'http://inspirehep.net'
-    if current_app:
-        server = current_app.config.get('SERVER_NAME') or default_server
-    else:
-        server = default_server
-    # This config might also be http://inspirehep.net or
-    # https://inspirehep.net.
-    if not re.match('^https?://', server):
-        server = 'http://{}'.format(server)
-    return {'$ref': '{}/api/{}/{}'.format(server, endpoint, recid)}
+    return {'$ref': absolute_url('/api/{}/{}'.format(endpoint, recid))}
 
 
 def legacy_export_as_marc(json, tabsize=4):

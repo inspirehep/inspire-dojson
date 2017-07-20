@@ -444,73 +444,6 @@ def test_inspire_categories_from_65017a_2_discards_arxiv():
     assert 'inspire_categories' not in result
 
 
-def test_fft_from_FFT():
-    schema = load_schema('hep')
-    subschema = schema['properties']['_fft']
-
-    snippet = (
-        '<datafield tag="FFT" ind1=" " ind2=" ">'
-        '  <subfield code="a">/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1</subfield>'
-        '  <subfield code="d"/>'
-        '  <subfield code="f">.xml</subfield>'
-        '  <subfield code="n">0029558261904692</subfield>'
-        '  <subfield code="r"/>'
-        '  <subfield code="s">2016-04-01 15:14:38</subfield>'
-        '  <subfield code="t">Main</subfield>'
-        '  <subfield code="v">1</subfield>'
-        '  <subfield code="z"/>'
-        '  <subfield code="o">HIDDEN</subfield>'
-        '</datafield>'
-    )  # record/4328/export/xme
-
-    expected = [
-        {
-            'creation_datetime': '2016-04-01T15:14:38',
-            'filename': '0029558261904692',
-            'flags': [
-                'HIDDEN',
-            ],
-            'format': '.xml',
-            'path': '/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1',
-            'type': 'Main',
-            'version': 1,
-        },
-    ]
-    result = hep.do(create_record(snippet))
-
-    assert validate(result['_fft'], subschema) is None
-    assert expected == result['_fft']
-
-    expected = [
-        {
-            'a': '/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1',
-            'f': '.xml',
-            'n': '0029558261904692',
-            'o': [
-                'HIDDEN',
-            ],
-            's': '2016-04-01 15:14:38',
-            't': 'Main',
-            'v': 1,
-        },
-    ]
-    result = hep2marc.do(result)
-
-    assert expected == result['FFT']
-
-
-def test_fft_from_FFT_percent_percent():
-    snippet = (
-        '<datafield tag="FFT" ind1="%" ind2="%">'
-        '  <subfield code="a">/opt/cds-invenio/var/tmp-shared/apsharvest_unzip_5dGfY5/articlebag-10-1103-PhysRevD-87-083514-apsxml/data/PhysRevD.87.083514/fulltext.xml</subfield>'
-        '  <subfield code="o">HIDDEN</subfield>'
-        '  <subfield code="t">APS</subfield>'
-        '</datafield>'
-    )  # record/1094156
-
-    assert '_fft' not in hep.do(create_record(snippet))
-
-
 def test_urls_from_8564_u_y():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
@@ -542,6 +475,33 @@ def test_urls_from_8564_u_y():
     result = hep2marc.do(result)
 
     assert expected == result['8564']
+
+
+def test_urls_from_8564_ignores_internal_links():
+    snippet = (
+        '<datafield tag="856" ind1="4" ind2=" ">'
+        '  <subfield code="s">1506142</subfield>'
+        '  <subfield code="u">http://inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
+        '</datafield>'
+    )  # record/1610503/export/xme
+
+    result = hep.do(create_record(snippet))
+
+    assert 'urls' not in result
+
+
+def test_urls_from_8564_ignores_internal_links_https():
+    snippet = (
+        '<datafield tag="856" ind1="4" ind2=" ">'
+        '  <subfield code="s">2392681</subfield>'
+        '  <subfield code="u">https://inspirehep.net/record/1508108/files/fermilab-pub-16-617-cms.pdf</subfield>'
+        '  <subfield code="y">Fulltext</subfield>'
+        '</datafield>'
+    )  # record/1508036/export/xme
+
+    result = hep.do(create_record(snippet))
+
+    assert 'urls' not in result
 
 
 def test_urls_from_8564_s_u_ignores_s():
