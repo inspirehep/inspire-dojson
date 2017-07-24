@@ -34,5 +34,6 @@ from .rules import (  # noqa
     bd6xx,
     bd7xx,
     bd9xx,
+    bdFFT,
 )
 from .model import hep, hep2marc  # noqa

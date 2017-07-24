@@ -29,7 +29,11 @@ from datetime import datetime
 
 from dojson import utils
 
+from flask import current_app
+
 from inspire_schemas.api import load_schema
+
+from six.moves import urllib
 
 from ..conferences.model import conferences
 from ..experiments.model import experiments
@@ -49,53 +53,6 @@ from ..utils.helpers import force_list
 
 IS_INTERNAL_UID = re.compile('^(inspire:uid:)?\d{5}$')
 IS_ORCID = re.compile('^(orcid:)?\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$')
-
-
-@hep.over('_fft', '^FFT[^%][^%]')
-@utils.for_each_value
-def _fft(self, key, value):
-    def _get_creation_datetime(value):
-        dt = datetime.strptime(value.get('s'), '%Y-%m-%d %H:%M:%S')
-        return dt.isoformat()
-
-    def _get_version(value):
-        try:
-            return int(force_single_element(value.get('v')))
-        except ValueError:
-            return None
-
-    return {
-        'creation_datetime': _get_creation_datetime(value),
-        'description': value.get('d'),
-        'filename': value.get('n'),
-        'flags': force_list(value.get('o')),
-        'format': value.get('f'),
-        'path': value.get('a'),
-        'status': value.get('z'),
-        'type': value.get('t'),
-        'version': _get_version(value),
-    }
-
-
-@hep2marc.over('FFT', '^_fft$')
-@utils.for_each_value
-def _fft2marc(self, key, value):
-    def _get_s(value):
-        if value.get('creation_datetime'):
-            dt = datetime.strptime(value['creation_datetime'], '%Y-%m-%dT%H:%M:%S')
-            return dt.strftime('%Y-%m-%d %H:%M:%S')
-
-    return {
-        'a': value.get('path'),
-        'd': value.get('description'),
-        'f': value.get('format'),
-        'n': value.get('filename'),
-        'o': value.get('flags'),
-        's': _get_s(value),
-        't': value.get('type'),
-        'v': value.get('version'),
-        'z': value.get('status'),
-    }
 
 
 def self_url(index):
@@ -325,14 +282,23 @@ def public_notes_680(self, key, value):
 @jobs.over('urls', '^8564.')
 @journals.over('urls', '^8564.')
 def urls(self, key, value):
+    def _is_internal_url(url):
+        base = urllib.parse.urlparse(current_app.config['LEGACY_BASE_URL'])
+        base_netloc = base.netloc or base.path
+        parsed_url = urllib.parse.urlparse(url)
+        url_netloc = parsed_url.netloc or parsed_url.path
+
+        return base_netloc == url_netloc
+
     urls = self.get('urls', [])
 
     description = force_single_element(value.get('y'))
     for url in force_list(value.get('u')):
-        urls.append({
-            'description': description,
-            'value': url,
-        })
+        if not _is_internal_url(url):
+            urls.append({
+                'description': description,
+                'value': url,
+            })
 
     return urls
 

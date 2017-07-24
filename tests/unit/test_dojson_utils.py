@@ -28,6 +28,7 @@ from mock import patch
 from inspire_schemas.utils import load_schema
 
 from inspire_dojson.utils import (
+    absolute_url,
     normalize_rank,
     force_single_element,
     get_recid_from_ref,
@@ -94,6 +95,46 @@ def test_force_single_element_returns_element_when_not_a_list():
 
 def test_force_single_element_returns_none_on_empty_list():
     assert force_single_element([]) is None
+
+
+def test_absolute_url_with_empty_server_name():
+    config = {}
+
+    with patch.dict(current_app.config, config, clear=True):
+        expected = 'http://inspirehep.net/foo'
+        result = absolute_url('foo')
+
+        assert expected == result
+
+
+def test_absolute_url_with_server_name_localhost():
+    config = {'SERVER_NAME': 'localhost:5000'}
+
+    with patch.dict(current_app.config, config):
+        expected = 'http://localhost:5000/foo'
+        result = absolute_url('foo')
+
+        assert expected == result
+
+
+def test_absolute_url_with_http_server_name():
+    config = {'SERVER_NAME': 'http://example.com'}
+
+    with patch.dict(current_app.config, config):
+        expected = 'http://example.com/foo'
+        result = absolute_url('foo')
+
+        assert expected == result
+
+
+def test_absolute_url_with_https_server_name():
+    config = {'SERVER_NAME': 'https://example.com'}
+
+    with patch.dict(current_app.config, config):
+        expected = 'https://example.com/foo'
+        result = absolute_url('foo')
+
+        assert expected == result
 
 
 def test_get_record_ref_with_empty_server_name():
