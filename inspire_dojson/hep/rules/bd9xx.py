@@ -103,6 +103,8 @@ def document_type(self, key, value):
 
         if normalized_a_value == 'arxiv':
             continue  # XXX: ignored.
+        elif normalized_a_value == 'hep':
+            self.setdefault('_collections', []).append('Literature')
         elif normalized_a_value == 'citeable':
             self['citeable'] = True
         elif normalized_a_value == 'core':
@@ -179,6 +181,13 @@ def withdrawn2marc(self, key, value):
 @utils.for_each_value
 def publication_type2marc(self, key, value):
     return {'a': value}
+
+
+@hep2marc.over('980', '^_collections$')
+@utils.for_each_value
+def _collections2marc(self, key, value):
+    if value == 'Literature':
+        return {'a': 'HEP'}
 
 
 @hep2marc.over('980', '^special_collections$')
