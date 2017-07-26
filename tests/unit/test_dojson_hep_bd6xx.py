@@ -217,7 +217,9 @@ def test_keywords2marc_does_not_export_magpie_keywords():
 
     result = hep2marc.do(record)
 
-    assert result is None
+    assert '084' not in result
+    assert '6531' not in result
+    assert '695' not in result
 
 
 def test_accelerator_experiments_from_693__a_e():

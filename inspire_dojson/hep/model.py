@@ -24,7 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-
 from ..model import FilterOverdo, add_schema, clean_record
 from ..utils.arxiv import normalize_arxiv_category, classify_field
 from ..utils.helpers import force_list
@@ -68,6 +67,13 @@ def ensure_document_type(record, blob):
     return record
 
 
+def ensure_hep(record, blob):
+    if not blob.get('special_collections'):
+        record.setdefault('980', []).append({'a': 'HEP'})
+
+    return record
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
@@ -77,6 +83,7 @@ hep_filters = [
 ]
 
 hep2marc_filters = [
+    ensure_hep,
     clean_record,
 ]
 
