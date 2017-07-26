@@ -69,7 +69,7 @@ def test_fft_from_FFT():
 
     result = hep2marc.do(result)
 
-    assert result is None
+    assert 'FFT' not in result
 
 
 def test_fft_from_FFT_percent_percent():

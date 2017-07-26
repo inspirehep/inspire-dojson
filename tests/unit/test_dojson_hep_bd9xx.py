@@ -130,6 +130,7 @@ def test_citeable_from_980__a_citeable():
 
     expected = [
         {'a': 'Citeable'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -154,6 +155,7 @@ def test_core_from_980__a_core():
 
     expected = [
         {'a': 'CORE'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -178,6 +180,7 @@ def test_core_from_980__a_noncore():
 
     expected = [
         {'a': 'NONCORE'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -202,6 +205,7 @@ def test_deleted_from_980__c():
 
     expected = [
         {'c': 'DELETED'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -340,6 +344,7 @@ def test_refereed_from_980__a_published():
 
     expected = [
         {'a': 'Published'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -362,9 +367,12 @@ def test_document_type_defaults_to_article():
     assert validate(result['document_type'], subschema) is None
     assert expected == result['document_type']
 
+    expected = [
+        {'a': 'HEP'},
+    ]
     result = hep2marc.do(result)
 
-    assert result is None
+    assert expected == result['980']
 
 
 def test_document_type_from_980__a():
@@ -387,6 +395,7 @@ def test_document_type_from_980__a():
 
     expected = [
         {'a': 'Book'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -413,6 +422,7 @@ def test_document_type_from_980__a_handles_conference_paper():
 
     expected = [
         {'a': 'ConferencePaper'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -439,6 +449,7 @@ def test_document_type_from_980__a_handles_activity_report():
 
     expected = [
         {'a': 'ActivityReport'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -465,6 +476,7 @@ def test_publication_type_from_980__a():
 
     expected = [
         {'a': 'review'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -489,6 +501,7 @@ def test_withdrawn_from_980__a_withdrawn():
 
     expected = [
         {'a': 'Withdrawn'},
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
