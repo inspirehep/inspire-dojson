@@ -31,7 +31,7 @@ def remove_lone_series_number(record, blob):
     def _valid(series):
         return series.get('name')
 
-    record['series'] = filter(_valid, record.get('series', []))
+    record['series'] = list(filter(_valid, record.get('series', [])))
 
     return record
 

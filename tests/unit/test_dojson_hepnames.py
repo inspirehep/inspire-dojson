@@ -264,7 +264,10 @@ def test_ids_from_double_035__a_9():
     ]
     result = hepnames2marc.do(result)
 
-    assert sorted(expected) == sorted(result['035'])
+    for el in expected:
+        assert el in result['035']
+    for el in result['035']:
+        assert el in expected
 
 
 def test_ids_from_035__a_9_with_orcid():
