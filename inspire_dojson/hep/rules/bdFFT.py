@@ -57,6 +57,27 @@ def _fft(self, key, value):
     }
 
 
+@hep2marc.over('FFT', '^_fft$')
+@utils.for_each_value
+def _fft2marc(self, key, value):
+    def _get_s(value):
+        if value.get('creation_datetime'):
+            dt = datetime.strptime(value['creation_datetime'], '%Y-%m-%dT%H:%M:%S')
+            return dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    return {
+        'a': value.get('path'),
+        'd': value.get('description'),
+        'f': value.get('format'),
+        'n': value.get('filename'),
+        'o': value.get('flags'),
+        's': _get_s(value),
+        't': value.get('type'),
+        'v': value.get('version'),
+        'z': value.get('status'),
+    }
+
+
 @hep2marc.over('FFT', '^documents')
 @utils.for_each_value
 def documents2marc(self, key, value):
