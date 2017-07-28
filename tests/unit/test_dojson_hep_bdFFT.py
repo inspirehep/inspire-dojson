@@ -67,9 +67,22 @@ def test_fft_from_FFT():
     assert validate(result['_fft'], subschema) is None
     assert expected == result['_fft']
 
+    expected = [
+        {
+            'a': '/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1',
+            'f': '.xml',
+            'n': '0029558261904692',
+            'o': [
+                'HIDDEN',
+            ],
+            's': '2016-04-01 15:14:38',
+            't': 'Main',
+            'v': 1,
+        },
+    ]
     result = hep2marc.do(result)
 
-    assert 'FFT' not in result
+    assert expected == result['FFT']
 
 
 def test_fft_from_FFT_percent_percent():
