@@ -50,6 +50,9 @@ def encode_for_xml(text, wash=False, xml_version='1.0', quote=False):
     :param text: text to encode
     :return: an encoded text
     """
+    if not isinstance(text, six.text_type):
+        text = six.text_type(text)
+
     text = text.replace('&', '&amp;')
     text = text.replace('<', '&lt;')
     if quote:
@@ -73,9 +76,6 @@ def wash_for_xml(text, xml_version='1.0'):
     :param xml_version: version of the XML for which we wash the
         input. Value for this parameter can be '1.0' or '1.1'
     """
-    if not isinstance(text, six.text_type):
-        text = six.text_type(text.decode('utf8', 'ignore'))
-
     if xml_version == '1.0':
         return RE_ALLOWED_XML_1_0_CHARS.sub('', text)
     else:
