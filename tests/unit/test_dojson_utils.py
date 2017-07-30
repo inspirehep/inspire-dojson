@@ -265,6 +265,25 @@ def test_legacy_export_as_marc_handles_unicode():
     assert expected == result
 
 
+def test_legacy_export_as_marc_handles_numbers():
+    record = {
+        '773': [
+            {'y': 1975},
+        ],
+    }
+
+    expected = (
+        '<record>\n'
+        '    <datafield tag="773" ind1="" ind2="">\n'
+        '        <subfield code="y">1975</subfield>\n'
+        '    </datafield>\n'
+        '</record>\n'
+    )
+    result = legacy_export_as_marc(record)
+
+    assert expected == result
+
+
 def test_dedupe_all_lists():
     obj = {'l0': list(range(10)) + list(range(10)),
            'o1': [{'foo': 'bar'}] * 10,
