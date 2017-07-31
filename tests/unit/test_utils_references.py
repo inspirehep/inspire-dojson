@@ -23,22 +23,33 @@
 from __future__ import absolute_import, division, print_function
 
 from inspire_dojson.utils import get_record_ref, validate
-from inspire_schemas.utils import load_schema
-from inspirehep.modules.references.processors import (
+from inspire_dojson.utils.references import (
     ReferenceBuilder,
     _is_arxiv,
     _normalize_arxiv,
     _split_refextract_authors_str,
 )
+from inspire_schemas.utils import load_schema
 
 
-def test_split_refextract_authors_str():
+def test_split_refextract_authors_str_initials():
     expected = [
         'Butler, D.',
         'Demarque, P.',
         'Smith, H.A.',
     ]
     authors_input = 'D. Butler, P. Demarque, & H. A. Smith'
+    result = _split_refextract_authors_str(authors_input)
+
+    assert expected == result
+
+
+def test_split_refextract_authors_str_noninitials():
+    expected = [
+        'Klebanov, Igor R.',
+        'Maldacena, Juan Martin'
+    ]
+    authors_input = 'Igor R. Klebanov and Juan Martin Maldacena'
     result = _split_refextract_authors_str(authors_input)
 
     assert expected == result
