@@ -24,9 +24,8 @@ from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.utils import load_schema, validate
 from inspire_dojson.institutions import institutions
-from inspire_dojson.utils import validate
 
 
 def test_addresses_from_034__d_f_and_371__double_a_b_d_g():

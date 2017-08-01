@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 from flask import current_app
 from mock import patch
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.utils import load_schema, validate
 
 from inspire_dojson.utils import (
     absolute_url,
@@ -36,7 +36,6 @@ from inspire_dojson.utils import (
     legacy_export_as_marc,
     dedupe_all_lists,
     strip_empty_values,
-    validate,
 )
 
 
