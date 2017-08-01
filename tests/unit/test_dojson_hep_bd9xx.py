@@ -26,10 +26,9 @@ import pytest
 
 from dojson.contrib.marc21.utils import create_record
 
-from inspire_schemas.api import load_schema
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_dojson.utils import validate
 
 
 def test_record_affiliations_from_902__a_z():

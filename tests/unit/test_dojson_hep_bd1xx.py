@@ -27,10 +27,9 @@ import pytest
 
 from dojson.contrib.marc21.utils import create_record
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.utils import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_dojson.utils import validate
 
 
 def test_authors_from_100__a_i_u_x_y():
