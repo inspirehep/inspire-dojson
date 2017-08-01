@@ -31,7 +31,7 @@ import pycountry
 from dojson import utils
 from idutils import is_doi, is_handle, normalize_doi
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.api import load_schema
 
 from ..model import hep, hep2marc
 from ...utils import force_single_element

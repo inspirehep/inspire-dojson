@@ -24,10 +24,8 @@ from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
 
-from inspire_schemas.utils import load_schema
-
 from inspire_dojson.conferences import conferences
-from inspire_dojson.utils import validate
+from inspire_schemas.api import load_schema, validate
 
 
 def test_acronyms_from_111__a_c_e_g_x_y():

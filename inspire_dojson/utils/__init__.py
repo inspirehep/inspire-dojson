@@ -28,10 +28,7 @@ import re
 
 import six
 from flask import current_app
-from jsonschema import validate as jsonschema_validate
 from six.moves import urllib
-
-from inspire_schemas.utils import LocalRefResolver
 
 from ..utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from ..utils.helpers import force_list, maybe_int
@@ -198,8 +195,3 @@ def dedupe_all_lists(obj):
         return type(obj)(new_obj)
     else:
         return obj
-
-
-def validate(instance, schema):
-    return jsonschema_validate(
-        instance, schema, resolver=LocalRefResolver('', {}))

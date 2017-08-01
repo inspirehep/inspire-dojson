@@ -29,7 +29,7 @@ import re
 from dojson import utils
 from dojson.errors import IgnoreKey
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.api import load_schema
 
 from .model import experiments
 from ..utils import force_single_element, get_record_ref
