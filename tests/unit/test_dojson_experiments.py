@@ -24,10 +24,8 @@ from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
 
-from inspire_schemas.utils import load_schema
-
 from inspire_dojson.experiments import experiments
-from inspire_dojson.utils import validate
+from inspire_schemas.api import load_schema, validate
 
 
 def test_dates_from_046__q_s_and_046__r():

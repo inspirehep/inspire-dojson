@@ -26,7 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 import six
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.api import load_schema
 
 # list produced from https://arxiv.org/archive/
 _NEW_CATEGORIES = {

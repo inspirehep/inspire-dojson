@@ -26,7 +26,8 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 
-from inspire_schemas.utils import load_schema
+from inspire_schemas.api import load_schema
+from inspire_schemas.utils import split_page_artid
 
 from ..model import hep, hep2marc
 from ...utils import (
@@ -35,7 +36,6 @@ from ...utils import (
     get_record_ref,
 )
 from ...utils.helpers import force_list, maybe_int
-from ...utils.pubnote import split_page_artid
 
 
 @hep.over('collaborations', '^710..')
