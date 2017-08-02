@@ -29,7 +29,7 @@ from datetime import datetime
 from dojson import utils
 
 from ..model import hep, hep2marc
-from ...utils import absolute_url, force_single_element
+from ...utils import absolute_url
 from ...utils.helpers import force_list, maybe_int
 
 
@@ -37,8 +37,9 @@ from ...utils.helpers import force_list, maybe_int
 @utils.for_each_value
 def _fft(self, key, value):
     def _get_creation_datetime(value):
-        dt = datetime.strptime(value.get('s'), '%Y-%m-%d %H:%M:%S')
-        return dt.isoformat()
+        if value.get('s'):
+            dt = datetime.strptime(value['s'], '%Y-%m-%d %H:%M:%S')
+            return dt.isoformat()
 
     is_context = value.get('f', '').endswith('context')
     if is_context:
