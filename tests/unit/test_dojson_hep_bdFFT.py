@@ -115,6 +115,42 @@ def test_fft_from_FFT_ignores_context():
     assert '_fft' not in result
 
 
+def test_fft_from_FFT_does_not_require_s():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_fft']
+
+    snippet = (
+        '<datafield tag="FFT" ind1=" " ind2=" ">'
+        '  <subfield code="a">http://www.mdpi.com/2218-1997/3/1/24/pdf</subfield>'
+        '  <subfield code="d">Fulltext</subfield>'
+        '  <subfield code="t">INSPIRE-PUBLIC</subfield>'
+        '</datafield>'
+    )  # DESY harvest
+
+    expected = [
+        {
+            'description': 'Fulltext',
+            'path': 'http://www.mdpi.com/2218-1997/3/1/24/pdf',
+            'type': 'INSPIRE-PUBLIC',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['_fft'], subschema) is None
+    assert expected == result['_fft']
+
+    expected = [
+        {
+            'a': 'http://www.mdpi.com/2218-1997/3/1/24/pdf',
+            'd': 'Fulltext',
+            't': 'INSPIRE-PUBLIC',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['FFT']
+
+
 def test_documents_to_FFT():
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
