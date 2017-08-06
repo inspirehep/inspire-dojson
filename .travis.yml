@@ -42,7 +42,7 @@ install:
   - travis_retry pip install -e .[tests]
 
 script:
-  - py.test inspire_dojson tests/unit
+  - py.test inspire_dojson tests
 
 after_success:
   - coveralls
