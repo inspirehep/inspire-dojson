@@ -35,6 +35,7 @@ install_requires = [
     'autosemver~=0.0,>=0.5.1',
     'dojson~=1.0,>=1.3.1',
     'inspire-schemas~=45.0,>=45.0.1',
+    'inspire-utils~=0.0,>=0.0.3',
     'langdetect~=1.0,>=1.0.7',
     'pycountry~=17.0,>=17.5.4',
 ]
