@@ -29,10 +29,13 @@ from setuptools import find_packages, setup
 
 URL = 'https://github.com/inspirehep/inspire-dojson'
 
+setup_requires = [
+    'autosemver~=0.0,>=0.5.2',
+]
+
 install_requires = [
     'Flask~=0.0,>=0.12.2',
     'IDUtils~=0.0,>=0.2.4',
-    'autosemver~=0.0,>=0.5.1',
     'dojson~=1.0,>=1.3.1',
     'inspire-schemas~=45.0,>=45.0.1',
     'inspire-utils~=0.0,>=0.0.3',
@@ -73,22 +76,22 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    setup_requires=['autosemver'],
+    setup_requires=setup_requires,
     install_requires=install_requires,
+    tests_require=tests_require,
     extras_require=extras_require,
     classifiers=[
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
-        'Development Status :: 4 - Beta',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    tests_require=tests_require,
 )
