@@ -78,6 +78,7 @@ setup(
     platforms='any',
     setup_requires=setup_requires,
     install_requires=install_requires,
+    tests_require=tests_require,
     extras_require=extras_require,
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -93,5 +94,4 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    tests_require=tests_require,
 )
