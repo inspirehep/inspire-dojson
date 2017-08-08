@@ -64,6 +64,18 @@ def test_keywords_from_084__a_2():
     assert '695' not in result
 
 
+def test_keywords_from_084__double_2_does_not_raise():
+    snippet = (
+        '<datafield tag="084" ind1=" " ind2=" ">'
+        '  <subfield code="a">02.20.Sv</subfield>'
+        '  <subfield code="2">PACS</subfield>'
+        '  <subfield code="2">PACS</subfield>'
+        '</datafield>'
+    )  # synthetic record
+
+    hep.do(create_record(snippet))
+
+
 def test_keywords_from_084__a_2_9():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']

@@ -87,7 +87,7 @@ def keywords(self, key, values):
 
     for value in force_list(values):
         if value.get('a'):
-            schema = value.get('2', '').upper()
+            schema = force_single_element(value.get('2', '')).upper()
             sources = force_list(value.get('9'))
             keyword = value.get('a')
 
