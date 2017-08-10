@@ -653,9 +653,7 @@ def test_references_from_999C5h_m_o_r_s_y_0():
                 'Myers, R.C.',
                 'Sinha, A.',
             ],
-            'm': [
-                'Seeing a c-theorem with holography ; [hep-th]',
-            ],
+            'm': 'Seeing a c-theorem with holography ; [hep-th]',
             'o': '10',
             'r': [
                 'arXiv:1006.1263',
@@ -791,9 +789,7 @@ def test_references_from_999C50_h_m_o_r_y():
                 'Fasso, A.',
                 'Ranft, J.',
             ],
-            'm': [
-                'FLUKA: a multi-particle transport code, CERN-10 , INFN/TC_05/11',
-            ],
+            'm': 'FLUKA: a multi-particle transport code, CERN-10 , INFN/TC_05/11',
             'r': [
                 'SLAC-R-773',
             ],
@@ -916,9 +912,7 @@ def test_references_from_999C50_9_r_u_h_m_o():
             'r': [
                 'urn:nbn:de:hebis:77-diss-1000009520',
             ],
-            'm': [
-                'Ph.D. thesis, University of Mainz, in preparation',
-            ],
+            'm': 'Ph.D. thesis, University of Mainz, in preparation',
             'o': '51',
             'u': [
                 'http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316',
@@ -1099,9 +1093,7 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
             'h': [
                 'Gaspar, C.',
             ],
-            'm': [
-                'Real Time Conference,, Vancouver, Canada',
-            ],
+            'm': 'Real Time Conference,, Vancouver, Canada',
             'o': '7',
             'p': 'IEEE',
             't': 'DIM - A Distributed Information Management System for the Delphi experiment at CERN',
@@ -1163,9 +1155,7 @@ def test_references_from_999C5a_h_i_m_o_p_y_9():
                 'Guerra, A.Del',  # XXX: wrong
             ],
             'i': '9789812562623',
-            'm': [
-                'Ionizing Radiation Detectors for Medical Imaging Crossref:',
-            ],
+            'm': 'Ionizing Radiation Detectors for Medical Imaging Crossref:',
             'o': '16',
             'p': 'World Scientific',
             'y': 2004,
@@ -1313,6 +1303,72 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
             'r': [
                 'arXiv:hep-ph/0112168',
             ],
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
+
+
+def test_references_from_999C5h_k_double_m_o_s_y_0():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="h">W, Schoutens.</subfield>'
+        '  <subfield code="k">Bouwknegt:1992wg</subfield>'
+        '  <subfield code="m">Peter Bouwknegt and Kareljan</subfield>'
+        '  <subfield code="m">symmetry in conformal field theory</subfield>'
+        '  <subfield code="o">12</subfield>'
+        '  <subfield code="s">Phys.Rept.,223,183-276</subfield>'
+        '  <subfield code="y">1993</subfield>'
+        '  <subfield code="0">338634</subfield>'
+        '</datafield>'
+    )  # record/1613562/export/xme
+
+    expected = [
+        {
+            'curated_relation': False,
+            'record': {
+                '$ref': 'http://localhost:5000/api/literature/338634',
+            },
+            'reference': {
+                'authors': [
+                    {'full_name': 'Schoutens.,'},
+                ],
+                'label': '12',
+                'misc': [
+                    'Peter Bouwknegt and Kareljan',
+                    'symmetry in conformal field theory',
+                ],
+                'publication_info': {
+                    'journal_title': 'Phys.Rept.',
+                    'journal_volume': '223',
+                    'page_start': '183',
+                    'page_end': '276',
+                    'year': 1993,
+                },
+                'texkey': 'Bouwknegt:1992wg',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            '0': 338634,
+            'h': [
+                'Schoutens.,',
+            ],
+            'k': 'Bouwknegt:1992wg',
+            'm': 'Peter Bouwknegt and Kareljan / symmetry in conformal field theory',
+            'o': '12',
+            's': 'Phys.Rept.,223,183-276',
+            'y': 1993,
         },
     ]
     result = hep2marc.do(result)
