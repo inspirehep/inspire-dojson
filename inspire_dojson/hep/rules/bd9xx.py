@@ -274,6 +274,8 @@ def references2marc(self, key, value):
     artid = get_value(reference, 'publication_info.artid')
     s_value = build_pubnote(journal_title, journal_volume, page_start, page_end, artid)
 
+    m_value = ' / '.join(force_list(reference.get('misc')))
+
     return {
         '0': get_recid_from_ref(value.get('record')),
         'a': a_values,
@@ -283,7 +285,7 @@ def references2marc(self, key, value):
         'h': h_values,
         'i': reference.get('isbn'),
         'k': reference.get('texkey'),
-        'm': reference.get('misc'),
+        'm': m_value,
         'o': reference.get('label'),
         'p': get_value(reference, 'imprint.publisher'),
         'q': get_value(reference, 'publication_info.parent_title'),
