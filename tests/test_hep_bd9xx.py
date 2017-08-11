@@ -543,7 +543,7 @@ def test_references_from_999C5r_0():
         {
             '0': 433620,
             'r': [
-                'arXiv:solv-int/9611008',
+                'solv-int/9611008',
             ],
         },
     ]
@@ -1301,7 +1301,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
             ],
             'o': '20',
             'r': [
-                'arXiv:hep-ph/0112168',
+                'hep-ph/0112168',
             ],
         },
     ]
@@ -1369,6 +1369,67 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
             'o': '12',
             's': 'Phys.Rept.,223,183-276',
             'y': 1993,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
+
+
+def test_references_from_999C5_0_h_m_o_r_t_y():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="0">674429</subfield>'
+        '  <subfield code="h">R. Ardito et al.</subfield>'
+        '  <subfield code="m">66</subfield>'
+        '  <subfield code="o">57</subfield>'
+        '  <subfield code="r">hep-ex/0501010</subfield>'
+        '  <subfield code="t">CUORE: A Cryogenic underground Observatory for Rare Events</subfield>'
+        '  <subfield code="y">2005</subfield>'
+        '</datafield>'
+    )  # record/1615506
+
+    expected = [
+        {
+            'curated_relation': False,
+            'record': {
+                '$ref': 'http://localhost:5000/api/literature/674429',
+            },
+            'reference': {
+                'arxiv_eprint': 'hep-ex/0501010',
+                'authors': [
+                    {'full_name': 'Ardito, R.'},
+                ],
+                'label': '57',
+                'misc': [
+                    '66',
+                ],
+                'publication_info': {'year': 2005},
+                'title': {'title': 'CUORE: A Cryogenic underground Observatory for Rare Events'},
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            '0': 674429,
+            'h': [
+                'Ardito, R.',
+            ],
+            'm': '66',
+            'o': '57',
+            'r': [
+                'hep-ex/0501010',
+            ],
+            't': 'CUORE: A Cryogenic underground Observatory for Rare Events',
+            'y': 2005,
         },
     ]
     result = hep2marc.do(result)

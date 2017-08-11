@@ -28,6 +28,7 @@ import re
 from functools import partial
 
 from dojson import utils
+from idutils import is_arxiv_post_2007
 
 from inspire_schemas.api import ReferenceBuilder
 from inspire_schemas.utils import build_pubnote
@@ -265,7 +266,9 @@ def references2marc(self, key, value):
     h_values = [el['full_name'] for el in authors if el.get('inspire_role') != 'editor']
 
     r_values = force_list(reference.get('report_number'))
-    r_values.extend(['arXiv:' + el for el in force_list(reference.get('arxiv_eprint'))])
+    if reference.get('arxiv_eprint'):
+        arxiv_eprint = reference['arxiv_eprint']
+        r_values.append('arXiv:' + arxiv_eprint if is_arxiv_post_2007(arxiv_eprint) else arxiv_eprint)
 
     journal_title = get_value(reference, 'publication_info.journal_title')
     journal_volume = get_value(reference, 'publication_info.journal_volume')
