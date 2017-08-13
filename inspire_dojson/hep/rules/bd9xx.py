@@ -32,11 +32,11 @@ from idutils import is_arxiv_post_2007
 
 from inspire_schemas.api import ReferenceBuilder
 from inspire_schemas.utils import build_pubnote
+from inspire_utils.record import get_value
 
 from ..model import hep, hep2marc
 from ...utils import force_single_element, get_recid_from_ref, get_record_ref
 from ...utils.helpers import force_list, maybe_int
-from ...utils.record import get_value
 
 
 RE_VALID_PUBNOTE = re.compile(".*,.*,.*(,.*)?")
