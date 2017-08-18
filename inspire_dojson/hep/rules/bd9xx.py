@@ -265,7 +265,7 @@ def references2marc(self, key, value):
     e_values = [el['full_name'] for el in authors if el.get('inspire_role') == 'editor']
     h_values = [el['full_name'] for el in authors if el.get('inspire_role') != 'editor']
 
-    r_values = force_list(reference.get('report_number'))
+    r_values = force_list(reference.get('report_numbers'))
     if reference.get('arxiv_eprint'):
         arxiv_eprint = reference['arxiv_eprint']
         r_values.append('arXiv:' + arxiv_eprint if is_arxiv_post_2007(arxiv_eprint) else arxiv_eprint)

@@ -771,7 +771,9 @@ def test_references_from_999C50_h_m_o_r_y():
                     'FLUKA: a multi-particle transport code, CERN-10 , INFN/TC_05/11',
                 ],
                 'publication_info': {'year': 2005},
-                'report_number': 'SLAC-R-773',
+                'report_numbers': [
+                    'SLAC-R-773',
+                ],
             },
         },
     ]
@@ -802,7 +804,7 @@ def test_references_from_999C50_h_m_o_r_y():
     assert expected == result['999C5']
 
 
-@pytest.mark.xfail(reason='multiple report numbers are not supported')
+@pytest.mark.xfail(reason="normalized names don't stay normalized")
 def test_references_from_999C59_h_m_o_double_r_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
@@ -823,16 +825,16 @@ def test_references_from_999C59_h_m_o_double_r_y():
         {
             'reference': {
                 'authors': [
-                    {'full_name': 'J, Bennett,'},
+                    {'full_name': 'Bennett, J'},
                 ],
                 'label': '9',
                 'misc': [
                     'Roger J. et al.',
                 ],
                 'publication_info': {'year': 2004},
-                'report_number': [
-                    'CERN-INTCP-186',
+                'report_numbers': [
                     'CERN-INTC-2004-016',
+                    'CERN-INTCP-186',
                 ],
             },
         },
@@ -851,9 +853,9 @@ def test_references_from_999C59_h_m_o_double_r_y():
                 'CERN-INTCP-186',
                 'CERN-INTC-2004-016',
             ],
-            'm': 'Roger J.et al.',
+            'm': 'Roger J. et al.',
             'o': '9',
-            'y': 2005,
+            'y': 2004,
         },
     ]
     result = hep2marc.do(result)
@@ -891,7 +893,9 @@ def test_references_from_999C50_9_r_u_h_m_o():
                 'misc': [
                     'Ph.D. thesis, University of Mainz, in preparation',
                 ],
-                'report_number': 'urn:nbn:de:hebis:77-diss-1000009520',
+                'report_numbers': [
+                    'urn:nbn:de:hebis:77-diss-1000009520',
+                ],
                 'urls': [
                     {'value': 'http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316'},
                 ],
