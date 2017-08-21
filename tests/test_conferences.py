@@ -675,7 +675,7 @@ def test_short_description_from_520__a():
     )  # record/1326067
 
     expected = {
-            'value': u'QNP2015 is the Seventh International Conference on Quarks and Nuclear Physics. It is anticipated that QCD practitioners, both experimentalists and theorists, will gather at the Universidad Técnica Federico Santa María, in Valparaíso, Chile during the week of March 2, 2015 to present and discuss the latest advances in the field. The following topics will be covered: quarks and gluons content of nucleons and nuclei, hadron spectroscopy, non-perturbative methods in QCD (including lattice calculations), effective field theories, nuclear matter under extreme conditions and nuclear medium. Participants should register at the conference website https://indico.cern.ch/event/304663/',
+        'value': u'QNP2015 is the Seventh International Conference on Quarks and Nuclear Physics. It is anticipated that QCD practitioners, both experimentalists and theorists, will gather at the Universidad Técnica Federico Santa María, in Valparaíso, Chile during the week of March 2, 2015 to present and discuss the latest advances in the field. The following topics will be covered: quarks and gluons content of nucleons and nuclei, hadron spectroscopy, non-perturbative methods in QCD (including lattice calculations), effective field theories, nuclear matter under extreme conditions and nuclear medium. Participants should register at the conference website https://indico.cern.ch/event/304663/',
     }
     result = conferences.do(create_record(snippet))
 

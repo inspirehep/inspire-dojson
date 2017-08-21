@@ -172,7 +172,7 @@ def test_title_translations_from_242__a_b(stable_langdetect):
         '  <subfield code="a">Generalized Hamilton-Jacobi Formalism</subfield>'
         '  <subfield code="b">Field Theories with Upper-Order Derivatives</subfield>'
         '</datafield>'
-        )  # record/1501064
+    )  # record/1501064
 
     expected = [
         {
