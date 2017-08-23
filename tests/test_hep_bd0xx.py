@@ -795,6 +795,40 @@ def test_report_numbers_from_037__z_9():
     assert expected == result['037']
 
 
+def test_report_numbers_from_037__a_9_arXiv_reportnumber():
+    schema = load_schema('hep')
+    subschema = schema['properties']['report_numbers']
+
+    snippet = (
+        '<datafield tag="037" ind1=" " ind2=" ">'
+        '  <subfield code="9">arXiv:reportnumber</subfield>'
+        '  <subfield code="a">LIGO-P1500247</subfield>'
+        '</datafield>'
+    )  # record/1618037
+
+    expected = [
+        {
+            'source': 'arXiv',
+            'value': 'LIGO-P1500247',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['report_numbers'], subschema) is None
+    assert expected == result['report_numbers']
+
+    expected = [
+        {
+            '9': 'arXiv:reportnumber',
+            'a': 'LIGO-P1500247',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['037']
+    assert '035' not in result
+
+
 def test_arxiv_eprints_from_037__a_c_9_and_multiple_65017_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']

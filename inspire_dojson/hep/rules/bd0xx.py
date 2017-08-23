@@ -286,6 +286,11 @@ def arxiv_eprints(self, key, value):
     def _is_hidden_report_number(other_id, source):
         return other_id
 
+    def _get_clean_source(source):
+        if source == 'arXiv:reportnumber':
+            return 'arXiv'
+        return source
+
     arxiv_eprints = self.get('arxiv_eprints', [])
     report_numbers = self.get('report_numbers', [])
 
@@ -305,12 +310,12 @@ def arxiv_eprints(self, key, value):
         elif _is_hidden_report_number(other_id, source):
             report_numbers.append({
                 'hidden': True,
-                'source': source,
+                'source': _get_clean_source(source),
                 'value': other_id,
             })
         else:
             report_numbers.append({
-                'source': source,
+                'source': _get_clean_source(source),
                 'value': id_,
             })
 
@@ -356,14 +361,21 @@ def arxiv_eprints2marc(self, key, value):
 @hep2marc.over('037', '^report_numbers$')
 @utils.for_each_value
 def report_numbers2marc(self, key, value):
+    def _get_mangled_source(source):
+        if source == 'arXiv':
+            return 'arXiv:reportnumber'
+        return source
+
+    source = _get_mangled_source(value.get('source'))
+
     if value.get('hidden'):
         return {
-            '9': value.get('source'),
+            '9': source,
             'z': value.get('value'),
         }
 
     return {
-        '9': value.get('source'),
+        '9': source,
         'a': value.get('value'),
     }
 
