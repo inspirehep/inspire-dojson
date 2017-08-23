@@ -31,6 +31,27 @@ from ..utils.arxiv import normalize_arxiv_category, classify_field
 from ..utils.helpers import force_list
 
 
+SPECIAL_COLLECTIONS_MAP = {
+    'BABAR-ANALYSIS-DOCUMENT': 'BABAR Analysis Documents',
+    'BABAR-INTERNAL-BAIS': 'BABAR Internal BAIS',
+    'BABAR-INTERNAL-NOTE': 'BABAR Internal Notes',
+    'CDF-INTERNAL-NOTE': 'CDF Internal Notes',
+    'CDF-NOTE': 'CDF Notes',
+    'CDSHIDDEN': 'CDS Hidden',
+    'D0-INTERNAL-NOTE': 'D0 Internal Notes',
+    'D0-PRELIMINARY-NOTE': 'D0 Preliminary Notes',
+    'H1-INTERNAL-NOTE': 'H1 Internal Notes',
+    'H1-PRELIMINARY-NOTE': 'H1 Preliminary Notes',
+    'HALHIDDEN': 'HAL Hidden',
+    'HEPHIDDEN': 'HEP Hidden',
+    'HERMES-INTERNAL-NOTE': 'HERMES Internal Notes',
+    'LARSOFT-INTERNAL-NOTE': 'LArSoft Internal Notes',
+    'LARSOFT-NOTE': 'LArSoft Notes',
+    'ZEUS-INTERNAL-NOTE': 'ZEUS Internal Notes',
+    'ZEUS-PRELIMINARY-NOTE': 'ZEUS Preliminary Notes',
+}
+
+
 def add_arxiv_categories(record, blob):
     if not record.get('arxiv_eprints') or not blob.get('65017'):
         return record
@@ -61,6 +82,14 @@ def add_inspire_categories(record, blob):
     return record
 
 
+def copy_special_collections(record, blob):
+    if record.get('special_collections'):
+        record.setdefault('_collections', []).extend(
+            _normalize_special_collection(el) for el in record['special_collections'])
+
+    return record
+
+
 def ensure_document_type(record, blob):
     if not record.get('document_type'):
         record['document_type'] = ['article']
@@ -75,10 +104,15 @@ def ensure_hep(record, blob):
     return record
 
 
+def _normalize_special_collection(special_collection):
+    return SPECIAL_COLLECTIONS_MAP.get(special_collection)
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
     add_inspire_categories,
+    copy_special_collections,
     ensure_document_type,
     clean_record,
 ]
