@@ -24,9 +24,10 @@
 
 from __future__ import absolute_import, division, print_function
 
+from inspire_utils.helpers import maybe_int
+
 from ..model import hep, hep2marc
 from ...utils import force_single_element
-from ...utils.helpers import maybe_int
 
 
 @hep.over('number_of_pages', '^300..')

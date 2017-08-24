@@ -24,6 +24,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from inspire_utils.helpers import force_list
+
 from .conferences import conferences
 from .data import data
 from .experiments import experiments
@@ -32,7 +34,6 @@ from .hepnames import hepnames
 from .institutions import institutions
 from .jobs import jobs
 from .journals import journals
-from .utils.helpers import force_list
 
 
 def overdo_marc_dict(record):

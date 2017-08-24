@@ -29,6 +29,7 @@ import re
 from dojson import utils
 
 from inspire_schemas.api import load_schema
+from inspire_utils.helpers import force_list, maybe_int
 
 from .model import hepnames, hepnames2marc
 from ..utils import (
@@ -38,7 +39,6 @@ from ..utils import (
     normalize_rank
 )
 from ..utils.arxiv import normalize_arxiv_category, valid_arxiv_categories
-from ..utils.helpers import force_list, maybe_int
 
 
 INSPIRE_BAI = re.compile('(\w+\.)+\d+')

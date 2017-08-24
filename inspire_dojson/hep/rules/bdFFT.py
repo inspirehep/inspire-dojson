@@ -28,9 +28,10 @@ from datetime import datetime
 
 from dojson import utils
 
+from inspire_utils.helpers import force_list, maybe_int
+
 from ..model import hep, hep2marc
 from ...utils import absolute_url
-from ...utils.helpers import force_list, maybe_int
 
 
 @hep.over('_fft', '^FFT[^%][^%]')

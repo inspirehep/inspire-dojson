@@ -28,9 +28,10 @@ import langdetect
 
 from dojson import utils
 
+from inspire_utils.helpers import force_list
+
 from ..model import hep, hep2marc
 from ...utils import force_single_element
-from ...utils.helpers import force_list
 
 
 @hep.over('titles', '^(210|242|245|246|247)..')

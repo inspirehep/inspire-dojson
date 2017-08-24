@@ -28,10 +28,11 @@ import re
 
 from dojson import utils
 
+from inspire_utils.helpers import force_list, maybe_int
+
 from .model import institutions
 from ..utils import force_single_element, get_record_ref
 from ..utils.geo import parse_institution_address
-from ..utils.helpers import force_list, maybe_int
 
 
 ACRONYM = re.compile(r'\s*\((.*)\)\s*$')
