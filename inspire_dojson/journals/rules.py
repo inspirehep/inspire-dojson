@@ -27,9 +27,10 @@ from __future__ import absolute_import, division, print_function
 from dojson import utils
 from idutils import normalize_issn
 
+from inspire_utils.helpers import maybe_int
+
 from .model import journals
 from ..utils import get_record_ref
-from ..utils.helpers import maybe_int
 
 
 @journals.over('issn', '^022..')

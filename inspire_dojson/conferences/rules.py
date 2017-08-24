@@ -26,9 +26,10 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 
+from inspire_utils.helpers import force_list
+
 from .model import conferences
 from ..utils import force_single_element
-from ..utils.helpers import force_list
 from ..utils.geo import parse_conference_address
 
 

@@ -28,6 +28,7 @@ from dojson import utils
 
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import split_page_artid
+from inspire_utils.helpers import force_list, maybe_int
 
 from ..model import hep, hep2marc
 from ...utils import (
@@ -35,7 +36,6 @@ from ...utils import (
     get_recid_from_ref,
     get_record_ref,
 )
-from ...utils.helpers import force_list, maybe_int
 
 
 @hep.over('collaborations', '^710..')

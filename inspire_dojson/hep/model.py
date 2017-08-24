@@ -24,11 +24,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
 from ..model import FilterOverdo, add_schema, clean_record
 from ..utils.arxiv import normalize_arxiv_category, classify_field
-from ..utils.helpers import force_list
 
 
 SPECIAL_COLLECTIONS_MAP = {

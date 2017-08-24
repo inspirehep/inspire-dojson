@@ -38,7 +38,7 @@ install_requires = [
     'IDUtils~=0.0,>=0.2.4',
     'dojson~=1.0,>=1.3.1',
     'inspire-schemas~=46.0,>=46.0.0',
-    'inspire-utils~=0.0,>=0.0.5',
+    'inspire-utils~=0.0,>=0.0.6',
     'langdetect~=1.0,>=1.0.7',
     'pycountry~=17.0,>=17.5.4',
 ]

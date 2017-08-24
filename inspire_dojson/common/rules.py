@@ -26,13 +26,13 @@ from __future__ import absolute_import, division, print_function
 
 import re
 
+from flask import current_app
+from six.moves import urllib
+
 from dojson import utils
 
-from flask import current_app
-
 from inspire_schemas.api import load_schema
-
-from six.moves import urllib
+from inspire_utils.helpers import force_list
 
 from ..conferences.model import conferences
 from ..experiments.model import experiments
@@ -47,7 +47,6 @@ from ..utils import (
     get_record_ref,
 )
 from ..utils.arxiv import classify_field
-from ..utils.helpers import force_list
 
 
 IS_INTERNAL_UID = re.compile('^(inspire:uid:)?\d{5}$')

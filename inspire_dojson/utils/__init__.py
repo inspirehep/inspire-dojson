@@ -31,8 +31,8 @@ from flask import current_app
 from six.moves import urllib
 
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
+from inspire_utils.helpers import force_list, maybe_int
 
-from ..utils.helpers import force_list, maybe_int
 from ..utils.text import encode_for_xml
 
 
