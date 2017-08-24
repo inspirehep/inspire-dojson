@@ -254,7 +254,6 @@ def test_special_collections_from_980__a():
 
     assert validate(result['special_collections'], subschema) is None
     assert expected == result['special_collections']
-    assert '_collections' not in result
 
     expected = [
         {'a': 'HALHIDDEN'},
@@ -281,7 +280,6 @@ def test_special_collections_from_980__a_babar_analysis_document():
 
     assert validate(result['special_collections'], subschema) is None
     assert expected == result['special_collections']
-    assert '_collections' not in result
 
     expected = [
         {'a': 'BABAR-AnalysisDocument'},
@@ -308,7 +306,10 @@ def test_collections_and_special_collections_from_980__a():
     )  # record/1201407
 
     expected = {
-        '_collections': ['Literature'],
+        '_collections': [
+            'Literature',
+            'D0 Preliminary Notes',
+        ],
         'special_collections': ['D0-PRELIMINARY-NOTE'],
     }
     result = hep.do(create_record(snippet))
