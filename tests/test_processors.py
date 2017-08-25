@@ -41,3 +41,20 @@ def test_overdo_marc_dict_handles_data():
     result = overdo_marc_dict(record)
 
     assert expected == result
+
+
+def test_overdo_marc_dict_handles_journalsnew():
+    record = {
+        '980__': {'a': 'JOURNALSNEW'},
+    }
+
+    expected = {
+        '$schema': 'journals.json',
+        '_collections': [
+            'Journals',
+        ],
+        'deleted': False,
+    }
+    result = overdo_marc_dict(record)
+
+    assert expected == result

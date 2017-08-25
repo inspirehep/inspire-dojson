@@ -42,7 +42,8 @@ def overdo_marc_dict(record):
         return institutions.do(record)
     elif _collection_in_record(record, 'experiment'):
         return experiments.do(record)
-    elif _collection_in_record(record, 'journals'):
+    elif _collection_in_record(record, 'journals') or \
+            _collection_in_record(record, 'journalsnew'):
         return journals.do(record)
     elif _collection_in_record(record, 'hepnames'):
         return hepnames.do(record)
