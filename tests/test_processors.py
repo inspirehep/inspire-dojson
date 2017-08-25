@@ -53,7 +53,6 @@ def test_overdo_marc_dict_handles_journalsnew():
         '_collections': [
             'Journals',
         ],
-        'deleted': False,
     }
     result = overdo_marc_dict(record)
 

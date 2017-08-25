@@ -28,9 +28,9 @@ from inspire_dojson.journals import journals
 from inspire_schemas.api import load_schema, validate
 
 
-def test_issn_from_022__a():
+def test_issns_from_022__a():
     schema = load_schema('journals')
-    subschema = schema['properties']['issn']
+    subschema = schema['properties']['issns']
 
     snippet = (
         '<datafield tag="022" ind1=" " ind2=" ">'
@@ -43,13 +43,13 @@ def test_issn_from_022__a():
     ]
     result = journals.do(create_record(snippet))
 
-    assert validate(result['issn'], subschema) is None
-    assert expected == result['issn']
+    assert validate(result['issns'], subschema) is None
+    assert expected == result['issns']
 
 
-def test_issn_from_022__a_b():
+def test_issns_from_022__a_b():
     schema = load_schema('journals')
-    subschema = schema['properties']['issn']
+    subschema = schema['properties']['issns']
 
     snippet = (
         '<datafield tag="022" ind1=" " ind2=" ">'
@@ -66,13 +66,13 @@ def test_issn_from_022__a_b():
     ]
     result = journals.do(create_record(snippet))
 
-    assert validate(result['issn'], subschema) is None
-    assert expected == result['issn']
+    assert validate(result['issns'], subschema) is None
+    assert expected == result['issns']
 
 
-def test_issn_from_double_022__a_b():
+def test_issns_from_double_022__a_b():
     schema = load_schema('journals')
-    subschema = schema['properties']['issn']
+    subschema = schema['properties']['issns']
 
     snippet = (
         '<record>'
@@ -99,13 +99,13 @@ def test_issn_from_double_022__a_b():
     ]
     result = journals.do(create_record(snippet))
 
-    assert validate(result['issn'], subschema) is None
-    assert expected == result['issn']
+    assert validate(result['issns'], subschema) is None
+    assert expected == result['issns']
 
 
-def test_issn_from_022__a_b_handles_electronic():
+def test_issns_from_022__a_b_handles_electronic():
     schema = load_schema('journals')
-    subschema = schema['properties']['issn']
+    subschema = schema['properties']['issns']
 
     snippet = (
         '<datafield tag="022" ind1=" " ind2=" ">'
@@ -116,102 +116,168 @@ def test_issn_from_022__a_b_handles_electronic():
 
     expected = [
         {
-            'comment': 'electronic',
             'medium': 'online',
             'value': '2469-9888',
         },
     ]
     result = journals.do(create_record(snippet))
 
-    assert validate(result['issn'], subschema) is None
-    assert expected == result['issn']
+    assert validate(result['issns'], subschema) is None
+    assert expected == result['issns']
 
 
-def test_coden_from_030__a_2():
+def test_journal_title_from_130__a():
     schema = load_schema('journals')
-    subschema = schema['properties']['coden']
-
-    snippet = (
-        '<datafield tag="030" ind1=" " ind2=" ">'
-        '  <subfield code="2">CODEN</subfield>'
-        '  <subfield code="a">HERAS</subfield>'
-        '</datafield>'
-    )  # record/1211568
-
-    expected = ['HERAS']
-    result = journals.do(create_record(snippet))
-
-    assert validate(result['coden'], subschema) is None
-    assert expected == result['coden']
-
-
-def test_coden_from_double_030__a_2():
-    schema = load_schema('journals')
-    subschema = schema['properties']['coden']
-
-    snippet = (
-        '<record>'
-        '  <datafield tag="030" ind1=" " ind2=" ">'
-        '    <subfield code="2">CODEN</subfield>'
-        '    <subfield code="a">00686</subfield>'
-        '  </datafield>'
-        '  <datafield tag="030" ind1=" " ind2=" ">'
-        '    <subfield code="2">CODEN</subfield>'
-        '    <subfield code="a">VLUFB</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1213834
-
-    expected = [
-        '00686',
-        'VLUFB',
-    ]
-    result = journals.do(create_record(snippet))
-
-    assert validate(result['coden'], subschema) is None
-    assert expected == result['coden']
-
-
-def test_journal_titles_from_130__a():
-    schema = load_schema('journals')
-    subschema = schema['properties']['journal_titles']
+    subschema = schema['properties']['journal_title']
 
     snippet = (
         '<datafield tag="130" ind1=" " ind2=" ">'
         '  <subfield code="a">Physical Review Special Topics - Accelerators and Beams</subfield>'
         '</datafield>'
-    )
+    )  # record/1212820
 
-    expected = [
-        {'title': 'Physical Review Special Topics - Accelerators and Beams'},
-    ]
+    expected = {'title': 'Physical Review Special Topics - Accelerators and Beams'}
     result = journals.do(create_record(snippet))
 
-    assert validate(result['journal_titles'], subschema) is None
-    assert expected == result['journal_titles']
+    assert validate(result['journal_title'], subschema) is None
+    assert expected == result['journal_title']
 
 
-def test_journal_titles_from_130__a_b():
+def test_journal_title_from_130__a_b():
     schema = load_schema('journals')
-    subschema = schema['properties']['journal_titles']
+    subschema = schema['properties']['journal_title']
 
     snippet = (
         '<datafield tag="130" ind1=" " ind2=" ">'
         '  <subfield code="a">Humana Mente</subfield>'
         '  <subfield code="b">Journal of Philosophical Studies</subfield>'
         '</datafield>'
-    )
+    )  # record/1325601
+
+    expected = {
+        'title': 'Humana Mente',
+        'subtitle': 'Journal of Philosophical Studies',
+    }
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['journal_title'], subschema) is None
+    assert expected == result['journal_title']
+
+
+def test_related_records_from_530__a_w_0():
+    schema = load_schema('journals')
+    subschema = schema['properties']['related_records']
+
+    snippet = (
+        '<datafield tag="530" ind1=" " ind2=" ">'
+        '  <subfield code="0">1212820</subfield>'
+        '  <subfield code="a">Phys.Rev.ST Accel.Beams</subfield>'
+        '  <subfield code="w">a</subfield>'
+        '</datafield>'
+    )  # record/1415879
 
     expected = [
         {
-            'title': 'Humana Mente',
-            'subtitle': 'Journal of Philosophical Studies',
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/journals/1212820',
+            },
+            'relation': 'predecessor',
         },
     ]
     result = journals.do(create_record(snippet))
 
-    assert validate(result['journal_titles'], subschema) is None
-    assert expected == result['journal_titles']
+    assert validate(result['related_records'], subschema) is None
+    assert expected == result['related_records']
+
+
+def test_related_records_from_530__a_i_w_0():
+    schema = load_schema('journals')
+    subschema = schema['properties']['related_records']
+
+    snippet = (
+        '<datafield tag="530" ind1=" " ind2=" ">'
+        '  <subfield code="0">1214339</subfield>'
+        '  <subfield code="a">Zh.Eksp.Teor.Fiz.</subfield>'
+        '  <subfield code="i">Original version (Russian)</subfield>'
+        '  <subfield code="w">r</subfield>'
+        '</datafield>'
+    )  # record/1214386
+
+    expected = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/journals/1214339',
+            },
+            'relation_freetext': 'Original version (Russian)',
+        },
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['related_records'], subschema) is None
+    assert expected == result['related_records']
+
+
+def test_license_from_540__a():
+    schema = load_schema('journals')
+    subschema = schema['properties']['license']
+
+    snippet = (
+        '<datafield tag="540" ind1=" " ind2=" ">'
+        '  <subfield code="a">CC-BY 4.0</subfield>'
+        '</datafield>'
+    )  # record/1617955
+
+    expected = {'license': 'CC-BY 4.0'}
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['license'], subschema) is None
+    assert expected == result['license']
+
+
+def test_harvesting_info_from_583__a_c_i_3():
+    schema = load_schema('journals')
+    subschema = schema['properties']['_harvesting_info']
+
+    snippet = (
+        '<datafield tag="583" ind1=" " ind2=" ">'
+        '  <subfield code="c">2017-08-21</subfield>'
+        '  <subfield code="3">New Phys.Sae Mulli,67</subfield>'
+        '  <subfield code="a">partial</subfield>'
+        '  <subfield code="i">harvest</subfield>'
+        '</datafield>'
+    )  # record/1616534
+
+    expected = {
+        'coverage': 'partial',
+        'date_last_harvest': '2017-08-21',
+        'last_seen_item': 'New Phys.Sae Mulli,67',
+        'method': 'harvest',
+    }
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['_harvesting_info'], subschema) is None
+    assert expected == result['_harvesting_info']
+
+
+def test_public_notes_from_640__a():
+    schema = load_schema('journals')
+    subschema = schema['properties']['public_notes']
+
+    snippet = (
+        '<datafield tag="640" ind1=" " ind2=" ">'
+        '  <subfield code="a">v.1 starts 2013</subfield>'
+        '</datafield>'
+    )  # record/1466026
+
+    expected = [
+        {'value': 'v.1 starts 2013'},
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['public_notes'], subschema) is None
+    assert expected == result['public_notes']
 
 
 def test_publisher_from_643__b():
@@ -256,9 +322,120 @@ def test_publisher_from_double_643__b():
     assert expected == result['publisher']
 
 
-def test_short_titles_from_711__a():
+def test_private_notes_from_667__x():
     schema = load_schema('journals')
-    subschema = schema['properties']['short_titles']
+    subschema = schema['properties']['_private_notes']
+
+    snippet = (
+        '<datafield tag="667" ind1=" " ind2=" ">'
+        '  <subfield code="x">Open Access</subfield>'
+        '</datafield>'
+    )  # record/1485643
+
+    expected = [
+        {'value': 'Open Access'},
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['_private_notes'], subschema) is None
+    assert expected == result['_private_notes']
+
+
+def test_doi_prefixes_from_677__d():
+    schema = load_schema('journals')
+    subschema = schema['properties']['doi_prefixes']
+
+    snippet = (
+        '<datafield tag="677" ind1=" " ind2=" ">'
+        '  <subfield code="d">10.17406/GJSFR</subfield>'
+        '</datafield>'
+    )  # record/1617963
+
+    expected = ['10.17406/GJSFR']
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['doi_prefixes'], subschema) is None
+    assert expected == result['doi_prefixes']
+
+
+def test_public_notes_from_680__i():
+    schema = load_schema('journals')
+    subschema = schema['properties']['public_notes']
+
+    snippet = (
+        u'<datafield tag="680" ind1=" " ind2=" ">'
+        u'  <subfield code="i">Russian Title: Высокомолекулярные соединения. Серия В. Химия полимеров (Vysokomolekulyarnye Soedineniya, Seriya B)</subfield>'
+        u'</datafield>'
+    )  # record/1615699
+
+    expected = [
+        {'value': u'Russian Title: Высокомолекулярные соединения. Серия В. Химия полимеров (Vysokomolekulyarnye Soedineniya, Seriya B)'},
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['public_notes'], subschema) is None
+    assert expected == result['public_notes']
+
+
+def test_proceedings_from_double_690__a():
+    schema = load_schema('journals')
+    subschema = schema['properties']['proceedings']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="690" ind1=" " ind2=" ">'
+        '    <subfield code="a">NON-PUBLISHED</subfield>'
+        '  </datafield>'
+        '  <datafield tag="690" ind1=" " ind2=" ">'
+        '    <subfield code="a">Proceedings</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1213080
+
+    expected = True
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['proceedings'], subschema) is None
+    assert expected == result['proceedings']
+
+
+def test_refereed_from_690__a_peer_review():
+    schema = load_schema('journals')
+    subschema = schema['properties']['refereed']
+
+    snippet = (
+        '<datafield tag="690" ind1=" " ind2=" ">'
+        '  <subfield code="a">Peer Review</subfield>'
+        '</datafield>'
+    )  # record/1617955
+
+    expected = True
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['refereed'], subschema) is None
+    assert expected == result['refereed']
+
+
+def test_refereed_from_690__a_non_published():
+    schema = load_schema('journals')
+    subschema = schema['properties']['refereed']
+
+    snippet = (
+        '<datafield tag="690" ind1=" " ind2=" ">'
+        '  <subfield code="a">NON-PUBLISHED</subfield>'
+        '</datafield>'
+    )  # record/1357923
+
+    expected = False
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['refereed'], subschema) is None
+    assert expected == result['refereed']
+
+
+def test_short_title_from_711__a():
+    schema = load_schema('journals')
+    subschema = schema['properties']['short_title']
 
     snippet = (
         '<datafield tag="711" ind1=" " ind2=" ">'
@@ -266,13 +443,11 @@ def test_short_titles_from_711__a():
         '</datafield>'
     )  # record/1212820
 
-    expected = [
-        {'title': 'Phys.Rev.ST Accel.Beams'},
-    ]
+    expected = 'Phys.Rev.ST Accel.Beams'
     result = journals.do(create_record(snippet))
 
-    assert validate(result['short_titles'], subschema) is None
-    assert expected == result['short_titles']
+    assert validate(result['short_title'], subschema) is None
+    assert expected == result['short_title']
 
 
 def test_title_variants_from_730__a():
@@ -285,9 +460,7 @@ def test_title_variants_from_730__a():
         '</datafield>'
     )  # record/1212820
 
-    expected = [
-        {'title': 'PHYSICAL REVIEW SPECIAL TOPICS ACCELERATORS AND BEAMS'},
-    ]
+    expected = ['PHYSICAL REVIEW SPECIAL TOPICS ACCELERATORS AND BEAMS']
     result = journals.do(create_record(snippet))
 
     assert validate(result['title_variants'], subschema) is None
@@ -310,8 +483,8 @@ def test_title_variants_from_double_730__a():
     )  # record/1212820
 
     expected = [
-        {'title': 'PHYS REV SPECIAL TOPICS ACCELERATORS BEAMS'},
-        {'title': 'PHYSICS REVIEW ST ACCEL BEAMS'},
+        'PHYS REV SPECIAL TOPICS ACCELERATORS BEAMS',
+        'PHYSICS REVIEW ST ACCEL BEAMS',
     ]
     result = journals.do(create_record(snippet))
 
@@ -319,26 +492,36 @@ def test_title_variants_from_double_730__a():
     assert expected == result['title_variants']
 
 
-def test_related_records_from_78002w():
-    schema = load_schema('journals')
-    subschema = schema['properties']['related_records']
-
+def test_title_variants_skips_730_when_it_contains_a_b():
     snippet = (
-        '<datafield tag="780" ind1="0" ind2="2">'
-        '  <subfield code="w">1212820</subfield>'
+        '<datafield tag="730" ind1=" " ind2=" ">'
+        '  <subfield code="a">AIHPD</subfield>'
+        '  <subfield code="b">D</subfield>'
         '</datafield>'
-    )  # record/1415879
+    )  # record/1511950
 
-    expected = [
-        {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/journals/1212820',
-            },
-            'relation': 'predecessor',
-        },
-    ]
     result = journals.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert 'title_variants' not in result
+
+
+def test_book_series_from_double_980__a():
+    schema = load_schema('journals')
+    subschema = schema['properties']['book_series']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">JOURNALS</subfield>'
+        '  </datafield>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">BookSeries</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1311535
+
+    expected = True
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['book_series'], subschema) is None
+    assert expected == result['book_series']

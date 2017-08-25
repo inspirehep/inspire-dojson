@@ -204,6 +204,7 @@ def _private_notes2marc(self, key, value):
 @hep.over('inspire_categories', '^65017')
 @institutions.over('inspire_categories', '^65017')
 @jobs.over('inspire_categories', '^65017')
+@journals.over('inspire_categories', '^65017')
 def inspire_categories(self, key, value):
     schema = load_schema('elements/inspire_field')
     valid_sources = schema['properties']['source']['enum']
@@ -250,7 +251,6 @@ def inspire_categories2marc(self, key, value):
 @hep.over('_private_notes', '^667..')
 @institutions.over('_private_notes', '^667..')
 @jobs.over('_private_notes', '^667..')
-@journals.over('_private_notes', '^667..')
 @utils.for_each_value
 def _private_notes_667(self, key, value):
     return {
@@ -368,7 +368,6 @@ def new_record2marc(self, key, value):
 
 @conferences.over('deleted', '^980..')
 @jobs.over('deleted', '^980..')
-@journals.over('deleted', '^980..')
 def deleted(self, key, value):
     return value.get('c', '').upper() == 'DELETED'
 
