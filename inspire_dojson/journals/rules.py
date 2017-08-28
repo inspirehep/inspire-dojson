@@ -27,60 +27,113 @@ from __future__ import absolute_import, division, print_function
 from dojson import utils
 from idutils import normalize_issn
 
-from inspire_utils.helpers import maybe_int
+from inspire_utils.helpers import force_list, maybe_int
 
 from .model import journals
 from ..utils import get_record_ref
 
 
-@journals.over('issn', '^022..')
+@journals.over('issns', '^022..')
 @utils.for_each_value
-def issn(self, key, value):
-    try:
-        issn = normalize_issn(value['a'])
-    except KeyError:
-        return {}
+def issns(self, key, value):
+    def _get_issn(value):
+        return normalize_issn(value.get('a'))
 
-    b = value.get('b', '').lower()
-    if 'online' == b:
-        medium = 'online'
-        comment = ''
-    elif 'print' == b:
-        medium = 'print'
-        comment = ''
-    elif 'electronic' in b:
-        medium = 'online'
-        comment = 'electronic'
-    elif 'ebook' in b:
-        medium = 'online'
-        comment = 'ebook'
-    elif 'hardcover' in b:
-        medium = 'print'
-        comment = 'hardcover'
-    else:
-        medium = ''
-        comment = b
+    def _get_medium(value):
+        MEDIUM_MAP = {
+            'Online (English)': 'online',
+            'Online (Russian': 'online',
+            'Online': 'online',
+            'Print (Russian)': 'print',
+            'Print': 'print',
+            'e-only': 'online',
+            'electronic': 'online',
+            'online': 'online',
+            'print': 'print',
+            'printed': 'print',
+        }
 
-    return {
-        'comment': comment,
-        'medium': medium,
-        'value': issn,
-    }
+        return MEDIUM_MAP.get(value.get('b'))
+
+    issn = _get_issn(value)
+    medium = _get_medium(value)
+
+    if issn:
+        return {
+            'medium': medium,
+            'value': issn,
+        }
 
 
-@journals.over('coden', '^030..')
-@utils.for_each_value
-def coden(self, key, value):
-    return value.get('a')
-
-
-@journals.over('journal_titles', '^130..')
-@utils.for_each_value
-def journal_titles(self, key, value):
+@journals.over('journal_title', '^130..')
+def journal_title(self, key, value):
     return {
         'title': value.get('a'),
         'subtitle': value.get('b'),
     }
+
+
+@journals.over('related_records', '^530..')
+@utils.for_each_value
+def related_records(self, key, value):
+    def _get_relation(value):
+        RELATION_MAP = {
+            'a': 'predecessor',
+            'b': 'other',
+            'r': 'other',
+        }
+
+        return RELATION_MAP.get(value.get('w'))
+
+    def _get_relation_freetext(value):
+        return value.get('i')
+
+    record = get_record_ref(maybe_int(value.get('0')), 'journals')
+    relation = _get_relation(value)
+    relation_freetext = _get_relation_freetext(value)
+
+    if record and relation == 'other':
+        return {
+            'curated_relation': record is not None,
+            'record': record,
+            'relation_freetext': relation_freetext,
+        }
+    elif record and relation:
+        return {
+            'curated_relation': record is not None,
+            'record': record,
+            'relation': relation,
+        }
+
+
+@journals.over('license', '^540..')
+def license(self, key, value):
+    return {
+        'license': value.get('a'),
+        'url': value.get('u'),
+    }
+
+
+@journals.over('_harvesting_info', '^583..')
+def _harvesting_info(self, key, value):
+    return {
+        'coverage': value.get('a'),
+        'date_last_harvest': value.get('c'),
+        'last_seen_item': value.get('3'),
+        'method': value.get('i'),
+    }
+
+
+@journals.over('public_notes', '^640..')
+@utils.for_each_value
+def public_notes_640(self, key, value):
+    public_note = value.get('a')
+
+    if public_note:
+        return {
+            'source': value.get('9'),
+            'value': public_note,
+        }
 
 
 @journals.over('publisher', '^643..')
@@ -89,26 +142,94 @@ def publisher(self, key, value):
     return value.get('b')
 
 
-@journals.over('short_titles', '^711..')
+@journals.over('_private_notes', '^667..')
 @utils.for_each_value
-def short_titles(self, key, value):
-    return {'title': value.get('a')}
+def _private_notes(self, key, value):
+    _private_note = value.get('x')
+
+    if _private_note:
+        return {
+            'source': value.get('9'),
+            'value': _private_note,
+        }
+
+
+@journals.over('doi_prefixes', '^677..')
+@utils.for_each_value
+def doi_prefixes(self, key, value):
+    return value.get('d')
+
+
+@journals.over('public_notes', '^680..')
+@utils.for_each_value
+def public_notes_680(self, key, value):
+    public_note = value.get('i')
+
+    if public_note:
+        return {
+            'source': value.get('9'),
+            'value': public_note,
+        }
+
+
+@journals.over('proceedings', '^690..')
+def proceedings(self, key, value):
+    """Populate the ``proceedings`` key.
+
+    Also populates the ``refereed`` key through side effects.
+    """
+    proceedings = self.get('proceedings')
+    refereed = self.get('refereed')
+
+    if not proceedings:
+        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
+        if 'PROCEEDINGS' in normalized_a_values:
+            proceedings = True
+
+    if not refereed:
+        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
+        if 'PEER REVIEW' in normalized_a_values:
+            refereed = True
+        elif 'NON-PUBLISHED' in normalized_a_values:
+            refereed = False
+
+    self['refereed'] = refereed
+    return proceedings
+
+
+@journals.over('short_title', '^711..')
+def short_title(self, key, value):
+    return value.get('a')
 
 
 @journals.over('title_variants', '^730..')
 @utils.for_each_value
 def title_variants(self, key, value):
-    return {'title': value.get('a')}
+    if value.get('b'):
+        return
+
+    return value.get('a')
 
 
-@journals.over('related_records', '^78002')
-@utils.for_each_value
-def related_records(self, key, value):
-    record = get_record_ref(maybe_int(value.get('w')), 'journals')
+@journals.over('deleted', '^980..')
+def deleted(self, key, value):
+    """Populate the ``deleted`` key.
 
-    if record:
-        return {
-            'curated_relation': record is not None,
-            'record': record,
-            'relation': 'predecessor',
-        }
+    Also populates the ``book_series`` key through side effects.
+    """
+    deleted = self.get('deleted')
+    book_series = self.get('book_series')
+
+    if not deleted:
+        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
+        normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
+        if 'DELETED' in normalized_a_values or 'DELETED' in normalized_c_values:
+            deleted = True
+
+    if not book_series:
+        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
+        if 'BOOKSERIES' in normalized_a_values:
+            book_series = True
+
+    self['book_series'] = book_series
+    return deleted
