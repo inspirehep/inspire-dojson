@@ -359,6 +359,33 @@ def test_publication_info_from_773__c_r_w_triple_0_2():
     assert expected == result['773']
 
 
+def test_publication_info_from_773__q_t():
+    schema = load_schema('hep')
+    subschema = schema['properties']['publication_info']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="q">LENPIC2017</subfield>'
+        '  <subfield code="t">Chiral Forces in Low Energy Nuclear Physics</subfield>'
+        '</datafield>'
+    )  # record/1598069
+
+    expected = [
+        {'conf_acronym': 'LENPIC2017'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], subschema) is None
+    assert expected == result['publication_info']
+
+    expected = [
+        {'q': 'LENPIC2017'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['773']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
