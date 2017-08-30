@@ -61,41 +61,41 @@ def publication_info(self, key, value):
         valid_materials = schema['enum']
 
         m_value = force_single_element(value.get('m', ''))
-        for material in valid_materials:
-            if m_value.lower() == material:
-                return material
+        normalized_m_value = m_value.lower()
 
-    year = maybe_int(force_single_element(value.get('y')))
-    parent_recid = maybe_int(force_single_element(value.get('0')))
-    journal_recid = maybe_int(force_single_element(value.get('1')))
-    conference_recid = maybe_int(force_single_element(value.get('2')))
-    parent_record = get_record_ref(parent_recid, 'literature')
-    conference_record = get_record_ref(conference_recid, 'conferences')
-    journal_record = get_record_ref(journal_recid, 'journals')
+        if normalized_m_value in valid_materials:
+            return normalized_m_value
 
     page_start, page_end, artid = split_page_artid(value.get('c'))
 
-    res = {
-        'parent_record': parent_record,
-        'conference_record': conference_record,
-        'journal_record': journal_record,
-        'page_start': page_start,
-        'page_end': page_end,
-        'artid': artid,
-        'journal_issue': force_single_element(value.get('n')),
-        'conf_acronym': force_single_element(value.get('q')),
-        'journal_title': force_single_element(value.get('p')),
-        'parent_report_number': force_single_element(value.get('r')),
-        'journal_volume': force_single_element(value.get('v')),
-        'cnum': force_single_element(value.get('w')),
-        'pubinfo_freetext': force_single_element(value.get('x')),
-        'year': year,
-        'parent_isbn': force_single_element(value.get('z')),
-        'material': _get_material(value),
-        'hidden': key.startswith('7731') or None,
-    }
+    parent_recid = maybe_int(force_single_element(value.get('0')))
+    parent_record = get_record_ref(parent_recid, 'literature')
 
-    return res
+    journal_recid = maybe_int(force_single_element(value.get('1')))
+    journal_record = get_record_ref(journal_recid, 'journals')
+
+    conference_recid = maybe_int(force_single_element(value.get('2')))
+    conference_record = get_record_ref(conference_recid, 'conferences')
+
+    return {
+        'artid': artid,
+        'cnum': force_single_element(value.get('w')),
+        'conf_acronym': force_single_element(value.get('q')),
+        'conference_record': conference_record,
+        'hidden': key.startswith('7731') or None,
+        'journal_issue': force_single_element(value.get('n')),
+        'journal_record': journal_record,
+        'journal_title': force_single_element(value.get('p')),
+        'journal_volume': force_single_element(value.get('v')),
+        'material': _get_material(value),
+        'page_end': page_end,
+        'page_start': page_start,
+        'parent_isbn': force_single_element(value.get('z')),
+        'parent_record': parent_record,
+        'parent_report_number': force_single_element(value.get('r')),
+        'pubinfo_freetext': force_single_element(value.get('x')),
+        'year': maybe_int(force_single_element(value.get('y'))),
+    }
 
 
 @hep2marc.over('773', '^publication_info$')
