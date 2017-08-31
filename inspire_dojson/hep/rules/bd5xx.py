@@ -232,10 +232,10 @@ def license(self, key, value):
         return MATERIAL_MAP.get(value.get('3'))
 
     return {
-        'license': _get_license(value),
         'imposing': value.get('b'),
-        'url': value.get('u'),
+        'license': _get_license(value),
         'material': _get_material(value),
+        'url': value.get('u'),
     }
 
 
