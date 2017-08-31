@@ -210,6 +210,16 @@ def funding_info2marc(self, key, value):
 @hep.over('license', '^540..')
 @utils.for_each_value
 def license(self, key, value):
+    def _get_license(value):
+        a_values = force_list(value.get('a'))
+
+        oa_licenses = [el for el in a_values if el == 'OA' or el == 'Open Access']
+        other_licenses = [el for el in a_values if el != 'OA' and el != 'Open Access']
+
+        if not other_licenses:
+            return force_single_element(oa_licenses)
+        return force_single_element(other_licenses)
+
     def _get_material(value):
         MATERIAL_MAP = {
             'Article': 'publication',
@@ -221,12 +231,8 @@ def license(self, key, value):
 
         return MATERIAL_MAP.get(value.get('3'))
 
-    license_value = force_list(value.get('a'))
-    # We strip away redundant 'Open Access' string
-    license_value = [val for val in license_value if license_value != 'Open Access']
-    license_value = force_single_element(license_value)
     return {
-        'license': license_value,
+        'license': _get_license(value),
         'imposing': value.get('b'),
         'url': value.get('u'),
         'material': _get_material(value),
