@@ -432,6 +432,39 @@ def test_abstracts_from_520__h_9():
     assert expected == result['520']
 
 
+def test_license_from_540__a_3():
+    schema = load_schema('hep')
+    subschema = schema['properties']['license']
+
+    snippet = (
+        '<datafield tag="540" ind1=" " ind2=" ">'
+        '  <subfield code="3">Article</subfield>'
+        '  <subfield code="a">OA</subfield>'
+        '</datafield>'
+    )  # record/120203
+
+    expected = [
+        {
+            'license': 'OA',
+            'material': 'publication',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['license'], subschema) is None
+    assert expected == result['license']
+
+    expected = [
+        {
+            '3': 'publication',
+            'a': 'OA',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['540']
+
+
 def test_copyright_from_542__d_e_g():
     schema = load_schema('hep')
     subschema = schema['properties']['copyright']
