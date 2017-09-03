@@ -299,6 +299,73 @@ def test_addresses_from_371__triple_a_b_d_e_g_and_371__triple_a_b_d_e_g_x():
     assert expected == result['addresses']
 
 
+def test_addresses_from_371__double_a_b_d_e_double_g():
+    schema = load_schema('institutions')
+    subschema = schema['properties']['addresses']
+
+    snippet = (
+        '<datafield tag="371" ind1=" " ind2=" ">'
+        '  <subfield code="e">88003</subfield>'
+        '  <subfield code="g">US</subfield>'
+        '  <subfield code="a">Physical Science Lab</subfield>'
+        '  <subfield code="a">Las Cruces, NM 88003</subfield>'
+        '  <subfield code="b">Las Cruces</subfield>'
+        '  <subfield code="d">USA</subfield>'
+        '  <subfield code="g">US</subfield>'
+        '</datafield>'
+    )  # record/1241283
+
+    expected = [
+        {
+            'cities': [
+                'Las Cruces',
+            ],
+            'country_code': 'US',
+            'postal_address': [
+                'Physical Science Lab',
+                'Las Cruces, NM 88003',
+            ],
+            'postal_code': '88003',
+        },
+    ]
+    result = institutions.do(create_record(snippet))
+
+    assert validate(result['addresses'], subschema) is None
+    assert expected == result['addresses']
+
+
+def test_addresses_from_371__a_b_d_e_g():
+    schema = load_schema('institutions')
+    subschema = schema['properties']['addresses']
+
+    snippet = (
+        '<datafield tag="371" ind1=" " ind2=" ">'
+        '  <subfield code="a">Edgbaston, Birmingham B15 2TT</subfield>'
+        '  <subfield code="b">Birmingham</subfield>'
+        '  <subfield code="d">United Kingdom</subfield>'
+        '  <subfield code="e">B15 2TT</subfield>'
+        '  <subfield code="g">UK</subfield>'
+        '</datafield>'
+    )  # record/902671
+
+    expected = [
+        {
+            'cities': [
+                'Birmingham',
+            ],
+            'country_code': 'GB',
+            'postal_address': [
+                'Edgbaston, Birmingham B15 2TT',
+            ],
+            'postal_code': 'B15 2TT',
+        },
+    ]
+    result = institutions.do(create_record(snippet))
+
+    assert validate(result['addresses'], subschema) is None
+    assert expected == result['addresses']
+
+
 def test_institution_type_from_372__a():
     schema = load_schema('institutions')
     subschema = schema['properties']['institution_type']

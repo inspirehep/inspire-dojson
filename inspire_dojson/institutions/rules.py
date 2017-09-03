@@ -135,7 +135,7 @@ def addresses_371(self, key, values):
             value.get('c'),
             value.get('d'),
             value.get('e'),
-            force_list(value.get('g')),
+            force_single_element(value.get('g')),
         )
 
         if _is_secondary_address(value):
