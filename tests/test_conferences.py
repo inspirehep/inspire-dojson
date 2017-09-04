@@ -353,6 +353,23 @@ def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month()
     assert expected == result['opening_date']
 
 
+def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month_without_padding():
+    schema = load_schema('conferences')
+    subschema = schema['properties']['opening_date']
+
+    snippet = (
+        '<datafield tag="111" ind1=" " ind2=" ">'
+        '  <subfield code="x">1999-07</subfield>'
+        '</datafield>'
+    )  # record/1477158
+
+    expected = '1999-07'
+    result = conferences.do(create_record(snippet))
+
+    assert validate(result['opening_date'], subschema) is None
+    assert expected == result['opening_date']
+
+
 def test_closing_date_from_111__y_handles_incomplete_dates_with_only_year():
     schema = load_schema('conferences')
     subschema = schema['properties']['closing_date']
