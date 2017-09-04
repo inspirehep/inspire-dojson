@@ -336,6 +336,40 @@ def test_titles_from_111__double_a_b():
     assert expected == result['titles']
 
 
+def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month():
+    schema = load_schema('conferences')
+    subschema = schema['properties']['opening_date']
+
+    snippet = (
+        '<datafield tag="111" ind1=" " ind2=" ">'
+        '  <subfield code="x">2001-02-00</subfield>'
+        '</datafield>'
+    )  # record/1442284
+
+    expected = '2001-02'
+    result = conferences.do(create_record(snippet))
+
+    assert validate(result['opening_date'], subschema) is None
+    assert expected == result['opening_date']
+
+
+def test_closing_date_from_111__y_handles_incomplete_dates_with_only_year():
+    schema = load_schema('conferences')
+    subschema = schema['properties']['closing_date']
+
+    snippet = (
+        '<datafield tag="111" ind1=" " ind2=" ">'
+        '  <subfield code="y">1967-00-00</subfield>'
+        '</datafield>'
+    )  # record/1372837
+
+    expected = '1967'
+    result = conferences.do(create_record(snippet))
+
+    assert validate(result['closing_date'], subschema) is None
+    assert expected == result['closing_date']
+
+
 def test_contact_details_from_270__m_p():
     schema = load_schema('conferences')
     subschema = schema['properties']['contact_details']
