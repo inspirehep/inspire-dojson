@@ -33,12 +33,23 @@ from ..utils import force_single_element
 from ..utils.geo import parse_conference_address
 
 
+def _trim_date(date):
+    year, month, day = map(int, date.split('-'))
+    if year and month and day:
+        return '%d-%02d-%02d' % (year, month, day)
+    elif year and month:
+        return '%d-%02d' % (year, month)
+    return '%d' % year
+
+
 @conferences.over('acronyms', '^111..')
 @utils.flatten
 @utils.for_each_value
 def acronyms(self, key, value):
-    self['opening_date'] = value.get('x')
-    self['closing_date'] = value.get('y')
+    if 'x' in value:
+        self['opening_date'] = _trim_date(value['x'])
+    if 'y' in value:
+        self['closing_date'] = _trim_date(value['y'])
 
     self['cnum'] = value.get('g')
 
