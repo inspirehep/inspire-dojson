@@ -34,7 +34,11 @@ from ..utils.geo import parse_conference_address
 
 
 def _trim_date(date):
-    year, month, day = map(int, date.split('-'))
+    try:
+        year, month, day = map(int, date.split('-'))
+    except ValueError:
+        return date
+
     if year and month and day:
         return '%d-%02d-%02d' % (year, month, day)
     elif year and month:
