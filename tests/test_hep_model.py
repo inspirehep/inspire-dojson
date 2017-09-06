@@ -22,8 +22,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-from inspire_dojson.hep.model import SPECIAL_COLLECTIONS_MAP
-from inspire_schemas.api import load_schema
+from inspire_dojson.hep.model import (
+    SPECIAL_COLLECTIONS_MAP,
+    move_journal_letters,
+)
+from inspire_schemas.api import load_schema, validate
 
 
 def test_special_collections_map_contains_all_valid_special_collections():
@@ -34,3 +37,37 @@ def test_special_collections_map_contains_all_valid_special_collections():
     result = SPECIAL_COLLECTIONS_MAP.keys()
 
     assert sorted(expected) == sorted(result)
+
+
+def test_move_journal_letters():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    record = {
+        'references': [
+            {
+                'reference': {
+                    'publication_info': {
+                        'journal_title': 'Phys.Rev.',
+                        'journal_volume': 'D82',
+                    },
+                },
+            },
+        ],
+    }
+    assert validate(record['references'], subschema) is None
+
+    expected = [
+        {
+            'reference': {
+                'publication_info': {
+                    'journal_title': 'Phys.Rev.D',
+                    'journal_volume': '82',
+                },
+            },
+        },
+    ]
+    result = move_journal_letters(record, None)
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']

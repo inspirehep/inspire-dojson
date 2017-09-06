@@ -24,6 +24,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import string
+
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
@@ -90,6 +92,18 @@ def copy_special_collections(record, blob):
     return record
 
 
+def move_journal_letters(record, blob):
+    for publication_info in get_value(record, 'references.reference.publication_info', default=[]):
+        journal_title = publication_info.get('journal_title')
+        journal_volume = publication_info.get('journal_volume')
+        if journal_title and journal_volume:
+            if journal_volume[0] in string.ascii_uppercase:
+                publication_info['journal_title'] += journal_volume[0]
+                publication_info['journal_volume'] = journal_volume[1:]
+
+    return record
+
+
 def ensure_document_type(record, blob):
     if not record.get('document_type'):
         record['document_type'] = ['article']
@@ -113,6 +127,7 @@ hep_filters = [
     add_arxiv_categories,
     add_inspire_categories,
     copy_special_collections,
+    move_journal_letters,
     ensure_document_type,
     clean_record,
 ]
