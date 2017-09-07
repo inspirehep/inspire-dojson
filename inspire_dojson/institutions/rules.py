@@ -235,16 +235,21 @@ def deleted(self, key, value):
     if not deleted:
         normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
         normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
-        deleted = 'DELETED' in normalized_a_values or 'DELETED' in normalized_c_values
+        if 'DELETED' in normalized_a_values or 'DELETED' in normalized_c_values:
+            deleted = True
 
     if not core:
         normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
-        core = 'CORE' in normalized_a_values
+        if 'CORE' in normalized_a_values:
+            core = True
+        elif 'NONCORE' in normalized_a_values:
+            core = False
 
     if not inactive:
         normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
         normalized_b_values = [el.upper() for el in force_list(value.get('b'))]
-        inactive = 'DEAD' in normalized_a_values or 'DEAD' in normalized_b_values
+        if 'DEAD' in normalized_a_values or 'DEAD' in normalized_b_values:
+            inactive = True
 
     self['core'] = core
     self['inactive'] = inactive
