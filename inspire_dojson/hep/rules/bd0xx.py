@@ -99,6 +99,22 @@ def dois(self, key, value):
         sources_without_curator = [el for el in sources if el.upper() != 'CURATOR']
         return force_single_element(sources_without_curator)
 
+    def _get_material(value):
+        MATERIAL_MAP = {
+            'addendum': 'addendum',
+            'ebook': 'publication',
+            'erratum': 'erratum',
+            'preprint': 'preprint',
+            'publication': 'publication',
+            'reprint': 'reprint',
+            'translation': 'translation',
+        }
+
+        q_value = force_single_element(value.get('q', ''))
+        normalized_q_value = q_value.lower()
+
+        return MATERIAL_MAP.get(normalized_q_value)
+
     def _is_doi(id_, type_):
         return (not type_ or type_.upper() == 'DOI') and is_doi(id_)
 
@@ -111,7 +127,7 @@ def dois(self, key, value):
     values = force_list(value)
     for value in values:
         id_ = force_single_element(value.get('a', ''))
-        material = force_single_element(value.get('q', '')).lower()
+        material = _get_material(value)
         schema = force_single_element(value.get('2', ''))
 
         sources = force_list(value.get('9'))
