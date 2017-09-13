@@ -465,6 +465,42 @@ def test_license_from_540__a_3():
     assert expected == result['540']
 
 
+def test_license_from_540__a_u_3():
+    schema = load_schema('hep')
+    subschema = schema['properties']['license']
+
+    snippet = (
+        '<datafield tag="540" ind1=" " ind2=" ">'
+        '  <subfield code="3">Publication</subfield>'
+        '  <subfield code="a">CC-BY-3.0</subfield>'
+        '  <subfield code="u">http://creativecommons.org/licenses/by/3.0/</subfield>'
+        '</datafield>'
+    )  # record/1184984
+
+    expected = [
+        {
+            'license': 'CC-BY-3.0',
+            'material': 'publication',
+            'url': 'http://creativecommons.org/licenses/by/3.0/',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['license'], subschema) is None
+    assert expected == result['license']
+
+    expected = [
+        {
+            '3': 'publication',
+            'a': 'CC-BY-3.0',
+            'u': 'http://creativecommons.org/licenses/by/3.0/',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['540']
+
+
 def test_license_from_540__double_a_u():
     schema = load_schema('hep')
     subschema = schema['properties']['license']
