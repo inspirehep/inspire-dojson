@@ -56,6 +56,12 @@ def collaborations2marc(self, key, value):
 @hep.over('publication_info', '^773..')
 @utils.for_each_value
 def publication_info(self, key, value):
+    def _get_cnum(value):
+        w_value = force_single_element(value.get('w', ''))
+        normalized_w_value = w_value.replace('/', '-').upper()
+
+        return normalized_w_value
+
     def _get_material(value):
         schema = load_schema('elements/material')
         valid_materials = schema['enum']
@@ -79,7 +85,7 @@ def publication_info(self, key, value):
 
     return {
         'artid': artid,
-        'cnum': force_single_element(value.get('w')),
+        'cnum': _get_cnum(value),
         'conf_acronym': force_single_element(value.get('q')),
         'conference_record': conference_record,
         'hidden': key.startswith('7731') or None,
