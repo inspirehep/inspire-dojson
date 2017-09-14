@@ -386,6 +386,48 @@ def test_publication_info_from_773__q_t():
     assert expected == result['773']
 
 
+def test_publication_info_from_773__w_x_0_2_handles_lowercase_cnums():
+    schema = load_schema('hep')
+    subschema = schema['properties']['publication_info']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="w">c12-07-09.10</subfield>'
+        '  <subfield code="x">Proceedings of the 57th Annual Conference of the South African Institute of Physics, edited by Johan Janse van Rensburg (2014), pp. 362 - 367</subfield>'
+        '  <subfield code="2">1423475</subfield>'
+        '  <subfield code="0">1424370</subfield>'
+        '</datafield>'
+    )  # record/1264637
+
+    expected = [
+        {
+            'cnum': 'C12-07-09.10',
+            'conference_record': {
+                '$ref': 'http://localhost:5000/api/conferences/1423475',
+            },
+            'parent_record': {
+                '$ref': 'http://localhost:5000/api/literature/1424370',
+            },
+            'pubinfo_freetext': 'Proceedings of the 57th Annual Conference of the South African Institute of Physics, edited by Johan Janse van Rensburg (2014), pp. 362 - 367',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], subschema) is None
+    assert expected == result['publication_info']
+
+    expected = [
+        {
+            'w': 'C12-07-09.10',
+            'x': 'Proceedings of the 57th Annual Conference of the South African Institute of Physics, edited by Johan Janse van Rensburg (2014), pp. 362 - 367',
+            '0': 1424370,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['773']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
