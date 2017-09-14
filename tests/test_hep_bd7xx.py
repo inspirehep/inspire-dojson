@@ -428,6 +428,32 @@ def test_publication_info_from_773__w_x_0_2_handles_lowercase_cnums():
     assert expected == result['773']
 
 
+def test_publication_info_from_773__w_handles_slashes_in_cnums():
+    schema = load_schema('hep')
+    subschema = schema['properties']['publication_info']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="w">C17/05/14</subfield>'
+        '</datafield>'
+    )  # record/1622968
+
+    expected = [
+        {'cnum': 'C17-05-14'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], subschema) is None
+    assert expected == result['publication_info']
+
+    expected = [
+        {'w': 'C17-05-14'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['773']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']

@@ -58,7 +58,7 @@ def collaborations2marc(self, key, value):
 def publication_info(self, key, value):
     def _get_cnum(value):
         w_value = force_single_element(value.get('w', ''))
-        normalized_w_value = w_value.upper()
+        normalized_w_value = w_value.replace('/', '-').upper()
 
         return normalized_w_value
 
