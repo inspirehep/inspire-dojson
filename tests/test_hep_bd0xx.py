@@ -443,6 +443,41 @@ def test_dois_from_0247_a_q_2_9_normalizes_erratum():
     assert expected == result['0247']
 
 
+def test_dois_from_0247_a_q_2_normalizes_ebook():
+    schema = load_schema('hep')
+    subschema = schema['properties']['dois']
+
+    snippet = (
+        '<datafield tag="024" ind1="7" ind2=" ">'
+        '  <subfield code="2">DOI</subfield>'
+        '  <subfield code="a">10.1017/CBO9780511813924</subfield>'
+        '  <subfield code="q">ebook</subfield>'
+        '</datafield>'
+    )  # record/1509573
+
+    expected = [
+        {
+            'material': 'publication',
+            'value': '10.1017/CBO9780511813924',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['dois'], subschema) is None
+    assert expected == result['dois']
+
+    expected = [
+        {
+            'a': '10.1017/CBO9780511813924',
+            'q': 'publication',
+            '2': 'DOI',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['0247']
+
+
 def test_texkeys_from_035__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['texkeys']
