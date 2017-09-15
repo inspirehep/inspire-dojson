@@ -97,6 +97,14 @@ def ensure_document_type(record, blob):
     return record
 
 
+def convert_curated(record, blob):
+    if blob.get('curated') is False:
+        a_value = '* Temporary entry *' if blob.get('core') else '* Brief entry *'
+        record.setdefault('500', []).insert(0, {'a': a_value})
+
+    return record
+
+
 def ensure_hep(record, blob):
     if not blob.get('special_collections'):
         record.setdefault('980', []).append({'a': 'HEP'})
@@ -118,6 +126,7 @@ hep_filters = [
 ]
 
 hep2marc_filters = [
+    convert_curated,
     ensure_hep,
     clean_record,
 ]
