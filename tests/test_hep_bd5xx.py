@@ -103,9 +103,10 @@ def test_public_notes_from_500__double_a_9():
     assert expected == result['500']
 
 
-def test_public_notes_from_500__a_and_500__a_9():
+def test_curated_and_public_notes_from_500__a_and_500__a_9():
     schema = load_schema('hep')
-    subschema = schema['properties']['public_notes']
+    curated_schema = schema['properties']['curated']
+    public_notes_schema = schema['properties']['public_notes']
 
     snippet = (
         '<record>'
@@ -119,10 +120,8 @@ def test_public_notes_from_500__a_and_500__a_9():
         '</record>'
     )  # record/1450045
 
-    expected = [
-        {
-            'value': '*Brief entry*',
-        },
+    expected_curated = False
+    expected_public_notes = [
         {
             'source': 'arXiv',
             'value': '11 pages, 5 figures',
@@ -130,16 +129,100 @@ def test_public_notes_from_500__a_and_500__a_9():
     ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['public_notes'], subschema) is None
-    assert expected == result['public_notes']
+    assert validate(result['curated'], curated_schema) is None
+    assert expected_curated == result['curated']
+
+    assert validate(result['public_notes'], public_notes_schema) is None
+    assert expected_public_notes == result['public_notes']
 
     expected = [
         {
-            'a': '*Brief entry*',
+            'a': '* Brief entry *',
         },
         {
             '9': 'arXiv',
             'a': '11 pages, 5 figures',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['500']
+
+
+def test_curated_from_500__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['curated']
+
+    snippet = (
+        '<datafield tag="500" ind1=" " ind2=" ">'
+        '  <subfield code="a">* Brief entry *</subfield>'
+        '</datafield>'
+    )  # record/1184775
+
+    expected = False
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['curated'], subschema) is None
+    assert expected == result['curated']
+
+    expected = [
+        {'a': '* Brief entry *'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['500']
+
+
+def test_core_and_curated_and_public_notes_from_500__a_and_500__a_9_and_980__a():
+    schema = load_schema('hep')
+    core_schema = schema['properties']['core']
+    curated_schema = schema['properties']['curated']
+    public_notes_schema = schema['properties']['public_notes']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="500" ind1=" " ind2=" ">'
+        '    <subfield code="a">* Temporary entry *</subfield>'
+        '  </datafield>'
+        '  <datafield tag="500" ind1=" " ind2=" ">'
+        '    <subfield code="a">*Temporary entry*</subfield>'
+        '  </datafield>'
+        '  <datafield tag="500" ind1=" " ind2=" ">'
+        '    <subfield code="a">5+3 pages, 3+2 figures</subfield>'
+        '    <subfield code="9">arXiv</subfield>'
+        '  </datafield>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">CORE</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1217749
+
+    expected_core = True
+    expected_curated = False
+    expected_public_notes = [
+        {
+            'source': 'arXiv',
+            'value': '5+3 pages, 3+2 figures',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['core'], core_schema) is None
+    assert expected_core == result['core']
+
+    assert validate(result['curated'], curated_schema) is None
+    assert expected_curated == result['curated']
+
+    assert validate(result['public_notes'], public_notes_schema) is None
+    assert expected_public_notes == result['public_notes']
+
+    expected = [
+        {
+            'a': '* Temporary entry *',
+        },
+        {
+            'a': '5+3 pages, 3+2 figures',
+            '9': 'arXiv',
         },
     ]
     result = hep2marc.do(result)

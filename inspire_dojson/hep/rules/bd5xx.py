@@ -42,9 +42,20 @@ IS_DEFENSE_DATE = re.compile(
 def public_notes(self, key, value):
     """Populate the ``public_notes`` key.
 
-    Also populates the ``thesis_info`` key through side effects.
+    Also populates the ``curated`` and ``thesis_info`` keys through side effects.
     """
+    def _means_not_curated(public_note):
+        return public_note in [
+            '*Brief entry*',
+            '* Brief entry *',
+            '*Temporary entry*',
+            '* Temporary entry *',
+            '*Temporary record*',
+            '* Temporary record *',
+        ]
+
     public_notes = self.get('public_notes', [])
+    curated = self.get('curated')
     thesis_info = self.get('thesis_info', {})
 
     source = force_single_element(value.get('9', ''))
@@ -53,12 +64,15 @@ def public_notes(self, key, value):
             match = IS_DEFENSE_DATE.match(public_note)
             if match:
                 thesis_info['defense_date'] = match.group('defense_date')
+            elif _means_not_curated(public_note):
+                curated = False
             else:
                 public_notes.append({
                     'source': source,
                     'value': public_note,
                 })
 
+    self['curated'] = curated
     self['thesis_info'] = thesis_info
     return public_notes
 
