@@ -854,3 +854,20 @@ def test_deleted_from_980__multiple_b_and_980__a_and_980__c():
 
     assert validate(result['deleted'], subschema) is None
     assert expected == result['deleted']
+
+
+def test_inactive_from_980__a():
+    schema = load_schema('institutions')
+    subschema = schema['properties']['inactive']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">DEAD</subfield>'
+        '</datafield>'
+    )  # record/1241100
+
+    expected = True
+    result = institutions.do(create_record(snippet))
+
+    assert validate(result['inactive'], subschema) is None
+    assert expected == result['inactive']
