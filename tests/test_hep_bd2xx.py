@@ -221,3 +221,39 @@ def test_editions_from_250__a():
     result = hep2marc.do(result)
 
     assert expected == result['250']
+
+
+def test_imprints_from_260__a_b_c():
+    schema = load_schema('hep')
+    subschema = schema['properties']['imprints']
+
+    snippet = (
+        '<datafield tag="260" ind1=" " ind2=" ">'
+        '  <subfield code="a">Geneva</subfield>'
+        '  <subfield code="b">CERN</subfield>'
+        '  <subfield code="c">2017</subfield>'
+        '</datafield>'
+    )  # record/1614215
+
+    expected = [
+        {
+            'date': '2017',
+            'place': 'Geneva',
+            'publisher': 'CERN',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['imprints'], subschema) is None
+    assert expected == result['imprints']
+
+    expected = [
+        {
+            'a': 'Geneva',
+            'b': 'CERN',
+            'c': '2017',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['260']
