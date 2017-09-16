@@ -221,3 +221,63 @@ def test_editions_from_250__a():
     result = hep2marc.do(result)
 
     assert expected == result['250']
+
+
+def test_imprints_from_260__a_b_c():
+    schema = load_schema('hep')
+    subschema = schema['properties']['imprints']
+
+    snippet = (
+        '<datafield tag="260" ind1=" " ind2=" ">'
+        '  <subfield code="a">Geneva</subfield>'
+        '  <subfield code="b">CERN</subfield>'
+        '  <subfield code="c">2017</subfield>'
+        '</datafield>'
+    )  # record/1614215
+
+    expected = [
+        {
+            'date': '2017',
+            'place': 'Geneva',
+            'publisher': 'CERN',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['imprints'], subschema) is None
+    assert expected == result['imprints']
+
+    expected = [
+        {
+            'a': 'Geneva',
+            'b': 'CERN',
+            'c': '2017',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['260']
+
+
+def test_preprint_date_from_269__c():
+    schema = load_schema('hep')
+    subschema = schema['properties']['preprint_date']
+
+    snippet = (
+        '<datafield tag="269" ind1=" " ind2=" ">'
+        '  <subfield code="c">2015-05-03</subfield>'
+        '</datafield>'
+    )  # record/1375944
+
+    expected = '2015-05-03'
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['preprint_date'], subschema) is None
+    assert expected == result['preprint_date']
+
+    expected = [
+        {'c': '2015-05-03'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['269']

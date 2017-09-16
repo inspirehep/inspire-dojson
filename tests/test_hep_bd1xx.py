@@ -1508,3 +1508,29 @@ def test_authors_from_100_a_double_u_w_z_y_double_z_and_700__a_double_u_w_y_doub
 
     assert expected_100 == result['100']
     assert expected_700 == result['700']
+
+
+def test_corporate_author_from_110__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['corporate_author']
+
+    snippet = (
+        '<datafield tag="110" ind1=" " ind2=" ">'
+        '  <subfield code="a">CMS Collaboration</subfield>'
+        '</datafield>'
+    )  # record/1621218
+
+    expected = [
+        'CMS Collaboration',
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['corporate_author'], subschema) is None
+    assert expected == result['corporate_author']
+
+    expected = [
+        {'a': 'CMS Collaboration'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['110']
