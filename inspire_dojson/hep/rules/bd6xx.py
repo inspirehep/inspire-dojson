@@ -49,24 +49,29 @@ REVERSE_ENERGY_RANGES_MAP = {v: k for k, v in six.iteritems(ENERGY_RANGES_MAP)}
 
 
 @hep.over('accelerator_experiments', '^693..')
+@utils.flatten
+@utils.for_each_value
 def accelerator_experiments(self, key, value):
-    result = self.get('accelerator_experiments', [])
+    result = []
 
-    for value in force_list(value):
-        e_values = force_list(value.get('e'))
-        zero_values = force_list(value.get('0'))
+    a_value = force_single_element(value.get('a'))
+    e_values = force_list(value.get('e'))
+    zero_values = force_list(value.get('0'))
 
-        # XXX: we zip only when they have the same length, otherwise
-        #      we might match a value with the wrong recid.
-        if len(e_values) == len(zero_values):
-            for e_value, zero_value in zip(e_values, zero_values):
-                result.append({
-                    'legacy_name': e_value,
-                    'record': get_record_ref(zero_value, 'experiments'),
-                })
-        else:
-            for e_value in e_values:
-                result.append({'legacy_name': e_value})
+    if a_value and not e_values:
+        result.append({'accelerator': a_value})
+
+    # XXX: we zip only when they have the same length, otherwise
+    #      we might match a value with the wrong recid.
+    if len(e_values) == len(zero_values):
+        for e_value, zero_value in zip(e_values, zero_values):
+            result.append({
+                'legacy_name': e_value,
+                'record': get_record_ref(zero_value, 'experiments'),
+            })
+    else:
+        for e_value in e_values:
+            result.append({'legacy_name': e_value})
 
     return result
 
@@ -74,7 +79,10 @@ def accelerator_experiments(self, key, value):
 @hep2marc.over('693', '^accelerator_experiments$')
 @utils.for_each_value
 def accelerator_experiments2marc(self, key, value):
-    return {'e': value.get('legacy_name')}
+    return {
+        'a': value.get('accelerator'),
+        'e': value.get('legacy_name'),
+    }
 
 
 @hep.over('keywords', '^(084|653|695)..')
