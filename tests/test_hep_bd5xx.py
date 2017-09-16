@@ -515,6 +515,43 @@ def test_abstracts_from_520__h_9():
     assert expected == result['520']
 
 
+def test_funding_info_from_536__a_c_f_0():
+    schema = load_schema('hep')
+    subschema = schema['properties']['funding_info']
+
+    snippet = (
+        '<datafield tag="536" ind1=" " ind2=" ">'
+        '  <subfield code="0">G:(EU-Grant)317089</subfield>'
+        '  <subfield code="a">GATIS - Gauge Theory as an Integrable System (317089)</subfield>'
+        '  <subfield code="c">317089</subfield>'
+        '  <subfield code="f">FP7-PEOPLE-2012-ITN</subfield>'
+        '</datafield>'
+    )  # record/1508869
+
+    expected = [
+        {
+            'agency': 'GATIS - Gauge Theory as an Integrable System (317089)',
+            'grant_number': '317089',
+            'project_number': 'FP7-PEOPLE-2012-ITN',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['funding_info'], subschema) is None
+    assert expected == result['funding_info']
+
+    expected = [
+        {
+            'a': 'GATIS - Gauge Theory as an Integrable System (317089)',
+            'c': '317089',
+            'f': 'FP7-PEOPLE-2012-ITN',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['536']
+
+
 def test_license_from_540__a_3():
     schema = load_schema('hep')
     subschema = schema['properties']['license']
@@ -994,6 +1031,30 @@ def test_export_to_from_595__c_cds():
 
     expected = [
         {'c': 'CDS'}
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['595']
+
+
+def test_export_to_from_595__c_hal():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_export_to']
+
+    snippet = (
+        '<datafield tag="595" ind1=" " ind2=" ">'
+        '  <subfield code="c">HAL</subfield>'
+        '</datafield>'
+    )  # record/1623281
+
+    expected = {'HAL': True}
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['_export_to'], subschema) is None
+    assert expected == result['_export_to']
+
+    expected = [
+        {'c': 'HAL'},
     ]
     result = hep2marc.do(result)
 

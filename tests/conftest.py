@@ -44,7 +44,11 @@ def app():
 def stable_langdetect(app):
     """Ensure that ``langdetect`` always returns the same thing.
 
-    See: https://github.com/Mimino666/langdetect#basic-usage."""
+    See: https://github.com/Mimino666/langdetect#basic-usage.
+    """
+    seed = DetectorFactory.seed
     DetectorFactory.seed = 0
 
     yield
+
+    DetectorFactory.seed = seed
