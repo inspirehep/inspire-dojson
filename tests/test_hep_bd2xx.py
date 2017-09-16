@@ -257,3 +257,27 @@ def test_imprints_from_260__a_b_c():
     result = hep2marc.do(result)
 
     assert expected == result['260']
+
+
+def test_preprint_date_from_269__c():
+    schema = load_schema('hep')
+    subschema = schema['properties']['preprint_date']
+
+    snippet = (
+        '<datafield tag="269" ind1=" " ind2=" ">'
+        '  <subfield code="c">2015-05-03</subfield>'
+        '</datafield>'
+    )  # record/1375944
+
+    expected = '2015-05-03'
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['preprint_date'], subschema) is None
+    assert expected == result['preprint_date']
+
+    expected = [
+        {'c': '2015-05-03'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['269']
