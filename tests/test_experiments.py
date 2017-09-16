@@ -121,6 +121,24 @@ def test_dates_from_046__s_and_046__t_and_046__x():
     assert expected_date_completed == result['date_completed']
 
 
+def test_dates_from_046__c_x():
+    schema = load_schema('experiments')
+    subschema = schema['properties']['date_cancelled']
+
+    snippet = (
+        '<datafield tag="046" ind1=" " ind2=" ">'
+        '  <subfield code="c">2000</subfield>'
+        '  <subfield code="x">no</subfield>'
+        '</datafield>'
+    )  # record/1110624
+
+    expected = '2000'
+    result = experiments.do(create_record(snippet))
+
+    assert validate(result['date_cancelled'], subschema) is None
+    assert expected == result['date_cancelled']
+
+
 def test_legacy_name_and_institutions_from_119__a_u_z():
     schema = load_schema('experiments')
     legacy_name_schema = schema['properties']['legacy_name']
