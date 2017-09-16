@@ -284,6 +284,54 @@ def test_legacy_name_and_institutions_from_119__a_and_multiple_119__u_z():
     assert expected_institutions == result['institutions']
 
 
+def test_accelerator_and_legacy_name_and_experiment_and_institutions_from_119__a_b_c_d_u_z():
+    schema = load_schema('experiments')
+    accelerator_schema = schema['properties']['accelerator']
+    legacy_name_schema = schema['properties']['legacy_name']
+    experiment_schema = schema['properties']['experiment']
+    institutions_schema = schema['properties']['institutions']
+
+    snippet = (
+        '<datafield tag="119" ind1=" " ind2=" ">'
+        '  <subfield code="a">ASAS-SN</subfield>'
+        '  <subfield code="b">NON</subfield>'
+        '  <subfield code="c">ASAS-SN</subfield>'
+        '  <subfield code="d">ASAS-SN</subfield>'
+        '  <subfield code="u">Ohio State U.</subfield>'
+        '  <subfield code="z">903092</subfield>'
+        '</datafield>'
+    )  # record/1617971
+
+    expected_accelerator = {'value': 'NON'}
+    expected_legacy_name = 'ASAS-SN'
+    expected_experiment = {
+        'short_name': 'ASAS-SN',
+        'value': 'ASAS-SN',
+    }
+    expected_institutions = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/institutions/903092',
+            },
+            'value': 'Ohio State U.',
+        },
+    ]
+    result = experiments.do(create_record(snippet))
+
+    assert validate(result['accelerator'], accelerator_schema) is None
+    assert expected_accelerator == result['accelerator']
+
+    assert validate(result['legacy_name'], legacy_name_schema) is None
+    assert expected_legacy_name == result['legacy_name']
+
+    assert validate(result['experiment'], experiment_schema) is None
+    assert expected_experiment == result['experiment']
+
+    assert validate(result['institutions'], institutions_schema) is None
+    assert expected_institutions == result['institutions']
+
+
 def test_long_name_from_245__a():
     schema = load_schema('experiments')
     subschema = schema['properties']['long_name']
