@@ -478,6 +478,39 @@ def test_dois_from_0247_a_q_2_normalizes_ebook():
     assert expected == result['0247']
 
 
+def test_persistent_identifiers_from_0247_a_2():
+    schema = load_schema('hep')
+    subschema = schema['properties']['persistent_identifiers']
+
+    snippet = (
+        '<datafield tag="024" ind1="7" ind2=" ">'
+        '  <subfield code="2">HDL</subfield>'
+        '  <subfield code="a">10150/625467</subfield>'
+        '</datafield>'
+    )  # record/1623117
+
+    expected = [
+        {
+            'schema': 'HDL',
+            'value': '10150/625467',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['persistent_identifiers'], subschema) is None
+    assert expected == result['persistent_identifiers']
+
+    expected = [
+        {
+            'a': '10150/625467',
+            '2': 'HDL',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['0247']
+
+
 def test_texkeys_from_035__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['texkeys']
