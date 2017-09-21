@@ -25,6 +25,7 @@
 from __future__ import absolute_import, division, print_function
 
 import re
+import string
 from functools import partial
 
 from dojson import utils
@@ -272,6 +273,10 @@ def references2marc(self, key, value):
 
     journal_title = get_value(reference, 'publication_info.journal_title')
     journal_volume = get_value(reference, 'publication_info.journal_volume')
+    if journal_title and journal_volume:
+        if journal_title[-1] in string.ascii_uppercase:
+            journal_volume = journal_title[-1] + journal_volume
+            journal_title = journal_title[:-1]
     page_start = get_value(reference, 'publication_info.page_start')
     page_end = get_value(reference, 'publication_info.page_end')
     artid = get_value(reference, 'publication_info.artid')
