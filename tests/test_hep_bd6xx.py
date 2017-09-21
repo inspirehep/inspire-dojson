@@ -232,6 +232,32 @@ def test_keywords2marc_does_not_export_magpie_keywords():
     assert '695' not in result
 
 
+def test_accelerator_experiments_from_693__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['accelerator_experiments']
+
+    snippet = (
+        '<datafield tag="693" ind1=" " ind2=" ">'
+        '  <subfield code="a">BATSE</subfield>'
+        '</datafield>'
+    )  # record/1623303
+
+    expected = [
+        {'accelerator': 'BATSE'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
+
+    expected = [
+        {'a': 'BATSE'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['693']
+
+
 def test_accelerator_experiments_from_693__a_e():
     schema = load_schema('hep')
     subschema = schema['properties']['accelerator_experiments']
