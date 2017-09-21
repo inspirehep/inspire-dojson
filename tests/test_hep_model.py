@@ -22,8 +22,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from dojson.contrib.marc21.utils import create_record
+
+from inspire_dojson.hep import hep
 from inspire_dojson.hep.model import SPECIAL_COLLECTIONS_MAP
-from inspire_schemas.api import load_schema
+from inspire_schemas.api import load_schema, validate
 
 
 def test_special_collections_map_contains_all_valid_special_collections():
@@ -34,3 +37,18 @@ def test_special_collections_map_contains_all_valid_special_collections():
     result = SPECIAL_COLLECTIONS_MAP.keys()
 
     assert sorted(expected) == sorted(result)
+
+
+def test_ensure_curated():
+    schema = load_schema('hep')
+    subschema = schema['properties']['curated']
+
+    snippet = (
+        '<record></record>'
+    )  # synthetic data
+
+    expected = True
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['curated'], subschema) is None
+    assert expected == result['curated']
