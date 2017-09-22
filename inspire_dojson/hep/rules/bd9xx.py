@@ -39,6 +39,48 @@ from ..model import hep, hep2marc
 from ...utils import force_single_element, get_recid_from_ref, get_record_ref
 
 
+_COLLECTIONS_MAP = {
+    'babar-analysisdocument': 'BABAR Analysis Documents',
+    'babar-internal-bais': 'BABAR Internal BAIS',
+    'babar-internal-note': 'BABAR Internal Notes',
+    'cdf-internal-note': 'CDF Internal Notes',
+    'cdf-note': 'CDF Notes',
+    'cdshidden': 'CDS Hidden',
+    'd0-internal-note': 'D0 Internal Notes',
+    'd0-preliminary-note': 'D0 Preliminary Notes',
+    'h1-internal-note': 'H1 Internal Notes',
+    'h1-preliminary-note': 'H1 Preliminary Notes',
+    'halhidden': 'HAL Hidden',
+    'hep': 'Literature',
+    'hephidden': 'HEP Hidden',
+    'hermes-internal-note': 'HERMES Internal Notes',
+    'larsoft-internal-note': 'LArSoft Internal Notes',
+    'larsoft-note': 'LArSoft Notes',
+    'zeus-internal-note': 'ZEUS Internal Notes',
+    'zeus-preliminary-note': 'ZEUS Preliminary Notes',
+}
+
+_COLLECTIONS_REVERSE_MAP = {
+    'BABAR Analysis Documents': 'BABAR-AnalysisDocument',
+    'BABAR Internal BAIS': 'BABAR-INTERNAL-BAIS',
+    'BABAR Internal Notes': 'BABAR-INTERNAL-NOTE',
+    'CDF Internal Notes': 'CDF-INTERNAL-NOTE',
+    'CDF Notes': 'CDF-NOTE',
+    'CDS Hidden': 'CDShidden',
+    'D0 Internal Notes': 'D0-INTERNAL-NOTE',
+    'D0 Preliminary Notes': 'D0-PRELIMINARY-NOTE',
+    'H1 Internal Notes': 'H1-INTERNAL-NOTE',
+    'H1 Preliminary Notes': 'H1-PRELIMINARY-NOTE',
+    'HAL Hidden': 'HALhidden',
+    'HEP Hidden': 'HEPhidden',
+    'HERMES Internal Notes': 'HERMEL-INTERNAL-NOTE',
+    'LArSoft Internal Notes': 'LARSOFT-INTERNAL-NOTE',
+    'LArSoft Notes': 'LARSOFT-NOTE',
+    'Literature': 'HEP',
+    'ZEUS Internal Notes': 'ZEUS-INTERNAL-NOTE',
+    'ZEUS Preliminary Notes': 'ZEUS-PRELIMINARY-NOTE',
+}
+
 RE_VALID_PUBNOTE = re.compile(".*,.*,.*(,.*)?")
 
 
@@ -68,26 +110,6 @@ def document_type(self, key, value):
         'review',
     ]
 
-    special_collections = [
-        # XXX: BABAR-AnalysisDocument is treated as a special case below.
-        'babar-internal-bais',
-        'babar-internal-note',
-        'cdf-internal-note',
-        'cdf-note',
-        'cdshidden',
-        'd0-internal-note',
-        'd0-preliminary-note',
-        'h1-internal-note',
-        'h1-preliminary-note',
-        'halhidden',
-        'hephidden',
-        'hermes-internal-note',
-        'larsoft-internal-note',
-        'larsoft-note',
-        'zeus-internal-note',
-        'zeus-preliminary-note',
-    ]
-
     document_types = [
         'book',
         'note',
@@ -105,8 +127,6 @@ def document_type(self, key, value):
 
         if normalized_a_value == 'arxiv':
             continue  # XXX: ignored.
-        elif normalized_a_value == 'hep':
-            self.setdefault('_collections', []).append('Literature')
         elif normalized_a_value == 'citeable':
             self['citeable'] = True
         elif normalized_a_value == 'core':
@@ -119,10 +139,8 @@ def document_type(self, key, value):
             self['withdrawn'] = True
         elif normalized_a_value in publication_types:
             publication_type.append(normalized_a_value)
-        elif normalized_a_value == 'babar-analysisdocument':
-            self.setdefault('special_collections', []).append('BABAR-ANALYSIS-DOCUMENT')
-        elif normalized_a_value in special_collections:
-            self.setdefault('special_collections', []).append(normalized_a_value.upper())
+        elif normalized_a_value in _COLLECTIONS_MAP:
+            self.setdefault('_collections', []).append(_COLLECTIONS_MAP[normalized_a_value])
         elif normalized_a_value == 'activityreport':
             document_type.append('activity report')
         elif normalized_a_value == 'bookchapter':
@@ -188,17 +206,8 @@ def publication_type2marc(self, key, value):
 @hep2marc.over('980', '^_collections$')
 @utils.for_each_value
 def _collections2marc(self, key, value):
-    if value == 'Literature':
-        return {'a': 'HEP'}
-
-
-@hep2marc.over('980', '^special_collections$')
-@utils.for_each_value
-def special_collections2marc(self, key, value):
-    if value == 'BABAR-ANALYSIS-DOCUMENT':
-        return {'a': 'BABAR-AnalysisDocument'}
-
-    return {'a': value}
+    if value in _COLLECTIONS_REVERSE_MAP:
+        return {'a': _COLLECTIONS_REVERSE_MAP[value]}
 
 
 @hep2marc.over('980', '^document_type$')
