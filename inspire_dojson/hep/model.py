@@ -97,6 +97,13 @@ def ensure_document_type(record, blob):
     return record
 
 
+def ensure_curated(record, blob):
+    if 'curated' not in record:
+        record['curated'] = True
+
+    return record
+
+
 def convert_curated(record, blob):
     if blob.get('curated') is False:
         a_value = '* Temporary entry *' if blob.get('core') else '* Brief entry *'
@@ -121,6 +128,7 @@ hep_filters = [
     add_arxiv_categories,
     add_inspire_categories,
     copy_special_collections,
+    ensure_curated,
     ensure_document_type,
     clean_record,
 ]
