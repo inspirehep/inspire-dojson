@@ -27,7 +27,31 @@ import pytest
 from dojson.contrib.marc21.utils import create_record
 
 from inspire_dojson.hep import hep, hep2marc
+from inspire_dojson.hep.rules.bd9xx import (
+    _COLLECTIONS_MAP,
+    _COLLECTIONS_REVERSE_MAP,
+)
 from inspire_schemas.api import load_schema, validate
+
+
+def test_collections_map_contains_all_valid_collections():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_collections']
+
+    expected = subschema['items']['enum']
+    result = _COLLECTIONS_MAP.values()
+
+    assert sorted(expected) == sorted(result)
+
+
+def test_collections_reverse_map_contains_all_valid_collections():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_collections']
+
+    expected = subschema['items']['enum']
+    result = _COLLECTIONS_REVERSE_MAP.keys()
+
+    assert sorted(expected) == sorted(result)
 
 
 def test_record_affiliations_from_902__a_z():
@@ -128,14 +152,10 @@ def test_citeable_from_980__a_citeable():
 
     expected = [
         {'a': 'Citeable'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
-    for el in expected:
-        assert el in result['980']
-    for el in result['980']:
-        assert el in expected
+    assert expected == result['980']
 
 
 def test_core_from_980__a_core():
@@ -156,7 +176,6 @@ def test_core_from_980__a_core():
 
     expected = [
         {'a': 'CORE'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -181,7 +200,6 @@ def test_core_from_980__a_noncore():
 
     expected = [
         {'a': 'NONCORE'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -206,7 +224,6 @@ def test_deleted_from_980__c():
 
     expected = [
         {'c': 'DELETED'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -237,9 +254,9 @@ def test_collections_from_980__a():
     assert expected == result['980']
 
 
-def test_special_collections_from_980__a():
+def test_collections_from_980__a_hal_hidden():
     schema = load_schema('hep')
-    subschema = schema['properties']['special_collections']
+    subschema = schema['properties']['_collections']
 
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
@@ -248,24 +265,24 @@ def test_special_collections_from_980__a():
     )  # record/1505341
 
     expected = [
-        'HALHIDDEN',
+        'HAL Hidden',
     ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['special_collections'], subschema) is None
-    assert expected == result['special_collections']
+    assert validate(result['_collections'], subschema) is None
+    assert expected == result['_collections']
 
     expected = [
-        {'a': 'HALHIDDEN'},
+        {'a': 'HALhidden'},
     ]
     result = hep2marc.do(result)
 
     assert expected == result['980']
 
 
-def test_special_collections_from_980__a_babar_analysis_document():
+def test_collections_from_980__a_babar_analysis_document():
     schema = load_schema('hep')
-    subschema = schema['properties']['special_collections']
+    subschema = schema['properties']['_collections']
 
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
@@ -274,12 +291,12 @@ def test_special_collections_from_980__a_babar_analysis_document():
     )  # record/1598316
 
     expected = [
-        'BABAR-ANALYSIS-DOCUMENT',
+        'BABAR Analysis Documents',
     ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['special_collections'], subschema) is None
-    assert expected == result['special_collections']
+    assert validate(result['_collections'], subschema) is None
+    assert expected == result['_collections']
 
     expected = [
         {'a': 'BABAR-AnalysisDocument'},
@@ -289,10 +306,9 @@ def test_special_collections_from_980__a_babar_analysis_document():
     assert expected == result['980']
 
 
-def test_collections_and_special_collections_from_980__a():
+def test_collections_from_double_980__a():
     schema = load_schema('hep')
-    subschema_collections = schema['properties']['_collections']
-    subschema_special = schema['properties']['special_collections']
+    subschema = schema['properties']['_collections']
 
     snippet = (
         '<record>'
@@ -305,19 +321,14 @@ def test_collections_and_special_collections_from_980__a():
         '</record>'
     )  # record/1201407
 
-    expected = {
-        '_collections': [
-            'Literature',
-            'D0 Preliminary Notes',
-        ],
-        'special_collections': ['D0-PRELIMINARY-NOTE'],
-    }
+    expected = [
+        'D0 Preliminary Notes',
+        'Literature',
+    ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['_collections'], subschema_collections) is None
-    assert validate(result['special_collections'], subschema_special) is None
-    assert expected['_collections'] == result['_collections']
-    assert expected['special_collections'] == result['special_collections']
+    assert validate(result['_collections'], subschema) is None
+    assert sorted(expected) == sorted(result['_collections'])
 
     expected = [
         {'a': 'HEP'},
@@ -349,7 +360,6 @@ def test_refereed_from_980__a_published():
 
     expected = [
         {'a': 'Published'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -372,13 +382,6 @@ def test_document_type_defaults_to_article():
     assert validate(result['document_type'], subschema) is None
     assert expected == result['document_type']
 
-    expected = [
-        {'a': 'HEP'},
-    ]
-    result = hep2marc.do(result)
-
-    assert expected == result['980']
-
 
 def test_document_type_from_980__a():
     schema = load_schema('hep')
@@ -400,7 +403,6 @@ def test_document_type_from_980__a():
 
     expected = [
         {'a': 'Book'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -427,7 +429,6 @@ def test_document_type_from_980__a_handles_conference_paper():
 
     expected = [
         {'a': 'ConferencePaper'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -454,7 +455,6 @@ def test_document_type_from_980__a_handles_activity_report():
 
     expected = [
         {'a': 'ActivityReport'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -481,7 +481,6 @@ def test_publication_type_from_980__a():
 
     expected = [
         {'a': 'review'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
@@ -506,7 +505,6 @@ def test_withdrawn_from_980__a_withdrawn():
 
     expected = [
         {'a': 'Withdrawn'},
-        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
