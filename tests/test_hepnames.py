@@ -1437,7 +1437,10 @@ def test_stub_from_980__a_useful():
     ]
     result = hepnames2marc.do(result)
 
-    assert expected == result['980']
+    for el in expected:
+        assert el in result['980']
+    for el in result['980']:
+        assert el in expected
 
 
 def test_stub_from_980__a_not_useful():
@@ -1486,4 +1489,7 @@ def test_deleted_from_980__c():
     ]
     result = hepnames2marc.do(result)
 
-    assert expected == result['980']
+    for el in expected:
+        assert el in result['980']
+    for el in result['980']:
+        assert el in expected

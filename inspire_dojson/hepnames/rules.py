@@ -554,6 +554,13 @@ def deleted(self, key, value):
     return deleted
 
 
+@hepnames2marc.over('980', '^_collections$')
+@utils.for_each_value
+def _collections2marc(self, key, value):
+    if value == 'Authors':
+        return {'a': 'HEPNAMES'}
+
+
 @hepnames2marc.over('980', '^deleted$')
 @utils.for_each_value
 def deleted2marc(self, key, value):
