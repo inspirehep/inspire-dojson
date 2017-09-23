@@ -128,6 +128,12 @@ def record_affiliations2marc(self, key, value):
 
 @hep.over('document_type', '^980..')
 def document_type(self, key, value):
+    """Populate the ``document_type`` key.
+
+    Also populates the ``_collections``, ``citeable``, ``core``, ``deleted``,
+    ``refereed``, ``publication_type``, and ``withdrawn`` keys through side
+    effects.
+    """
     schema = load_schema('hep')
     publication_type_schema = schema['properties']['publication_type']
     valid_publication_types = publication_type_schema['items']['enum']
