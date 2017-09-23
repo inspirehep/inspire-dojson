@@ -81,6 +81,30 @@ _COLLECTIONS_REVERSE_MAP = {
     'ZEUS Preliminary Notes': 'ZEUS-PRELIMINARY-NOTE',
 }
 
+DOCUMENT_TYPE_MAP = {
+    'activityreport': 'activity report',
+    'article': 'article',  # XXX: doesn't actually happen.
+    'book': 'book',
+    'bookchapter': 'book chapter',
+    'conferencepaper': 'conference paper',
+    'note': 'note',
+    'proceedings': 'proceedings',
+    'report': 'report',
+    'thesis': 'thesis',
+}
+
+DOCUMENT_TYPE_REVERSE_MAP = {
+    'activity report': 'ActivityReport',
+    'article': None,  # XXX: we want to discard it.
+    'book': 'Book',
+    'book chapter': 'BookChapter',
+    'conference paper': 'ConferencePaper',
+    'note': 'Note',
+    'proceedings': 'Proceedings',
+    'report': 'Report',
+    'thesis': 'Thesis',
+}
+
 RE_VALID_PUBNOTE = re.compile(".*,.*,.*(,.*)?")
 
 
@@ -108,14 +132,6 @@ def document_type(self, key, value):
     publication_type_schema = schema['properties']['publication_type']
     valid_publication_types = publication_type_schema['items']['enum']
 
-    document_types = [
-        'book',
-        'note',
-        'report',
-        'proceedings',
-        'thesis',
-    ]
-
     document_type = self.get('document_type', [])
     publication_type = self.get('publication_type', [])
 
@@ -137,14 +153,8 @@ def document_type(self, key, value):
             self['withdrawn'] = True
         elif normalized_a_value in _COLLECTIONS_MAP:
             self.setdefault('_collections', []).append(_COLLECTIONS_MAP[normalized_a_value])
-        elif normalized_a_value == 'activityreport':
-            document_type.append('activity report')
-        elif normalized_a_value == 'bookchapter':
-            document_type.append('book chapter')
-        elif normalized_a_value == 'conferencepaper':
-            document_type.append('conference paper')
-        elif normalized_a_value in document_types:
-            document_type.append(normalized_a_value)
+        elif normalized_a_value in DOCUMENT_TYPE_MAP:
+            document_type.append(DOCUMENT_TYPE_MAP[normalized_a_value])
         elif normalized_a_value in valid_publication_types:
             publication_type.append(normalized_a_value)
 
@@ -205,10 +215,8 @@ def _collections2marc(self, key, value):
 @hep2marc.over('980', '^document_type$')
 @utils.for_each_value
 def document_type2marc(self, key, value):
-    if value == 'article':
-        return
-
-    return {'a': value.title().replace(' ', '')}
+    if value in DOCUMENT_TYPE_REVERSE_MAP and DOCUMENT_TYPE_REVERSE_MAP[value]:
+        return {'a': DOCUMENT_TYPE_REVERSE_MAP[value]}
 
 
 @hep2marc.over('980', '^publication_type$')
