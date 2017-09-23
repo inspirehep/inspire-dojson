@@ -30,7 +30,7 @@ from functools import partial
 from dojson import utils
 from idutils import is_arxiv_post_2007
 
-from inspire_schemas.api import ReferenceBuilder
+from inspire_schemas.api import ReferenceBuilder, load_schema
 from inspire_schemas.utils import build_pubnote
 from inspire_utils.helpers import force_list, maybe_int
 from inspire_utils.record import get_value
@@ -81,6 +81,30 @@ _COLLECTIONS_REVERSE_MAP = {
     'ZEUS Preliminary Notes': 'ZEUS-PRELIMINARY-NOTE',
 }
 
+DOCUMENT_TYPE_MAP = {
+    'activityreport': 'activity report',
+    'article': 'article',  # XXX: doesn't actually happen.
+    'book': 'book',
+    'bookchapter': 'book chapter',
+    'conferencepaper': 'conference paper',
+    'note': 'note',
+    'proceedings': 'proceedings',
+    'report': 'report',
+    'thesis': 'thesis',
+}
+
+DOCUMENT_TYPE_REVERSE_MAP = {
+    'activity report': 'ActivityReport',
+    'article': None,  # XXX: we want to discard it.
+    'book': 'Book',
+    'book chapter': 'BookChapter',
+    'conference paper': 'ConferencePaper',
+    'note': 'Note',
+    'proceedings': 'Proceedings',
+    'report': 'Report',
+    'thesis': 'Thesis',
+}
+
 RE_VALID_PUBNOTE = re.compile(".*,.*,.*(,.*)?")
 
 
@@ -104,19 +128,15 @@ def record_affiliations2marc(self, key, value):
 
 @hep.over('document_type', '^980..')
 def document_type(self, key, value):
-    publication_types = [
-        'introductory',
-        'lectures',
-        'review',
-    ]
+    """Populate the ``document_type`` key.
 
-    document_types = [
-        'book',
-        'note',
-        'report',
-        'proceedings',
-        'thesis',
-    ]
+    Also populates the ``_collections``, ``citeable``, ``core``, ``deleted``,
+    ``refereed``, ``publication_type``, and ``withdrawn`` keys through side
+    effects.
+    """
+    schema = load_schema('hep')
+    publication_type_schema = schema['properties']['publication_type']
+    valid_publication_types = publication_type_schema['items']['enum']
 
     document_type = self.get('document_type', [])
     publication_type = self.get('publication_type', [])
@@ -137,18 +157,12 @@ def document_type(self, key, value):
             self['refereed'] = True
         elif normalized_a_value == 'withdrawn':
             self['withdrawn'] = True
-        elif normalized_a_value in publication_types:
-            publication_type.append(normalized_a_value)
         elif normalized_a_value in _COLLECTIONS_MAP:
             self.setdefault('_collections', []).append(_COLLECTIONS_MAP[normalized_a_value])
-        elif normalized_a_value == 'activityreport':
-            document_type.append('activity report')
-        elif normalized_a_value == 'bookchapter':
-            document_type.append('book chapter')
-        elif normalized_a_value == 'conferencepaper':
-            document_type.append('conference paper')
-        elif normalized_a_value in document_types:
-            document_type.append(normalized_a_value)
+        elif normalized_a_value in DOCUMENT_TYPE_MAP:
+            document_type.append(DOCUMENT_TYPE_MAP[normalized_a_value])
+        elif normalized_a_value in valid_publication_types:
+            publication_type.append(normalized_a_value)
 
     c_value = force_single_element(value.get('c', ''))
     normalized_c_value = c_value.strip().lower()
@@ -197,12 +211,6 @@ def withdrawn2marc(self, key, value):
         return {'a': 'Withdrawn'}
 
 
-@hep2marc.over('980', '^publication_type$')
-@utils.for_each_value
-def publication_type2marc(self, key, value):
-    return {'a': value}
-
-
 @hep2marc.over('980', '^_collections$')
 @utils.for_each_value
 def _collections2marc(self, key, value):
@@ -213,10 +221,14 @@ def _collections2marc(self, key, value):
 @hep2marc.over('980', '^document_type$')
 @utils.for_each_value
 def document_type2marc(self, key, value):
-    if value == 'article':
-        return
+    if value in DOCUMENT_TYPE_REVERSE_MAP and DOCUMENT_TYPE_REVERSE_MAP[value]:
+        return {'a': DOCUMENT_TYPE_REVERSE_MAP[value]}
 
-    return {'a': value.title().replace(' ', '')}
+
+@hep2marc.over('980', '^publication_type$')
+@utils.for_each_value
+def publication_type2marc(self, key, value):
+    return {'a': value}
 
 
 @hep.over('references', '^999C5')

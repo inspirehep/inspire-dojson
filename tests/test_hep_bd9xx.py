@@ -30,6 +30,8 @@ from inspire_dojson.hep import hep, hep2marc
 from inspire_dojson.hep.rules.bd9xx import (
     _COLLECTIONS_MAP,
     _COLLECTIONS_REVERSE_MAP,
+    DOCUMENT_TYPE_MAP,
+    DOCUMENT_TYPE_REVERSE_MAP,
 )
 from inspire_schemas.api import load_schema, validate
 
@@ -50,6 +52,24 @@ def test_collections_reverse_map_contains_all_valid_collections():
 
     expected = subschema['items']['enum']
     result = _COLLECTIONS_REVERSE_MAP.keys()
+
+    assert sorted(expected) == sorted(result)
+
+
+def test_document_type_map_contains_all_valid_document_types():
+    schema = load_schema('elements/document_type')
+
+    expected = schema['enum']
+    result = DOCUMENT_TYPE_MAP.values()
+
+    assert sorted(expected) == sorted(result)
+
+
+def test_document_type_reverse_map_contains_all_valid_document_types():
+    schema = load_schema('elements/document_type')
+
+    expected = schema['enum']
+    result = DOCUMENT_TYPE_REVERSE_MAP.keys()
 
     assert sorted(expected) == sorted(result)
 
