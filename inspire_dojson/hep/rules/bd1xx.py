@@ -259,14 +259,10 @@ def authors2marc(self, key, value):
 @hep.over('corporate_author', '^110..')
 @utils.for_each_value
 def corporate_author(self, key, value):
-    """Main Entry-Corporate Name."""
     return value.get('a')
 
 
 @hep2marc.over('110', '^corporate_author$')
 @utils.for_each_value
 def corporate_author2marc(self, key, value):
-    """Main Entry-Corporate Name."""
-    return {
-        'a': value,
-    }
+    return {'a': value}
