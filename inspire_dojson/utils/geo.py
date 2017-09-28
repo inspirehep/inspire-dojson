@@ -535,7 +535,6 @@ def parse_conference_address(address_string):
             city,
         ],
         'country_code': country_code,
-        'postal_address': force_list(address_string),
         'postal_code': None,
         'state': state,
     }

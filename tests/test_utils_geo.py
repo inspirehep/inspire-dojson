@@ -73,9 +73,6 @@ def test_parse_conference_address_recognizes_state_and_country_of_us_city():
             'Waltham',
         ],
         'country_code': 'US',
-        'postal_address': [
-            'Waltham, Mass.',
-        ],
         'postal_code': None,
         'state': 'MA',
     }
@@ -90,9 +87,6 @@ def test_parse_conference_address_recognizes_country_of_non_us_city():
             'Dubna',
         ],
         'country_code': 'SU',
-        'postal_address': [
-            'Dubna, USSR',
-        ],
         'postal_code': None,
         'state': None,
     }
@@ -107,9 +101,6 @@ def test_parse_conference_address_handles_empty_string():
             '',
         ],
         'country_code': None,
-        'postal_address': [
-            '',
-        ],
         'postal_code': None,
         'state': None,
     }
