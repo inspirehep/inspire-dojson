@@ -126,9 +126,6 @@ def test_address_from_111__a_c_d_g_x_y():
                 'Austin',
             ],
             'country_code': 'US',
-            'postal_address': [
-                'Austin, Tex.',
-            ],
             'state': 'TX',
         },
     ]
@@ -164,18 +161,12 @@ def test_address_from_111__a_c_d_g_x_y_and_111__c():
                 'Yerevan',
             ],
             'country_code': 'AM',
-            'postal_address': [
-                'Yerevan, Armenia',
-            ],
         },
         {
             'cities': [
                 'Tbilisi',
             ],
             'country_code': 'GE',
-            'postal_address': [
-                'Tbilisi, Georgia',
-            ],
         },
     ]
     result = conferences.do(create_record(snippet))
@@ -206,18 +197,12 @@ def test_address_from_111__a_double_c_d_e_g_x_y():
             'cities': [
                 'QCD 12',
             ],
-            'postal_address': [
-                'QCD 12',
-            ],
         },  # XXX: Wrong, but the best we can do.
         {
             'cities': [
                 'Montpellier',
             ],
             'country_code': 'FR',
-            'postal_address': [
-                'Montpellier, France',
-            ],
         },
     ]
     result = conferences.do(create_record(snippet))
@@ -271,9 +256,6 @@ def test_address_from_111__a_c_e_g_x_y_and_270__b():
                 'Cleveland',
             ],
             'country_code': 'US',
-            'postal_address': [
-                'Cleveland, Ohio, USA',
-            ],
             'state': 'OH',
         },
         {'place_name': 'Case Western Reserve University'},
