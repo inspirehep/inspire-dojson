@@ -55,7 +55,7 @@ def accelerator_experiments(self, key, value):
     result = []
 
     a_value = force_single_element(value.get('a'))
-    e_values = force_list(value.get('e'))
+    e_values = [el for el in force_list(value.get('e')) if el != '-']
     zero_values = force_list(value.get('0'))
 
     if a_value and not e_values:

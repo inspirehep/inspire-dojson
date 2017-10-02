@@ -289,6 +289,43 @@ def test_accelerator_experiments_from_693__a_e():
     assert expected == result['693']
 
 
+def test_accelerator_experiments_from_693__e_0_and_693__e_discards_single_dashes():
+    schema = load_schema('hep')
+    subschema = schema['properties']['accelerator_experiments']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="693" ind1=" " ind2=" ">'
+        '    <subfield code="e">CERN-LHC-ATLAS</subfield>'
+        '    <subfield code="0">1108541</subfield>'
+        '  </datafield>'
+        '  <datafield tag="693" ind1=" " ind2=" ">'
+        '    <subfield code="e">-</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1503527
+
+    expected = [
+        {
+            'legacy_name': 'CERN-LHC-ATLAS',
+            'record': {
+                '$ref': 'http://localhost:5000/api/experiments/1108541',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
+
+    expected = [
+        {'e': 'CERN-LHC-ATLAS'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['693']
+
+
 def test_keywords_from_695__a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
