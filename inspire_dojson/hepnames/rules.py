@@ -29,6 +29,7 @@ import re
 from dojson import utils
 
 from inspire_schemas.api import load_schema
+from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
 from .model import hepnames, hepnames2marc
@@ -215,8 +216,8 @@ def positions(self, key, value):
         'old_emails': old_emails,
         '_rank': _rank,
         'rank': rank,
-        'start_date': value.get('s'),
-        'end_date': value.get('t'),
+        'start_date': normalize_date(value.get('s')),
+        'end_date': normalize_date(value.get('t')),
         'current': current,
     }
 
@@ -367,7 +368,7 @@ def source(self, key, value):
     def _get_source(value):
         return {
             'name': value.get('a'),
-            'date_verified': value.get('d'),
+            'date_verified': normalize_date(value.get('d')),
         }
 
     source = self.get('source', [])

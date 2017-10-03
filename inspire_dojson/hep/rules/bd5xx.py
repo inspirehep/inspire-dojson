@@ -28,14 +28,14 @@ import re
 
 from dojson import utils
 
+from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
 from ..model import hep, hep2marc
 from ...utils import force_single_element, get_record_ref
 
 
-IS_DEFENSE_DATE = re.compile(
-    'Presented on (?P<defense_date>\d{4}(-\d{2}){,2})', re.IGNORECASE)
+IS_DEFENSE_DATE = re.compile('Presented on (?P<defense_date>.*)', re.IGNORECASE)
 
 
 @hep.over('public_notes', '^500..')
@@ -63,7 +63,7 @@ def public_notes(self, key, value):
         for public_note in force_list(value.get('a')):
             match = IS_DEFENSE_DATE.match(public_note)
             if match:
-                thesis_info['defense_date'] = match.group('defense_date')
+                thesis_info['defense_date'] = normalize_date(match.group('defense_date'))
             elif _means_not_curated(public_note):
                 curated = False
             else:

@@ -30,6 +30,7 @@ import six
 
 from dojson import utils
 
+from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list
 
 from .model import jobs
@@ -55,7 +56,7 @@ def date_closed(self, key, value):
 
     deadline_date = force_single_element(el.get('i'))
     if deadline_date:
-        self['deadline_date'] = deadline_date
+        self['deadline_date'] = normalize_date(deadline_date)
 
     closing_date = None
     closing_info = force_single_element(el.get('l'))
@@ -71,7 +72,7 @@ def date_closed(self, key, value):
             else:
                 self['urls'] = [{'value': closing_info}]
         else:
-            closing_date = closing_info
+            closing_date = normalize_date(closing_info)
 
     return closing_date
 
