@@ -24,6 +24,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 
 import six
@@ -96,6 +97,23 @@ def absolute_url(relative_url):
     if not re.match('^https?://', server):
         server = 'http://{}'.format(server)
     return urllib.parse.urljoin(server, relative_url)
+
+
+def afs_url(value):
+    """Returns the AFS absolute path from the FFT ``path`` key.
+
+    If ``path`` doesn't start with ``/opt/cds-invenio/`` it returns it unchanged.
+    """
+    default_afs_path = '/afs/cern.ch/project/inspire/PROD'
+    file_path = value.get('a')
+
+    if file_path is None:
+        return
+
+    if file_path.startswith('/opt/cds-invenio/'):
+        file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
+        return os.path.join(default_afs_path, file_path)
+    return file_path
 
 
 def get_record_ref(recid, endpoint='record'):
