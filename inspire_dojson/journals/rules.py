@@ -27,6 +27,7 @@ from __future__ import absolute_import, division, print_function
 from dojson import utils
 from idutils import normalize_issn
 
+from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
 from .model import journals
@@ -118,7 +119,7 @@ def license(self, key, value):
 def _harvesting_info(self, key, value):
     return {
         'coverage': value.get('a'),
-        'date_last_harvest': value.get('c'),
+        'date_last_harvest': normalize_date(value.get('c')),
         'last_seen_item': value.get('3'),
         'method': value.get('i'),
     }

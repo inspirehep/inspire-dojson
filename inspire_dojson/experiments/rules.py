@@ -30,6 +30,7 @@ from dojson import utils
 from dojson.errors import IgnoreKey
 
 from inspire_schemas.api import load_schema
+from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
 from .model import experiments
@@ -40,15 +41,15 @@ from ..utils import force_single_element, get_record_ref
 def dates(self, key, values):
     for value in force_list(values):
         if value.get('q'):
-            self['date_proposed'] = value.get('q')
+            self['date_proposed'] = normalize_date(value.get('q'))
         if value.get('r'):
-            self['date_approved'] = value.get('r')
+            self['date_approved'] = normalize_date(value.get('r'))
         if value.get('s'):
-            self['date_started'] = value.get('s')
+            self['date_started'] = normalize_date(value.get('s'))
         if value.get('c'):
-            self['date_cancelled'] = value.get('c')
+            self['date_cancelled'] = normalize_date(value.get('c'))
         if value.get('t'):
-            self['date_completed'] = value.get('t')
+            self['date_completed'] = normalize_date(value.get('t'))
 
     raise IgnoreKey
 

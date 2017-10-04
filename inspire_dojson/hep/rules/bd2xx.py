@@ -28,6 +28,7 @@ import langdetect
 
 from dojson import utils
 
+from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list
 
 from ..model import hep, hep2marc
@@ -113,7 +114,7 @@ def imprints(self, key, value):
     return {
         'place': value.get('a'),
         'publisher': value.get('b'),
-        'date': value.get('c'),
+        'date': normalize_date(value.get('c')),
     }
 
 
@@ -129,9 +130,7 @@ def imprints2marc(self, key, value):
 
 @hep.over('preprint_date', '^269..')
 def preprint_date(self, key, value):
-    if isinstance(value, (tuple, list)):
-        return min(elem['c'] for elem in value if 'c' in elem)
-    return value.get('c')
+    return normalize_date(value.get('c'))
 
 
 @hep2marc.over('269', '^preprint_date$')
