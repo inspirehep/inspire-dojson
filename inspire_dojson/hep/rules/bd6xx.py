@@ -98,14 +98,16 @@ def keywords(self, key, values):
         if value.get('a'):
             schema = force_single_element(value.get('2', '')).upper()
             sources = force_list(value.get('9'))
-            keyword = value.get('a')
+
+            a_values = force_list(value.get('a'))
 
             if 'conference' not in sources:
-                keywords.append({
-                    'schema': schema,
-                    'source': force_single_element(sources),
-                    'value': keyword,
-                })
+                for a_value in a_values:
+                    keywords.append({
+                        'schema': schema,
+                        'source': force_single_element(sources),
+                        'value': a_value,
+                    })
 
         if value.get('e'):
             energy_ranges.append(ENERGY_RANGES_MAP.get(value.get('e')))

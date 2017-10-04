@@ -115,6 +115,51 @@ def test_keywords_from_084__a_2_9():
     assert '695' not in result
 
 
+def test_keywords_from_084__double_a_2():
+    schema = load_schema('hep')
+    subschema = schema['properties']['keywords']
+
+    snippet = (
+        '<datafield tag="084" ind1=" " ind2=" ">'
+        '  <subfield code="2">PACS</subfield>'
+        '  <subfield code="a">04.80.N</subfield>'
+        '  <subfield code="a">07.10.Y</subfield>'
+        '</datafield>'
+    )  # record/1376406
+
+    expected = [
+        {
+            'schema': 'PACS',
+            'value': '04.80.N',
+        },
+        {
+            'schema': 'PACS',
+            'value': '07.10.Y',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['keywords'], subschema) is None
+    assert expected == result['keywords']
+    assert 'energy_ranges' not in result
+
+    expected = [
+        {
+            '2': 'PACS',
+            'a': '04.80.N',
+        },
+        {
+            '2': 'PACS',
+            'a': '07.10.Y',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['084']
+    assert '6531' not in result
+    assert '695' not in result
+
+
 def test_keywords_from_6531_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
