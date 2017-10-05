@@ -24,6 +24,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from isbn import ISBN
+
 from dojson import utils
 
 from inspire_schemas.api import load_schema
@@ -72,6 +74,14 @@ def publication_info(self, key, value):
         if normalized_m_value in valid_materials:
             return normalized_m_value
 
+    def _get_parent_isbn(value):
+        z_value = force_single_element(value.get('z', ''))
+        if z_value:
+            try:
+                return str(ISBN(z_value))
+            except Exception:
+                return z_value
+
     page_start, page_end, artid = split_page_artid(value.get('c'))
 
     parent_recid = maybe_int(force_single_element(value.get('0')))
@@ -96,7 +106,7 @@ def publication_info(self, key, value):
         'material': _get_material(value),
         'page_end': page_end,
         'page_start': page_start,
-        'parent_isbn': force_single_element(value.get('z')),
+        'parent_isbn': _get_parent_isbn(value),
         'parent_record': parent_record,
         'parent_report_number': force_single_element(value.get('r')),
         'pubinfo_freetext': force_single_element(value.get('x')),
