@@ -65,7 +65,7 @@ def test_isbns_from_020__a_handles_capital_x():
     )  # record/1230427
 
     expected = [
-        {'value': '069114558X'},
+        {'value': '9780691145587'},
     ]
     result = hep.do(create_record(snippet))
 
@@ -73,7 +73,7 @@ def test_isbns_from_020__a_handles_capital_x():
     assert expected == result['isbns']
 
     expected = [
-        {'a': '069114558X'},
+        {'a': '9780691145587'},
     ]
     result = hep2marc.do(result)
 
@@ -241,6 +241,22 @@ def test_isbns_from_020__a_b_normalizes_hardcover():
     result = hep2marc.do(result)
 
     assert expected == result['020']
+
+
+def test_isbns_from_020__a_b_handles_dots():
+    schema = load_schema('hep')
+    subschema = schema['properties']['isbns']
+
+    snippet = (
+        '<datafield tag="020" ind1=" " ind2=" ">'
+        '  <subfield code="a">978.90.9023556.1</subfield>'
+        '  <subfield code="b">Online</subfield>'
+        '</datafield>'
+    )  # record/1426768
+
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['isbns'], subschema) is None
 
 
 def test_dois_from_0247_a_2_double_9_ignores_curator_source():
