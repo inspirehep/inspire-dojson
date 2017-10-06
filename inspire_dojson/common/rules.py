@@ -24,6 +24,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 
 from flask import current_app
@@ -282,7 +283,12 @@ def public_notes_680(self, key, value):
 @journals.over('urls', '^8564.')
 def urls(self, key, value):
     def _is_internal_url(url):
-        base = urllib.parse.urlparse(current_app.config['LEGACY_BASE_URL'])
+        try:
+            legacy_base_url = current_app.config['LEGACY_BASE_URL']
+        except RuntimeError:
+            # Working outside of Flask context
+            legacy_base_url = os.environ.get('APP_LEGACY_BASE_URL', 'http://inspirehep.net')
+        base = urllib.parse.urlparse(legacy_base_url)
         base_netloc = base.netloc or base.path
         parsed_url = urllib.parse.urlparse(url)
         url_netloc = parsed_url.netloc or parsed_url.path
