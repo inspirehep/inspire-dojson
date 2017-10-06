@@ -342,3 +342,58 @@ def test_figures_to_FFT():
     result = hep2marc.do(snippet)
 
     assert expected == result['FFT']
+
+
+def test_figures_and_documents_from_FFT_without_d_subfield():
+    schema = load_schema('hep')
+    figures_subschema = schema['properties']['figures']
+    documents_subschema = schema['properties']['documents']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037399/content.png;1</subfield>'
+        '    <subfield code="f">.png</subfield>'
+        '    <subfield code="n">FIG10</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 07:54:54</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '   <subfield code="z"/>'
+        '  </datafield>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037619/content.pdf;1</subfield>'
+        '    <subfield code="f">.pdf</subfield>'
+        '    <subfield code="n">arXiv:1710.01187</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 09:42:00</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '    <subfield code="z"/>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1628455/export/xme
+
+    expected_figures = [
+        {
+            'key': 'FIG10.png',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png;1',
+        },
+    ]
+
+    expected_documents = [
+        {
+            'key': 'arXiv:1710.01187.pdf',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+        },
+    ]
+
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['figures'], figures_subschema) is None
+    assert validate(result['documents'], documents_subschema) is None
+    assert 'documents' in result
+    assert 'figures' in result
+
+    assert expected_figures == result['figures']
+    assert expected_documents == result['documents']

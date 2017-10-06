@@ -67,8 +67,8 @@ def documents(self, key, value):
     if is_context:
         return
 
-    index, caption = _get_index_and_caption(value.get('d'))
     if _is_figure(value):
+        index, caption = _get_index_and_caption(value.get('d', ''))
         figures.append({
             'key': _get_key(value),
             'caption': caption,
