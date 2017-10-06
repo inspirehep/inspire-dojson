@@ -28,11 +28,11 @@ import itertools
 
 import six
 
+from inspire_schemas.utils import normalize_arxiv_category, classify_field
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
 from ..model import FilterOverdo, add_schema, clean_record
-from ..utils.arxiv import normalize_arxiv_category, classify_field
 
 
 def add_arxiv_categories(record, blob):

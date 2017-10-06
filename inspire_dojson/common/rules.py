@@ -32,6 +32,7 @@ from six.moves import urllib
 from dojson import utils
 
 from inspire_schemas.api import load_schema
+from inspire_schemas.utils import normalize_arxiv_category, classify_field
 from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list
 
@@ -47,7 +48,6 @@ from ..utils import (
     get_recid_from_ref,
     get_record_ref,
 )
-from ..utils.arxiv import classify_field
 
 
 IS_INTERNAL_UID = re.compile('^(inspire:uid:)?\d{5}$')
