@@ -24,6 +24,10 @@
 
 from __future__ import absolute_import, division, print_function
 
+import itertools
+
+import six
+
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
@@ -83,12 +87,46 @@ def convert_curated(record, blob):
     return record
 
 
+def ensure_ordered_figures(record, blob):
+    ordered_figures_dict = {}
+    unordered_figures_list = []
+
+    for figure in record.get('figures', []):
+        order = figure.pop('order')
+        if order:
+            ordered_figures_dict[order] = figure
+        else:
+            unordered_figures_list.append(figure)
+
+    record['figures'] = [value for key, value in sorted(six.iteritems(ordered_figures_dict))]
+    record['figures'].extend(unordered_figures_list)
+    return record
+
+
+def ensure_unique_documents_and_figures(record, blob):
+    def duplicates(elements):
+        duplicate_keys_list = []
+        for index, element in enumerate(elements):
+            if element:
+                if element['key'] in duplicate_keys_list:
+                    yield index, element
+                else:
+                    duplicate_keys_list.append(element['key'])
+
+    for index, attachment in itertools.chain(duplicates(record.get('documents', [])), duplicates(record.get('figures', []))):
+        attachment['key'] = '{}_{}'.format(index, attachment['key'])
+
+    return record
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
     add_inspire_categories,
     ensure_curated,
     ensure_document_type,
+    ensure_unique_documents_and_figures,
+    ensure_ordered_figures,
     clean_record,
 ]
 

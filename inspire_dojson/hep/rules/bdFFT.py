@@ -24,60 +24,65 @@
 
 from __future__ import absolute_import, division, print_function
 
-from datetime import datetime
+import re
 
 from dojson import utils
 
-from inspire_utils.helpers import force_list, maybe_int
+from inspire_utils.helpers import force_list
 
 from ..model import hep, hep2marc
-from ...utils import absolute_url
+from ...utils import absolute_url, afs_url
 
 
-@hep.over('_fft', '^FFT[^%][^%]')
+@hep.over('documents', '^FFT[^%][^%]')
 @utils.for_each_value
-def _fft(self, key, value):
-    def _get_creation_datetime(value):
-        if value.get('s'):
-            dt = datetime.strptime(value['s'], '%Y-%m-%d %H:%M:%S')
-            return dt.isoformat()
+def documents(self, key, value):
+    """Populate the ``documents`` key.
 
+    Also populates the ``figures`` key through side effects.
+    """
+    def _is_hidden(value):
+        return 'HIDDEN' in [val.upper() for val in value] or None
+
+    def _is_figure(value):
+        figures_extensions = ['.png']
+        return value.get('f') in figures_extensions
+
+    def _get_index_and_caption(value):
+        match = re.compile('(^\d{5})?\s*(.*)').match(value)
+        if match:
+            return match.group(1), match.group(2)
+
+    def _get_key(value):
+        fname = value.get('n', 'document')
+        extension = value.get('f', '')
+
+        if fname.endswith(extension):
+            return fname
+        return fname + extension
+
+    figures = self.get('figures', [])
     is_context = value.get('f', '').endswith('context')
+
     if is_context:
         return
 
-    return {
-        'creation_datetime': _get_creation_datetime(value),
-        'description': value.get('d'),
-        'filename': value.get('n'),
-        'flags': force_list(value.get('o')),
-        'format': value.get('f'),
-        'path': value.get('a'),
-        'status': value.get('z'),
-        'type': value.get('t'),
-        'version': maybe_int(value.get('v')),
-    }
-
-
-@hep2marc.over('FFT', '^_fft$')
-@utils.for_each_value
-def _fft2marc(self, key, value):
-    def _get_s(value):
-        if value.get('creation_datetime'):
-            dt = datetime.strptime(value['creation_datetime'], '%Y-%m-%dT%H:%M:%S')
-            return dt.strftime('%Y-%m-%d %H:%M:%S')
-
-    return {
-        'a': value.get('path'),
-        'd': value.get('description'),
-        'f': value.get('format'),
-        'n': value.get('filename'),
-        'o': value.get('flags'),
-        's': _get_s(value),
-        't': value.get('type'),
-        'v': value.get('version'),
-        'z': value.get('status'),
-    }
+    index, caption = _get_index_and_caption(value.get('d'))
+    if _is_figure(value):
+        figures.append({
+            'key': _get_key(value),
+            'caption': caption,
+            'url': afs_url(value),
+            'order': index
+        })
+        self['figures'] = figures
+    else:
+        return {
+            'description': value.get('d'),
+            'key': _get_key(value),
+            'hidden': _is_hidden(force_list(value.get('o'))),
+            'url': afs_url(value)
+        }
 
 
 @hep2marc.over('FFT', '^documents')

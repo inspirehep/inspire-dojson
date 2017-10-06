@@ -28,74 +28,183 @@ from inspire_dojson.hep import hep, hep2marc
 from inspire_schemas.api import load_schema, validate
 
 
-def test_fft_from_FFT():
+def test_documents_from_FFT():
     schema = load_schema('hep')
-    subschema = schema['properties']['_fft']
+    subschema = schema['properties']['documents']
 
     snippet = (
         '<datafield tag="FFT" ind1=" " ind2=" ">'
-        '  <subfield code="a">/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1</subfield>'
+        '  <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037619/content.pdf;1</subfield>'
         '  <subfield code="d"/>'
-        '  <subfield code="f">.xml</subfield>'
-        '  <subfield code="n">0029558261904692</subfield>'
+        '  <subfield code="f">.pdf</subfield>'
+        '  <subfield code="n">arXiv:1710.01187</subfield>'
         '  <subfield code="r"/>'
-        '  <subfield code="s">2016-04-01 15:14:38</subfield>'
+        '  <subfield code="s">2017-10-04 09:42:00</subfield>'
         '  <subfield code="t">Main</subfield>'
         '  <subfield code="v">1</subfield>'
         '  <subfield code="z"/>'
-        '  <subfield code="o">HIDDEN</subfield>'
         '</datafield>'
-    )  # record/4328/export/xme
+    )  # record/1628455/export/xme
 
     expected = [
         {
-            'creation_datetime': '2016-04-01T15:14:38',
-            'filename': '0029558261904692',
-            'flags': [
-                'HIDDEN',
-            ],
-            'format': '.xml',
-            'path': '/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1',
-            'type': 'Main',
-            'version': 1,
+            'key': 'arXiv:1710.01187.pdf',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
         },
     ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['_fft'], subschema) is None
-    assert expected == result['_fft']
+    assert validate(result['documents'], subschema) is None
+    assert expected == result['documents']
+    assert 'figures' not in result
+
+
+def test_documents_are_unique_from_FFT():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037619/content.pdf;1</subfield>'
+        '    <subfield code="d"/>'
+        '    <subfield code="f">.pdf</subfield>'
+        '    <subfield code="n">arXiv:1710.01187</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 09:42:00</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '    <subfield code="z"/>'
+        '  </datafield>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037619/content.pdf;1</subfield>'
+        '    <subfield code="d"/>'
+        '    <subfield code="f">.pdf</subfield>'
+        '    <subfield code="n">arXiv:1710.01187</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 09:42:00</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '    <subfield code="z"/>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1628455/export/xme
 
     expected = [
         {
-            'a': '/opt/cds-invenio/var/data/files/g122/2457396/content.xml;1',
-            'f': '.xml',
-            'n': '0029558261904692',
-            'o': [
-                'HIDDEN',
-            ],
-            's': '2016-04-01 15:14:38',
-            't': 'Main',
-            'v': 1,
+            'key': 'arXiv:1710.01187.pdf',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+        },
+        {
+            'key': '1_arXiv:1710.01187.pdf',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
         },
     ]
-    result = hep2marc.do(result)
+    result = hep.do(create_record(snippet))
 
-    assert expected == result['FFT']
+    assert validate(result['documents'], subschema) is None
+    assert expected == result['documents']
+    assert 'figures' not in result
 
 
-def test_fft_from_FFT_percent_percent():
+def test_figures_from_FFT():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
     snippet = (
-        '<datafield tag="FFT" ind1="%" ind2="%">'
-        '  <subfield code="a">/opt/cds-invenio/var/tmp-shared/apsharvest_unzip_5dGfY5/articlebag-10-1103-PhysRevD-87-083514-apsxml/data/PhysRevD.87.083514/fulltext.xml</subfield>'
-        '  <subfield code="o">HIDDEN</subfield>'
-        '  <subfield code="t">APS</subfield>'
+        '<datafield tag="FFT" ind1=" " ind2=" ">'
+        '  <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037399/content.png;1</subfield>'
+        '  <subfield code="d">00009 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '  <subfield code="f">.png</subfield>'
+        '  <subfield code="n">FIG10</subfield>'
+        '  <subfield code="r"/>'
+        '  <subfield code="s">2017-10-04 07:54:54</subfield>'
+        '  <subfield code="t">Main</subfield>'
+        '  <subfield code="v">1</subfield>'
+        '  <subfield code="z"/>'
         '</datafield>'
-    )  # record/1094156
+    )  # record/1628455/export/xme
 
-    assert '_fft' not in hep.do(create_record(snippet))
+    expected = [
+        {
+            'key': 'FIG10.png',
+            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png;1',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['figures'], subschema) is None
+    assert expected == result['figures']
+    assert 'documents' not in result
 
 
-def test_fft_from_FFT_ignores_context():
+def test_figures_order_from_FFT():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037400/content.png;1</subfield>'
+        '    <subfield code="d">00010 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '    <subfield code="f">.png</subfield>'
+        '    <subfield code="n">FIG11</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 07:54:54</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '    <subfield code="z"/>'
+        '  </datafield>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037399/content.png;1</subfield>'
+        '    <subfield code="d">00009 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '    <subfield code="f">.png</subfield>'
+        '    <subfield code="n">FIG10</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 07:54:54</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '    <subfield code="z"/>'
+        '  </datafield>'
+        '  <datafield tag="FFT" ind1=" " ind2=" ">'
+        '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037401/content.png;1</subfield>'
+        '    <subfield code="d">00011 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '    <subfield code="f">.png</subfield>'
+        '    <subfield code="n">FIG12</subfield>'
+        '    <subfield code="r"/>'
+        '    <subfield code="s">2017-10-04 07:54:54</subfield>'
+        '    <subfield code="t">Main</subfield>'
+        '    <subfield code="v">1</subfield>'
+        '    <subfield code="z"/>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1628455/export/xme
+
+    expected = [
+        {
+            'key': 'FIG10.png',
+            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png;1',
+        },
+        {
+            'key': 'FIG11.png',
+            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037400/content.png;1',
+        },
+        {
+            'key': 'FIG12.png',
+            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037401/content.png;1',
+        }
+    ]
+    result = hep.do(create_record(snippet))
+    assert validate(result['figures'], subschema) is None
+    assert expected == result['figures']
+    assert 'documents' not in result
+
+
+def test_documents_from_FFT_ignores_context():
     snippet = (
         '<datafield tag="FFT" ind1=" " ind2=" ">'
         '  <subfield code="a">/opt/cds-invenio/var/data/files/g148/2964970/content.png;context;1</subfield>'
@@ -112,12 +221,13 @@ def test_fft_from_FFT_ignores_context():
 
     result = hep.do(create_record(snippet))
 
-    assert '_fft' not in result
+    assert 'documents' not in result
+    assert 'figures' not in result
 
 
-def test_fft_from_FFT_does_not_require_s():
+def test_documents_from_FFT_does_not_require_s():
     schema = load_schema('hep')
-    subschema = schema['properties']['_fft']
+    subschema = schema['properties']['documents']
 
     snippet = (
         '<datafield tag="FFT" ind1=" " ind2=" ">'
@@ -129,15 +239,16 @@ def test_fft_from_FFT_does_not_require_s():
 
     expected = [
         {
+            'key': 'document',
             'description': 'Fulltext',
-            'path': 'http://www.mdpi.com/2218-1997/3/1/24/pdf',
-            'type': 'INSPIRE-PUBLIC',
-        },
+            'url': 'http://www.mdpi.com/2218-1997/3/1/24/pdf'
+        }
     ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['_fft'], subschema) is None
-    assert expected == result['_fft']
+    assert validate(result['documents'], subschema) is None
+    assert expected == result['documents']
+    assert 'figures' not in result
 
     expected = [
         {
@@ -149,6 +260,20 @@ def test_fft_from_FFT_does_not_require_s():
     result = hep2marc.do(result)
 
     assert expected == result['FFT']
+
+
+def test_fft_from_FFT_percent_percent():
+    snippet = (
+        '<datafield tag="FFT" ind1="%" ind2="%">'
+        '  <subfield code="a">/opt/cds-invenio/var/tmp-shared/apsharvest_unzip_5dGfY5/articlebag-10-1103-PhysRevD-87-083514-apsxml/data/PhysRevD.87.083514/fulltext.xml</subfield>'
+        '  <subfield code="o">HIDDEN</subfield>'
+        '  <subfield code="t">APS</subfield>'
+        '</datafield>'
+    )  # record/1094156
+
+    result = hep.do(create_record(snippet))
+    assert 'documents' not in result
+    assert 'figures' not in result
 
 
 def test_documents_to_FFT():
