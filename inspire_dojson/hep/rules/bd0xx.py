@@ -32,11 +32,11 @@ from dojson import utils
 from idutils import is_doi, is_handle, normalize_doi
 
 from inspire_schemas.api import load_schema
+from inspire_schemas.utils import normalize_arxiv_category, classify_field
 from inspire_utils.helpers import force_list
 
 from ..model import hep, hep2marc
 from ...utils import force_single_element
-from ...utils.arxiv import normalize_arxiv_category
 
 
 RE_LANGUAGE = re.compile('\/| or | and |,|=|\s+')

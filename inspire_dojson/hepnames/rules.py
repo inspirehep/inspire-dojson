@@ -29,6 +29,7 @@ import re
 from dojson import utils
 
 from inspire_schemas.api import load_schema
+from inspire_schemas.utils import normalize_arxiv_category, classify_field
 from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
@@ -39,7 +40,6 @@ from ..utils import (
     get_recid_from_ref,
     normalize_rank
 )
-from ..utils.arxiv import normalize_arxiv_category, valid_arxiv_categories
 
 
 INSPIRE_BAI = re.compile('(\w+\.)+\d+')
