@@ -27,6 +27,7 @@ from __future__ import absolute_import, division, print_function
 import re
 
 import pycountry
+from isbn import ISBN
 
 from dojson import utils
 from idutils import is_doi, is_handle, normalize_doi
@@ -66,13 +67,13 @@ def isbns(self, key, value):
         return normalized_medium
 
     def _get_isbn(value):
-        def _normalize(isbn):
-            return isbn.upper().replace('-', '')
-
-        isbn = force_single_element(value.get('a', ''))
-        normalized_isbn = _normalize(isbn)
-
-        return normalized_isbn
+        a_value = force_single_element(value.get('a', ''))
+        normalized_a_value = a_value.replace('.', '')
+        if normalized_a_value:
+            try:
+                return str(ISBN(normalized_a_value))
+            except Exception:
+                return normalized_a_value
 
     return {
         'medium': _get_medium(value),

@@ -454,6 +454,42 @@ def test_publication_info_from_773__w_handles_slashes_in_cnums():
     assert expected == result['773']
 
 
+def test_publication_info_from_773__c_z_handles_dashes_in_isbns():
+    schema = load_schema('hep')
+    subschema = schema['properties']['publication_info']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="c">110-125</subfield>'
+        '  <subfield code="z">978-1-4684-7552-4</subfield>'
+        '</datafield>'
+    )  # record/1334853
+
+    expected = [
+        {
+            'page_end': '125',
+            'page_start': '110',
+            'parent_isbn': '9781468475524',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], subschema) is None
+    assert expected == result['publication_info']
+
+    expected = [
+        {
+            'c': [
+                '110-125',
+            ],
+            'z': '9781468475524',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['773']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
