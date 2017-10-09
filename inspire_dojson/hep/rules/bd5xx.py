@@ -115,7 +115,7 @@ def thesis_info(self, key, value):
 
     thesis_info = self.get('thesis_info', {})
 
-    thesis_info['date'] = force_single_element(value.get('d'))
+    thesis_info['date'] = normalize_date(force_single_element(value.get('d')))
     thesis_info['degree_type'] = _get_degree_type(value)
     thesis_info['institutions'] = _get_institutions(value)
 
@@ -397,7 +397,7 @@ def _export_to2marc(self, key, value):
 @utils.for_each_value
 def _desy_bookkeeping(self, key, value):
     return {
-        'date': value.get('d'),
+        'date': normalize_date(value.get('d')),
         'expert': force_single_element(value.get('a')),
         'status': value.get('s'),
     }
