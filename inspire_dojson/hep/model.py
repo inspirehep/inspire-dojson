@@ -28,7 +28,7 @@ import itertools
 
 import six
 
-from inspire_schemas.utils import normalize_arxiv_category, classify_field
+from inspire_schemas.utils import normalize_arxiv_category
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
@@ -44,23 +44,6 @@ def add_arxiv_categories(record, blob):
             record['arxiv_eprints'][0]['categories'].append(
                 normalize_arxiv_category(category['a'])
             )
-
-    return record
-
-
-def add_inspire_categories(record, blob):
-    if not record.get('arxiv_eprints') or record.get('inspire_categories'):
-        return record
-
-    for arxiv_category in force_list(get_value(record, 'arxiv_eprints.categories')):
-        inspire_category = classify_field(arxiv_category)
-        if inspire_category:
-            record['inspire_category'] = [
-                {
-                    'source': 'arxiv',
-                    'term': inspire_category,
-                },
-            ]
 
     return record
 
@@ -122,7 +105,6 @@ def ensure_unique_documents_and_figures(record, blob):
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
-    add_inspire_categories,
     ensure_curated,
     ensure_document_type,
     ensure_unique_documents_and_figures,
