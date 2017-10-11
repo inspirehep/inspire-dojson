@@ -240,7 +240,7 @@ def test_documents_from_FFT_does_not_require_s():
     expected = [
         {
             'key': 'document',
-            'description': 'Fulltext',
+            'fulltext': True,
             'url': 'http://www.mdpi.com/2218-1997/3/1/24/pdf'
         }
     ]
