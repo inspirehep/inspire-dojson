@@ -48,6 +48,9 @@ def documents(self, key, value):
         figures_extensions = ['.png']
         return value.get('f') in figures_extensions
 
+    def _is_fulltext(value):
+        return value.get('d', '').lower() == 'fulltext' or None
+
     def _get_index_and_caption(value):
         match = re.compile('(^\d{5})?\s*(.*)').match(value)
         if match:
@@ -78,8 +81,9 @@ def documents(self, key, value):
         self['figures'] = figures
     else:
         return {
-            'description': value.get('d'),
+            'description': value.get('d') if not _is_fulltext(value) else None,
             'key': _get_key(value),
+            'fulltext': _is_fulltext(value),
             'hidden': _is_hidden(force_list(value.get('o'))),
             'url': afs_url(value)
         }
@@ -93,8 +97,15 @@ def documents2marc(self, key, value):
         if doctype == 'submitter':
             return 'INSPIRE-PUBLIC'
         return doctype
+
+    def _get_description(value):
+        if 'description' in value:
+            return value['description']
+        if value.get('fulltext'):
+            return 'Fulltext'
+
     return {
-        'd': value.get('description'),
+        'd': _get_description(value),
         'a': absolute_url(value.get('url')),
         't': _get_type(value),
         'o': 'HIDDEN' if value.get('hidden') else None,
