@@ -823,7 +823,6 @@ def test_references_from_999C50_h_m_o_r_y():
     assert expected == result['999C5']
 
 
-@pytest.mark.xfail(reason="normalized names don't stay normalized")
 def test_references_from_999C59_h_m_o_double_r_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
@@ -844,7 +843,7 @@ def test_references_from_999C59_h_m_o_double_r_y():
         {
             'reference': {
                 'authors': [
-                    {'full_name': 'Bennett, J'},
+                    {'full_name': 'Bennett, J.'},
                 ],
                 'label': '9',
                 'misc': [
@@ -866,11 +865,11 @@ def test_references_from_999C59_h_m_o_double_r_y():
     expected = [
         {
             'h': [
-                'Bennett, J',
+                'Bennett, J.',
             ],
             'r': [
-                'CERN-INTCP-186',
                 'CERN-INTC-2004-016',
+                'CERN-INTCP-186',
             ],
             'm': 'Roger J. et al.',
             'o': '9',
@@ -966,7 +965,7 @@ def test_reference_from_999C5t_p_y_e_o():
             'reference': {
                 'authors': [
                     {
-                        'full_name': u'Erdélyi,A.',
+                        'full_name': u'Erdélyi, A.',
                         'inspire_role': 'editor',
                     },
                 ],
@@ -985,7 +984,7 @@ def test_reference_from_999C5t_p_y_e_o():
     expected = [
         {
             'e': [
-                u'Erdélyi,A.',
+                u'Erdélyi, A.',
             ],
             'o': '16',
             'p': 'New York: McGraw-Hill Book Company, Inc.',
@@ -1149,7 +1148,7 @@ def test_references_from_999C5a_h_i_m_o_p_y_9():
         {
             'reference': {
                 'authors': [
-                    {'full_name': 'Guerra, A.Del'},  # XXX: wrong.
+                    {'full_name': 'Del Guerra, A.'},
                 ],
                 'dois': [
                     '10.1142/5408',
@@ -1175,7 +1174,7 @@ def test_references_from_999C5a_h_i_m_o_p_y_9():
                 'doi:10.1142/5408',
             ],
             'h': [
-                'Guerra, A.Del',  # XXX: wrong
+                'Del Guerra, A.',
             ],
             'i': '9789812562623',
             'm': 'Ionizing Radiation Detectors for Medical Imaging Crossref:',
@@ -1207,7 +1206,7 @@ def test_references_from_999C5h_o_q_t_y():
         {
             'reference': {
                 'authors': [
-                    {'full_name': 'M., Gromov,'},  # XXX: wrong
+                    {'full_name': 'Gromov, M.'},
                 ],
                 'label': '16',
                 'publication_info': {
@@ -1226,7 +1225,7 @@ def test_references_from_999C5h_o_q_t_y():
     expected = [
         {
             'h': [
-                'M., Gromov,',  # XXX: wrong
+                'Gromov, M.',
             ],
             'o': '16',
             'q': 'Geom. Funct. Anal., GAFA 2000',
@@ -1333,6 +1332,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
     assert expected == result['999C5']
 
 
+@pytest.mark.xfail(reason='name is normalized incorrectly')
 def test_references_from_999C5h_k_double_m_o_s_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
@@ -1358,7 +1358,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
             },
             'reference': {
                 'authors': [
-                    {'full_name': 'Schoutens.,'},
+                    {'full_name': 'Schoutens, W.'},
                 ],
                 'label': '12',
                 'misc': [
@@ -1385,7 +1385,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
         {
             '0': 338634,
             'h': [
-                'Schoutens.,',
+                'Schoutens, W.',
             ],
             'k': 'Bouwknegt:1992wg',
             'm': 'Peter Bouwknegt and Kareljan / symmetry in conformal field theory',
