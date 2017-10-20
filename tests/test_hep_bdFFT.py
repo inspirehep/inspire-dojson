@@ -49,7 +49,7 @@ def test_documents_from_FFT():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'original_url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -93,11 +93,11 @@ def test_documents_are_unique_from_FFT():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'original_url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
         },
         {
             'key': '1_arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'original_url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -241,7 +241,7 @@ def test_documents_from_FFT_does_not_require_s():
         {
             'key': 'document',
             'fulltext': True,
-            'url': 'http://www.mdpi.com/2218-1997/3/1/24/pdf'
+            'original_url': 'http://www.mdpi.com/2218-1997/3/1/24/pdf'
         }
     ]
     result = hep.do(create_record(snippet))
@@ -250,9 +250,11 @@ def test_documents_from_FFT_does_not_require_s():
     assert expected == result['documents']
     assert 'figures' not in result
 
+    # the 'a' property is populated from the current url for the document on
+    # inspire, not the original one.
     expected = [
         {
-            'a': 'http://www.mdpi.com/2218-1997/3/1/24/pdf',
+            'a': 'http://localhost:5000',
             'd': 'Fulltext',
             't': 'INSPIRE-PUBLIC',
         },
@@ -384,7 +386,7 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
     expected_documents = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'original_url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
         },
     ]
 
