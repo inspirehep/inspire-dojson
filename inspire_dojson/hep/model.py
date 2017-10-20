@@ -102,6 +102,29 @@ def ensure_unique_documents_and_figures(record, blob):
     return record
 
 
+def write_ids(record, blob):
+    result_035 = record.get('035')
+    id_dict = record.get('id_dict', {})
+
+    for schema, values in six.iteritems(id_dict):
+        z_values = iter(values)
+        a_value = next(z_values)
+        result_035.append({
+            '9': schema,
+            'a': a_value
+        })
+        for z_value in z_values:
+            result_035.append({
+                '9': schema,
+                'z': z_value
+            })
+
+    if 'id_dict' in record:
+        del record['id_dict']
+
+    return record
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
@@ -113,6 +136,7 @@ hep_filters = [
 ]
 
 hep2marc_filters = [
+    write_ids,
     convert_curated,
     clean_record,
 ]
