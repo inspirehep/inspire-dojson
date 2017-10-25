@@ -105,6 +105,7 @@ def dois(self, key, value):
         MATERIAL_MAP = {
             'addendum': 'addendum',
             'ebook': 'publication',
+            'editorial note': 'editorial note',
             'erratum': 'erratum',
             'preprint': 'preprint',
             'publication': 'publication',
