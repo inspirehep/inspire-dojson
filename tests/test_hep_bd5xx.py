@@ -61,6 +61,39 @@ def test_public_notes_from_500__a_9():
     assert expected == result['500']
 
 
+def test_public_notes_from_500__a_9_presented_on():
+    schema = load_schema('hep')
+    subschema = schema['properties']['public_notes']
+
+    snippet = (
+        '<datafield tag="500" ind1=" " ind2=" ">'
+        '  <subfield code="a">presented on the 11th International Conference on Modification of Materials with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september 2012)</subfield>'
+        '  <subfield code="9">arXiv</subfield>'
+        '</datafield>'
+    )  # record/1185462
+
+    expected = [
+        {
+            'source': 'arXiv',
+            'value': 'presented on the 11th International Conference on Modification of Materials with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september 2012)',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['public_notes'], subschema) is None
+    assert expected == result['public_notes']
+
+    expected = [
+        {
+            '9': 'arXiv',
+            'a': 'presented on the 11th International Conference on Modification of Materials with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september 2012)',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['500']
+
+
 def test_public_notes_from_500__double_a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
