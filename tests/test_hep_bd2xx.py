@@ -259,6 +259,32 @@ def test_imprints_from_260__a_b_c():
     assert expected == result['260']
 
 
+def test_imprints_from_260__c_wrong_date():
+    schema = load_schema('hep')
+    subschema = schema['properties']['imprints']
+
+    snippet = (
+        '<datafield tag="260" ind1=" " ind2=" ">'
+        '  <subfield code="c">2014-00-01</subfield>'
+        '</datafield>'
+    )  # record/1314991
+
+    expected = [
+        {'date': '2014'}
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['imprints'], subschema) is None
+    assert expected == result['imprints']
+
+    expected = [
+        {'c': '2014'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['260']
+
+
 def test_preprint_date_from_269__c():
     schema = load_schema('hep')
     subschema = schema['properties']['preprint_date']
@@ -277,6 +303,30 @@ def test_preprint_date_from_269__c():
 
     expected = [
         {'c': '2015-05-03'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['269']
+
+
+def test_preprint_date_from_269__c_wrong_date():
+    schema = load_schema('hep')
+    subschema = schema['properties']['preprint_date']
+
+    snippet = (
+        '<datafield tag="269" ind1=" " ind2=" ">'
+        '  <subfield code="c">2001-02-31</subfield>'
+        '</datafield>'
+    )  # record/1194517
+
+    expected = '2001-02'
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['preprint_date'], subschema) is None
+    assert expected == result['preprint_date']
+
+    expected = [
+        {'c': '2001-02'},
     ]
     result = hep2marc.do(result)
 

@@ -63,7 +63,13 @@ def public_notes(self, key, value):
         for public_note in force_list(value.get('a')):
             match = IS_DEFENSE_DATE.match(public_note)
             if match:
-                thesis_info['defense_date'] = normalize_date(match.group('defense_date'))
+                try:
+                    thesis_info['defense_date'] = normalize_date(match.group('defense_date'))
+                except ValueError:
+                    public_notes.append({
+                        'source': source,
+                        'value': public_note,
+                    })
             elif _means_not_curated(public_note):
                 curated = False
             else:

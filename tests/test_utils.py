@@ -22,6 +22,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import pytest
+
 from flask import current_app
 from mock import patch
 
@@ -34,6 +36,7 @@ from inspire_dojson.utils import (
     legacy_export_as_marc,
     dedupe_all_lists,
     strip_empty_values,
+    normalize_date_aggressively,
 )
 
 
@@ -321,3 +324,24 @@ def test_strip_empty_values():
 
 def test_strip_empty_values_returns_none_on_none():
     assert strip_empty_values(None) is None
+
+
+def test_normalize_date_aggressively_accepts_correct_date():
+    assert normalize_date_aggressively('2015-02-24') == '2015-02-24'
+
+
+def test_normalize_date_aggressively_strips_wrong_day():
+    assert normalize_date_aggressively('2015-02-31') == '2015-02'
+
+
+def test_normalize_date_aggressively_strips_wrong_month():
+    assert normalize_date_aggressively('2015-20-24') == '2015'
+
+
+def test_normalize_date_aggressively_raises_on_wrong_format():
+    with pytest.raises(ValueError):
+        normalize_date_aggressively('2014=12-01')
+
+
+def test_normalize_date_aggressively_ignores_fake_dates():
+        assert normalize_date_aggressively('0000') is None
