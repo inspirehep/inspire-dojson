@@ -31,6 +31,7 @@ import six
 from flask import current_app
 from six.moves import urllib
 
+from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
 
@@ -214,3 +215,22 @@ def dedupe_all_lists(obj):
         return type(obj)(new_obj)
     else:
         return obj
+
+
+def normalize_date_aggressively(date):
+    """Normalize date, stripping date parts until a valid date is obtained."""
+    def _strip_last_part(date):
+        parts = date.split('-')
+        return '-'.join(parts[:-1])
+
+    fake_dates = {'0000', '9999'}
+    if date in fake_dates:
+        return None
+    try:
+        return normalize_date(date)
+    except ValueError:
+        if '-' not in date:
+            raise
+        else:
+            new_date = _strip_last_part(date)
+            return normalize_date_aggressively(new_date)

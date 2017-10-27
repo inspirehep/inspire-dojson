@@ -45,6 +45,35 @@ def test_deadline_date_from_046__i():
     assert expected == result['deadline_date']
 
 
+def test_deadline_date_from_046__i__fake_date():
+    snippet = (
+        '<datafield tag="046" ind1=" " ind2=" ">'
+        '  <subfield code="i">0000</subfield>'
+        '</datafield>'
+    )  # record/959114
+
+    result = jobs.do(create_record(snippet))
+
+    assert 'deadline_date' not in result
+
+
+def test_deadline_date_from_046__i__wrong_date():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['deadline_date']
+
+    snippet = (
+        '<datafield tag="046" ind1=" " ind2=" ">'
+        '  <subfield code="i">2014-06-31</subfield>'
+        '</datafield>'
+    )  # record/1279445
+
+    expected = '2014-06'
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['deadline_date'], subschema) is None
+    assert expected == result['deadline_date']
+
+
 def test_closed_date_from_046__l():
     schema = load_schema('jobs')
     subschema = schema['properties']['closed_date']
@@ -60,6 +89,18 @@ def test_closed_date_from_046__l():
 
     assert validate(result['closed_date'], subschema) is None
     assert expected == result['closed_date']
+
+
+def test_closed_date_from_046__l_fake_date():
+    snippet = (
+        '<datafield tag="046" ind1=" " ind2=" ">'
+        '  <subfield code="l">0000</subfield>'
+        '</datafield>'
+    )  # record/958863
+
+    result = jobs.do(create_record(snippet))
+
+    assert 'closed_date' not in result
 
 
 def test_date_closed_from_046__i_and_046__l_an_url():
