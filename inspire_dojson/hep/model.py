@@ -48,6 +48,22 @@ def add_arxiv_categories(record, blob):
     return record
 
 
+def move_incomplete_publication_infos(record, blob):
+    def _keys_with_truthy_values(d):
+        return [k for k, v in d.items() if v]
+
+    if not record.get('publication_info'):
+        return record
+
+    for publication_info in record['publication_info']:
+        if _keys_with_truthy_values(publication_info) == ['journal_title']:
+            public_note = {'value': 'Submitted to {}'.format(publication_info['journal_title'])}
+            record.setdefault('public_notes', []).append(public_note)
+            del publication_info['journal_title']
+
+    return record
+
+
 def ensure_document_type(record, blob):
     if not record.get('document_type'):
         record['document_type'] = ['article']
@@ -128,6 +144,7 @@ def write_ids(record, blob):
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
+    move_incomplete_publication_infos,
     ensure_curated,
     ensure_document_type,
     ensure_unique_documents_and_figures,
