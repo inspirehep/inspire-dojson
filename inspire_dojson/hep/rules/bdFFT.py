@@ -117,7 +117,7 @@ def figures2marc(self, key, values):
     fft = self.setdefault('FFT', [])
     for index, value in enumerate(values):
         fft.append({
-            'd': '{:05d} {}'.format(index, value.get('caption')),
+            'd': u'{:05d} {}'.format(index, value.get('caption')),
             'a': absolute_url(value.get('url')),
             't': 'Plot',
         })

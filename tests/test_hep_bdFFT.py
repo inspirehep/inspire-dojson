@@ -397,3 +397,33 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
 
     assert expected_figures == result['figures']
     assert expected_documents == result['documents']
+
+
+def test_figures2marc_handles_unicode():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
+    record = {
+        'figures': [
+            {
+                'caption': u'Hard gaps. (a) Differential conductance $G_S$ of an epitaxial nanowire device as a function of backgate voltage $V_{BG}$ and source\u00d0drain voltage $V_{SD}$. Increasing $V_{BG}$, the conductance increases from the tunneling to the Andreev regime (orange and blue plots in the bottom). Adapted from Ref. \\cite{Chang2015}. (b) Subgap conductance $G_s$ as a function of the normal (above-gap) conductance $G_n$. Red curve is the theory prediction for a single channel NS contact, Eq. (\\ref{NS-Andreev}). Inset shows different $dI/dV$ taken at different values of $G_n$. Adapted from Ref. \\cite{Zhang2016}.',
+                'key': 'Fig21.png',
+                'label': 'fig:21',
+                'material': 'preprint',
+                'source': 'arxiv',
+                'url': '/api/files/feb489f4-7e13-4ca4-b51c-2c8c2242d596/Fig21.png',
+            },
+        ],
+    }  # holdingpen/772341
+    assert validate(record['figures'], subschema) is None
+
+    expected = [
+        {
+            'a': 'http://localhost:5000/api/files/feb489f4-7e13-4ca4-b51c-2c8c2242d596/Fig21.png',
+            'd': u'00000 Hard gaps. (a) Differential conductance $G_S$ of an epitaxial nanowire device as a function of backgate voltage $V_{BG}$ and source\xd0drain voltage $V_{SD}$. Increasing $V_{BG}$, the conductance increases from the tunneling to the Andreev regime (orange and blue plots in the bottom). Adapted from Ref. \\cite{Chang2015}. (b) Subgap conductance $G_s$ as a function of the normal (above-gap) conductance $G_n$. Red curve is the theory prediction for a single channel NS contact, Eq. (\\ref{NS-Andreev}). Inset shows different $dI/dV$ taken at different values of $G_n$. Adapted from Ref. \\cite{Zhang2016}.',
+            't': 'Plot',
+        },
+    ]
+    result = hep2marc.do(record)
+
+    assert expected == result['FFT']
