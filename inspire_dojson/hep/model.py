@@ -57,7 +57,7 @@ def move_incomplete_publication_infos(record, blob):
 
     for publication_info in record['publication_info']:
         if _keys_with_truthy_values(publication_info) == ['journal_title']:
-            public_note = {'value': 'Submitted to {}'.format(publication_info['journal_title'])}
+            public_note = {'value': u'Submitted to {}'.format(publication_info['journal_title'])}
             record.setdefault('public_notes', []).append(public_note)
             del publication_info['journal_title']
 
@@ -113,7 +113,7 @@ def ensure_unique_documents_and_figures(record, blob):
                     duplicate_keys_list.append(element['key'])
 
     for index, attachment in itertools.chain(duplicates(record.get('documents', [])), duplicates(record.get('figures', []))):
-        attachment['key'] = '{}_{}'.format(index, attachment['key'])
+        attachment['key'] = u'{}_{}'.format(index, attachment['key'])
 
     return record
 
