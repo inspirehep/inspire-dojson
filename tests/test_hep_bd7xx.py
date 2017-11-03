@@ -490,6 +490,26 @@ def test_publication_info_from_773__c_z_handles_dashes_in_isbns():
     assert expected == result['773']
 
 
+def test_publication_info_from_773__p_populates_public_notes():
+    schema = load_schema('hep')
+    subschema = schema['properties']['public_notes']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="p">Phys.Rev.D</subfield>'
+        '</datafield>'
+    )  # record/1631620
+
+    expected = [
+        {'value': 'Submitted to Phys.Rev.D'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['public_notes'], subschema) is None
+    assert expected == result['public_notes']
+    assert 'publication_info' not in result
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
