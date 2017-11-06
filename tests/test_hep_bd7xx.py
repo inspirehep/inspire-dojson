@@ -553,6 +553,68 @@ def test_publication_info_from_7731_c_p_v_y():
     assert expected == result['7731']
 
 
+def test_publication_info_from_7731_c_p_v_y_and_773__c_p_v_y_1():
+    schema = load_schema('hep')
+    subschema = schema['properties']['publication_info']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="773" ind1="1" ind2=" ">'
+        '    <subfield code="c">602-604</subfield>'
+        '    <subfield code="p">Phys.Lett.</subfield>'
+        '    <subfield code="v">B40</subfield>'
+        '    <subfield code="y">1972</subfield>'
+        '  </datafield>'
+        '  <datafield tag="773" ind1=" " ind2=" ">'
+        '    <subfield code="c">602-604</subfield>'
+        '    <subfield code="p">Phys.Lett.</subfield>'
+        '    <subfield code="v">40B</subfield>'
+        '    <subfield code="y">1972</subfield>'
+        '    <subfield code="1">1214521</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1439897
+
+    expected = [
+        {
+            'journal_title': 'Phys.Lett.B',
+            'journal_volume': '40',
+            'page_start': '602',
+            'page_end': '604',
+            'year': 1972,
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], subschema) is None
+    assert expected == result['publication_info']
+
+    expected_773 = [
+        {
+            'c': [
+                '602-604',
+            ],
+            'p': 'Phys.Lett.',
+            'v': '40B',
+            'y': 1972,
+        },
+    ]
+    expected_7731 = [
+        {
+            'c': [
+                '602-604',
+            ],
+            'p': 'Phys.Lett.',
+            'v': 'B40',
+            'y': 1972,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected_773 == result['773']
+    assert expected_7731 == result['7731']
+
+
 def test_publication_info2marc_handles_unicode():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
