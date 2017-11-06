@@ -28,7 +28,10 @@ import itertools
 
 import six
 
-from inspire_schemas.utils import normalize_arxiv_category
+from inspire_schemas.utils import (
+    convert_old_publication_info_to_new,
+    normalize_arxiv_category,
+)
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
@@ -44,6 +47,15 @@ def add_arxiv_categories(record, blob):
             record['arxiv_eprints'][0]['categories'].append(
                 normalize_arxiv_category(category['a'])
             )
+
+    return record
+
+
+def convert_publication_infos(record, blob):
+    if not record.get('publication_info'):
+        return record
+
+    record['publication_info'] = convert_old_publication_info_to_new(record['publication_info'])
 
     return record
 
@@ -144,6 +156,7 @@ def write_ids(record, blob):
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
+    convert_publication_infos,
     move_incomplete_publication_infos,
     ensure_curated,
     ensure_document_type,
