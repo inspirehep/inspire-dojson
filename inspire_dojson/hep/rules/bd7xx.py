@@ -126,9 +126,9 @@ def publication_info2marc(self, key, values):
     for value in force_list(values):
         page_artid = []
         if value.get('page_start') and value.get('page_end'):
-            page_artid.append('{page_start}-{page_end}'.format(**value))
+            page_artid.append(u'{page_start}-{page_end}'.format(**value))
         elif value.get('page_start'):
-            page_artid.append('{page_start}'.format(**value))
+            page_artid.append(u'{page_start}'.format(**value))
         if value.get('artid'):
             page_artid.append(u'{artid}'.format(**value))
 

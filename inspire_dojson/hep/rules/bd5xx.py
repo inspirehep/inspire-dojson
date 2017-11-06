@@ -154,7 +154,7 @@ def thesis_info2marc(self, key, value):
 
     if value.get('defense_date'):
         result_500.append({
-            'a': 'Presented on {}'.format(value.get('defense_date')),
+            'a': u'Presented on {}'.format(value.get('defense_date')),
         })
 
     result_502 = {
