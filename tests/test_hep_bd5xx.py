@@ -540,9 +540,6 @@ def test_abstracts_from_520__double_a():
 
 
 def test_abstracts_from_520__h_9():
-    schema = load_schema('hep')
-    subschema = schema['properties']['abstracts']
-
     snippet = (
         '<datafield tag="520" ind1=" " ind2=" ">'
         '  <subfield code="9">HEPDATA</subfield>'
@@ -550,26 +547,9 @@ def test_abstracts_from_520__h_9():
         '</datafield>'
     )  # record/1079585
 
-    expected = [
-        {
-            'source': 'HEPDATA',
-            'value': 'CERN-SPS. Measurements of the spectra of positively charged kaons in proton-carbon interactions at a beam momentum of 31 GeV/c. The analysis is based on the full set of data collected in 2007 using a 4% nuclear interaction length graphite target. Charged pion spectra taken using the same data set are compared with the kaon spectra.',
-        },
-    ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['abstracts'], subschema) is None
-    assert expected == result['abstracts']
-
-    expected = [
-        {
-            '9': 'HEPDATA',
-            'h': 'CERN-SPS. Measurements of the spectra of positively charged kaons in proton-carbon interactions at a beam momentum of 31 GeV/c. The analysis is based on the full set of data collected in 2007 using a 4% nuclear interaction length graphite target. Charged pion spectra taken using the same data set are compared with the kaon spectra.',
-        },
-    ]
-    result = hep2marc.do(result)
-
-    assert expected == result['520']
+    assert 'abstracts' not in result
 
 
 def test_funding_info_from_536__a_c_f_0():

@@ -181,28 +181,14 @@ def abstracts(self, key, value):
             'value': a_value,
         })
 
-    for h_value in force_list(value.get('h')):
-        result.append({
-            'source': source,
-            'value': h_value,
-        })
-
     return result
 
 
 @hep2marc.over('520', '^abstracts$')
 @utils.for_each_value
 def abstract2marc(self, key, value):
-    source = value.get('source')
-
-    if source == 'HEPDATA':
-        return {
-            '9': source,
-            'h': value.get('value'),
-        }
-
     return {
-        '9': source,
+        '9': value.get('source'),
         'a': value.get('value'),
     }
 
