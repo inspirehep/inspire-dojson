@@ -692,6 +692,39 @@ def test_external_system_numbers_from_035__9_discards_incomplete_datafields():
     assert 'external_system_identifiers' not in result
 
 
+def test_external_system_numbers_from_035__a_9_hepdata():
+    schema = load_schema('hep')
+    subschema = schema['properties']['external_system_identifiers']
+
+    snippet = (
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="a">ins1498566</subfield>'
+        '    <subfield code="9">HEPDATA</subfield>'
+        '  </datafield>'
+    )  # record/1498566
+
+    expected = [
+        {
+            'value': 'ins1498566',
+            'schema': 'HEPDATA',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['external_system_identifiers'], subschema) is None
+    assert expected == result['external_system_identifiers']
+
+    expected = [
+        {
+            'a': 'ins1498566',
+            '9': 'HEPDATA',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['035']
+
+
 def test_external_system_numbers_from_035__a_9_and_035__z_9():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
