@@ -653,8 +653,8 @@ def test_references_from_999C5h_m_o_r_s_y_0():
                 ],
                 'publication_info': {
                     'artid': '046006',
-                    'journal_title': 'Phys.Rev.',
-                    'journal_volume': 'D82',
+                    'journal_title': 'Phys.Rev.D',
+                    'journal_volume': '82',
                     'year': 2010,
                 },
             },
@@ -722,8 +722,8 @@ def test_references_from_999C5a_h_o_s_x_y_0():
                 'label': '15',
                 'publication_info': {
                     "artid": '2055',
-                    'journal_title': 'Int.J.Mod.Phys.',
-                    'journal_volume': 'A23',
+                    'journal_title': 'Int.J.Mod.Phys.A',
+                    'journal_volume': '23',
                     'page_start': '2055',
                     'year': 2008,
                 },
@@ -1031,8 +1031,8 @@ def test_reference_from_999C5o_h_c_t_s_r_y_0():
                 'label': '36',
                 'publication_info': {
                     'artid': '77',
-                    'journal_title': 'Phys.Lett.',
-                    'journal_volume': 'B727',
+                    'journal_title': 'Phys.Lett.B',
+                    'journal_volume': '727',
                     'page_start': '77',
                     'year': 2013,
                 },

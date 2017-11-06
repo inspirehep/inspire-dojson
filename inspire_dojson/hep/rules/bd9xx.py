@@ -31,7 +31,10 @@ from dojson import utils
 from idutils import is_arxiv_post_2007
 
 from inspire_schemas.api import ReferenceBuilder, load_schema
-from inspire_schemas.utils import build_pubnote
+from inspire_schemas.utils import (
+    build_pubnote,
+    convert_new_publication_info_to_old,
+)
 from inspire_utils.helpers import force_list, maybe_int
 from inspire_utils.record import get_value
 
@@ -291,6 +294,8 @@ def references2marc(self, key, value):
         arxiv_eprint = reference['arxiv_eprint']
         r_values.append('arXiv:' + arxiv_eprint if is_arxiv_post_2007(arxiv_eprint) else arxiv_eprint)
 
+    if reference.get('publication_info'):
+        reference['publication_info'] = convert_new_publication_info_to_old([reference['publication_info']])[0]
     journal_title = get_value(reference, 'publication_info.journal_title')
     journal_volume = get_value(reference, 'publication_info.journal_volume')
     page_start = get_value(reference, 'publication_info.page_start')
