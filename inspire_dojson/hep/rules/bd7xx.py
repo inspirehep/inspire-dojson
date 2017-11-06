@@ -29,7 +29,10 @@ from isbn import ISBN
 from dojson import utils
 
 from inspire_schemas.api import load_schema
-from inspire_schemas.utils import split_page_artid
+from inspire_schemas.utils import (
+    convert_new_publication_info_to_old,
+    split_page_artid,
+)
 from inspire_utils.helpers import force_list, maybe_int
 
 from ..model import hep, hep2marc
@@ -123,7 +126,7 @@ def publication_info2marc(self, key, values):
     result_773 = self.get('773', [])
     result_7731 = self.get('7731', [])
 
-    for value in force_list(values):
+    for value in force_list(convert_new_publication_info_to_old(values)):
         page_artid = []
         if value.get('page_start') and value.get('page_end'):
             page_artid.append(u'{page_start}-{page_end}'.format(**value))
