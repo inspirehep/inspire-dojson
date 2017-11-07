@@ -28,7 +28,7 @@ import re
 
 from dojson import utils
 
-from inspire_utils.helpers import force_list, maybe_int
+from inspire_utils.helpers import force_list, maybe_float, maybe_int
 
 from .model import institutions
 from ..utils import force_single_element, get_record_ref
@@ -42,17 +42,10 @@ def _is_secondary_address(value):
     return 'x' in value
 
 
-def _maybe_float(el):
-    try:
-        return float(el)
-    except (TypeError, ValueError):
-        pass
-
-
 @institutions.over('_location', '^034..')
 def _location(self, key, value):
-    latitude = _maybe_float(value.get('f'))
-    longitude = _maybe_float(value.get('d'))
+    latitude = maybe_float(value.get('f'))
+    longitude = maybe_float(value.get('d'))
 
     if latitude and longitude:
         return {
