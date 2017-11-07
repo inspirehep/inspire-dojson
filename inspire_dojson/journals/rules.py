@@ -200,7 +200,19 @@ def proceedings(self, key, value):
 
 @journals.over('short_title', '^711..')
 def short_title(self, key, value):
-    return value.get('a')
+    """Populate the ``short_title`` key.
+
+    Also populates the ``title_variants`` key through side effects.
+    """
+    short_title = value.get('a')
+    title_variants = self.get('title_variants', [])
+
+    if value.get('u'):
+        short_title = value.get('u')
+        title_variants.append(value.get('a'))
+
+    self['title_variants'] = title_variants
+    return short_title
 
 
 @journals.over('title_variants', '^730..')

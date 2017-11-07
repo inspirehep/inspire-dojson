@@ -450,6 +450,64 @@ def test_short_title_from_711__a():
     assert expected == result['short_title']
 
 
+def test_short_title_from_711__a_u():
+    schema = load_schema('journals')
+    short_title_schema = schema['properties']['short_title']
+    title_variants_schema = schema['properties']['title_variants']
+
+    snippet = (
+        '<datafield tag="711" ind1=" " ind2=" ">'
+        '  <subfield code="a">Univ.Politech.Bucharest Sci.Bull.</subfield>'
+        '  <subfield code="u">Univ.Politech.Bucharest Sci.Bull.A</subfield>'
+        '</datafield>'
+    )  # record/1485822
+
+    expected_short_title = 'Univ.Politech.Bucharest Sci.Bull.A'
+    expected_title_variants = ['Univ.Politech.Bucharest Sci.Bull.']
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['short_title'], short_title_schema) is None
+    assert expected_short_title == result['short_title']
+
+    assert validate(result['title_variants'], title_variants_schema) is None
+    assert expected_title_variants == result['title_variants']
+
+
+def test_short_title_from_711__a_u_and_double_730__a():
+    schema = load_schema('journals')
+    short_title_schema = schema['properties']['short_title']
+    title_variants_schema = schema['properties']['title_variants']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="711" ind1=" " ind2=" ">'
+        '    <subfield code="a">Diss.Abstr.Int.</subfield>'
+        '    <subfield code="u">Diss.Abstr.Int.B</subfield>'
+        '  </datafield>'
+        '  <datafield tag="730" ind1=" " ind2=" ">'
+        '    <subfield code="a">DISS ABSTR INT</subfield>'
+        '  </datafield>'
+        '  <datafield tag="730" ind1=" " ind2=" ">'
+        '    <subfield code="a">DABBB</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1212928
+
+    expected_short_title = 'Diss.Abstr.Int.B'
+    expected_title_variants = [
+        'Diss.Abstr.Int.',
+        'DISS ABSTR INT',
+        'DABBB',
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['short_title'], short_title_schema) is None
+    assert expected_short_title == result['short_title']
+
+    assert validate(result['title_variants'], title_variants_schema) is None
+    assert sorted(expected_title_variants) == sorted(result['title_variants'])
+
+
 def test_title_variants_from_730__a():
     schema = load_schema('journals')
     subschema = schema['properties']['title_variants']
