@@ -619,6 +619,42 @@ def test_references_from_999C5r_s_0():
     assert expected == result['999C5']
 
 
+def test_references_from_999C5z_0_9():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="0">1343079</subfield>'
+        '  <subfield code="z">1</subfield>'
+        '  <subfield code="9">CURATOR</subfield>'
+        '</datafield>'
+    )  # invented record
+
+    expected = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/literature/1343079',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            '0': 1343079,
+            '9': 'CURATOR',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
+
+
 def test_references_from_999C5h_m_o_r_s_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']

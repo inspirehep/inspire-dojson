@@ -243,6 +243,9 @@ def references(self, key, value):
             record = get_record_ref(recid, 'literature')
             rb.set_record(record)
 
+        def _is_really_curated(value):
+            return value.get('z') == '1' and 'CURATOR' in force_list(value.get('9'))
+
         rb = ReferenceBuilder()
         mapping = [
             ('0', _set_record),
@@ -270,6 +273,9 @@ def references(self, key, value):
                 if el:
                     method(el)
 
+        if _is_really_curated(value):
+            rb.curate()
+
         return rb.obj
 
     return _get_reference(value)
@@ -278,7 +284,7 @@ def references(self, key, value):
 @hep2marc.over('999C5', '^references$')
 @utils.for_each_value
 def references2marc(self, key, value):
-    reference = value['reference']
+    reference = value.get('reference', {})
 
     pids = force_list(reference.get('persistent_identifiers'))
     a_values = ['doi:' + el for el in force_list(reference.get('dois'))]
@@ -307,6 +313,7 @@ def references2marc(self, key, value):
 
     return {
         '0': get_recid_from_ref(value.get('record')),
+        '9': 'CURATOR' if value.get('curated_relation') else None,
         'a': a_values,
         'b': get_value(reference, 'publication_info.cnum'),
         'c': reference.get('collaborations'),
