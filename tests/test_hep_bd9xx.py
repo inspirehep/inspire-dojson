@@ -619,23 +619,39 @@ def test_references_from_999C5r_s_0():
     assert expected == result['999C5']
 
 
-def test_references_from_999C5z_0_9():
+def test_references_from_999C5h_m_o_yz_0_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
     snippet = (
         '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="0">1343079</subfield>'
-        '  <subfield code="z">1</subfield>'
+        '  <subfield code="0">1242925</subfield>'
         '  <subfield code="9">CURATOR</subfield>'
+        '  <subfield code="h">M. Schwarz</subfield>'
+        '  <subfield code="m">Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)</subfield>'
+        '  <subfield code="o">7</subfield>'
+        '  <subfield code="y">2010</subfield>'
+        '  <subfield code="z">1</subfield>'
         '</datafield>'
-    )  # invented record
+    )  # record/1289907
 
     expected = [
         {
             'curated_relation': True,
             'record': {
-                '$ref': 'http://localhost:5000/api/literature/1343079',
+                '$ref': 'http://localhost:5000/api/literature/1242925',
+            },
+            'reference': {
+                'authors': [
+                    {'full_name': 'Schwarz, M.'},
+                ],
+                'label': '7',
+                'misc': [
+                    'Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)',
+                ],
+                'publication_info': {
+                    'year': 2010,
+                },
             },
         },
     ]
@@ -646,8 +662,14 @@ def test_references_from_999C5z_0_9():
 
     expected = [
         {
-            '0': 1343079,
+            '0': 1242925,
             '9': 'CURATOR',
+            'h': [
+                'Schwarz, M.',
+            ],
+            'm': 'Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)',
+            'o': '7',
+            'y': 2010,
         },
     ]
     result = hep2marc.do(result)

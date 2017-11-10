@@ -237,48 +237,46 @@ def publication_type2marc(self, key, value):
 @hep.over('references', '^999C5')
 @utils.for_each_value
 def references(self, key, value):
-    def _get_reference(value):
-        def _set_record(el):
-            recid = maybe_int(el)
-            record = get_record_ref(recid, 'literature')
-            rb.set_record(record)
+    def _is_curated(value):
+        normalized_nine_values = [el.upper() for el in force_list(value.get('9'))]
+        return value.get('z') == '1' and 'CURATOR' in normalized_nine_values
 
-        def _is_really_curated(value):
-            return value.get('z') == '1' and 'CURATOR' in force_list(value.get('9'))
+    def _set_record(el):
+        recid = maybe_int(el)
+        record = get_record_ref(recid, 'literature')
+        rb.set_record(record)
 
-        rb = ReferenceBuilder()
-        mapping = [
-            ('0', _set_record),
-            ('a', rb.add_uid),
-            ('b', rb.add_uid),
-            ('c', rb.add_collaboration),
-            ('e', partial(rb.add_author, role='ed.')),
-            ('h', rb.add_refextract_authors_str),
-            ('i', rb.add_uid),
-            ('k', rb.set_texkey),
-            ('m', rb.add_misc),
-            ('o', rb.set_label),
-            ('p', rb.set_publisher),
-            ('q', rb.add_parent_title),
-            ('r', rb.add_report_number),
-            ('s', rb.set_pubnote),
-            ('t', rb.add_title),
-            ('u', rb.add_url),
-            ('x', rb.add_raw_reference),
-            ('y', rb.set_year),
-        ]
+    rb = ReferenceBuilder()
+    mapping = [
+        ('0', _set_record),
+        ('a', rb.add_uid),
+        ('b', rb.add_uid),
+        ('c', rb.add_collaboration),
+        ('e', partial(rb.add_author, role='ed.')),
+        ('h', rb.add_refextract_authors_str),
+        ('i', rb.add_uid),
+        ('k', rb.set_texkey),
+        ('m', rb.add_misc),
+        ('o', rb.set_label),
+        ('p', rb.set_publisher),
+        ('q', rb.add_parent_title),
+        ('r', rb.add_report_number),
+        ('s', rb.set_pubnote),
+        ('t', rb.add_title),
+        ('u', rb.add_url),
+        ('x', rb.add_raw_reference),
+        ('y', rb.set_year),
+    ]
 
-        for field, method in mapping:
-            for el in force_list(value.get(field)):
-                if el:
-                    method(el)
+    for field, method in mapping:
+        for el in force_list(value.get(field)):
+            if el:
+                method(el)
 
-        if _is_really_curated(value):
-            rb.curate()
+    if _is_curated(value):
+        rb.curate()
 
-        return rb.obj
-
-    return _get_reference(value)
+    return rb.obj
 
 
 @hep2marc.over('999C5', '^references$')
