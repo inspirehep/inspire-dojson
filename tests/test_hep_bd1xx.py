@@ -1510,6 +1510,77 @@ def test_authors_from_100_a_double_u_w_z_y_double_z_and_700__a_double_u_w_y_doub
     assert expected_700 == result['700']
 
 
+def test_author_from_100__a_i_m_u_v_x_y_z_strips_email_prefix():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Kuehn, S.</subfield>'
+        '  <subfield code="u">CERN</subfield>'
+        '  <subfield code="v">CERN, European Organization for Nuclear Research, Geneve, Switzerland</subfield>'
+        '  <subfield code="m">email:susanne.kuehn@cern.ch</subfield>'
+        '  <subfield code="i">INSPIRE-00218553</subfield>'
+        '  <subfield code="x">1066844</subfield>'
+        '  <subfield code="y">1</subfield>'
+        '  <subfield code="z">902725</subfield>'
+        '</datafield>'
+    )  # record/1634669
+
+    expected = [
+        {
+            'affiliations': [
+                {
+                    'record': {
+                        '$ref': 'http://localhost:5000/api/institutions/902725',
+                    },
+                    'value': 'CERN',
+                },
+            ],
+            'curated_relation': True,
+            'emails': [
+                'susanne.kuehn@cern.ch',
+            ],
+            'full_name': 'Kuehn, S.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE ID',
+                    'value': 'INSPIRE-00218553',
+                },
+            ],
+            'raw_affiliations': [
+                {'value': 'CERN, European Organization for Nuclear Research, Geneve, Switzerland'},
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1066844',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Kuehn, S.',
+        'i': [
+            'INSPIRE-00218553',
+        ],
+        'm': [
+            'susanne.kuehn@cern.ch',
+        ],
+        'u': [
+            'CERN',
+        ],
+        'v': [
+            'CERN, European Organization for Nuclear Research, Geneve, Switzerland',
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
 def test_corporate_author_from_110__a():
     schema = load_schema('hep')
     subschema = schema['properties']['corporate_author']

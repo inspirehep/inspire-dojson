@@ -71,6 +71,9 @@ def authors(self, key, value):
                 return True
             return  # XXX: we don't return False because it would be preserved.
 
+        def _get_emails(value):
+            return [el[6:] if el.startswith('email:') else el for el in force_list(value.get('m'))]
+
         def _get_full_name(value):
             a_values = force_list(value.get('a'))
             if a_values:
@@ -167,7 +170,7 @@ def authors(self, key, value):
             'affiliations': _get_affiliations(value),
             'alternative_names': force_list(value.get('q')),
             'curated_relation': _get_curated_relation(value),
-            'emails': force_list(value.get('m')),
+            'emails': _get_emails(value),
             'full_name': _get_full_name(value),
             'ids': _get_ids(value),
             'record': _get_record(value),
