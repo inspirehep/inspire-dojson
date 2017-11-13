@@ -564,6 +564,7 @@ def test_references_from_999C5r_0():
             'r': [
                 'solv-int/9611008',
             ],
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -612,6 +613,7 @@ def test_references_from_999C5r_s_0():
                 'arXiv:1006.1289',
             ],
             's': 'Prog.Part.Nucl.Phys.,65,149',
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -638,6 +640,7 @@ def test_references_from_999C5h_m_o_yz_0_9():
     expected = [
         {
             'curated_relation': True,
+            'legacy_curated': True,
             'record': {
                 '$ref': 'http://localhost:5000/api/literature/1242925',
             },
@@ -670,6 +673,7 @@ def test_references_from_999C5h_m_o_yz_0_9():
             'm': 'Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)',
             'o': '7',
             'y': 2010,
+            'z': 1,
         },
     ]
     result = hep2marc.do(result)
@@ -737,6 +741,7 @@ def test_references_from_999C5h_m_o_r_s_y_0():
             ],
             's': 'Phys.Rev.,D82,046006',
             'y': 2010,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -807,6 +812,7 @@ def test_references_from_999C5a_h_o_s_x_y_0():
                 'Int. J. Mod. Phys. A 23 (doi:10.1142/S0217751X0804055X)',
             ],
             'y': 2008,
+            'z': 0,
             '0': 780399,
         }
     ]
@@ -874,6 +880,7 @@ def test_references_from_999C50_h_m_o_r_y():
             ],
             'o': '13',
             'y': 2005,
+            'z': 0,
         }
     ]
     result = hep2marc.do(result)
@@ -899,6 +906,7 @@ def test_references_from_999C59_h_m_o_double_r_y():
 
     expected = [
         {
+            'legacy_curated': True,
             'reference': {
                 'authors': [
                     {'full_name': 'Bennett, J.'},
@@ -922,6 +930,7 @@ def test_references_from_999C59_h_m_o_double_r_y():
 
     expected = [
         {
+            '9': 'CURATOR',
             'h': [
                 'Bennett, J.',
             ],
@@ -932,6 +941,7 @@ def test_references_from_999C59_h_m_o_double_r_y():
             'm': 'Roger J. et al.',
             'o': '9',
             'y': 2004,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -958,6 +968,7 @@ def test_references_from_999C50_9_r_u_h_m_o():
     expected = [
         {
             'curated_relation': False,
+            'legacy_curated': True,
             'record': {
                 '$ref': 'http://localhost:5000/api/literature/1511470',
             },
@@ -986,6 +997,7 @@ def test_references_from_999C50_9_r_u_h_m_o():
     expected = [
         {
             '0': 1511470,
+            '9': 'CURATOR',
             'h': [
                 'Wiebe, K.',
             ],
@@ -997,6 +1009,7 @@ def test_references_from_999C50_9_r_u_h_m_o():
             'u': [
                 'http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316',
             ],
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -1048,6 +1061,7 @@ def test_reference_from_999C5t_p_y_e_o():
             'p': 'New York: McGraw-Hill Book Company, Inc.',
             't': 'Higher Transcendetal Functions Vol. I, Bateman Manuscript Project',
             'y': 1953,
+            'z': 0,
         }
     ]
     result = hep2marc.do(result)
@@ -1119,6 +1133,7 @@ def test_reference_from_999C5o_h_c_t_s_r_y_0():
             's': 'Phys.Lett.,B727,77',
             't': u'Angular analysis and branching fraction measurement of the decay B0 → K∗0 µ+ µ-',
             'y': 2013,
+            'z': 0,
         }
     ]
     result = hep2marc.do(result)
@@ -1145,6 +1160,7 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
 
     expected = [
         {
+            'legacy_curated': True,
             'reference': {
                 'authors': [
                     {'full_name': 'Gaspar, C.'},
@@ -1169,6 +1185,7 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
 
     expected = [
         {
+            '9': 'CURATOR',
             'b': 'C93-06-08',
             'h': [
                 'Gaspar, C.',
@@ -1178,6 +1195,7 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
             'p': 'IEEE',
             't': 'DIM - A Distributed Information Management System for the Delphi experiment at CERN',
             'y': 1993,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -1239,6 +1257,7 @@ def test_references_from_999C5a_h_i_m_o_p_y_9():
             'o': '16',
             'p': 'World Scientific',
             'y': 2004,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -1289,6 +1308,7 @@ def test_references_from_999C5h_o_q_t_y():
             'q': 'Geom. Funct. Anal., GAFA 2000',
             't': 'Spaces and questions',
             'y': 2000,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -1319,7 +1339,10 @@ def test_references_from_999C5k():
     assert expected == result['references']
 
     expected = [
-        {'k': 'Robilotta:2008js'},
+        {
+            'k': 'Robilotta:2008js',
+            'z': 0,
+         },
     ]
     result = hep2marc.do(result)
 
@@ -1347,6 +1370,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
 
     expected = [
         {
+            'legacy_curated': True,
             'curated_relation': False,
             'record': {
                 '$ref': 'http://localhost:5000/api/literature/568216',
@@ -1372,6 +1396,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
     expected = [
         {
             '0': 568216,
+            '9': 'CURATOR',
             'h': [
                 'Yan, Y.',
                 'Tegen, R.',
@@ -1383,6 +1408,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
             'r': [
                 'hep-ph/0112168',
             ],
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -1450,6 +1476,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
             'o': '12',
             's': 'Phys.Rept.,223,183-276',
             'y': 1993,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)
@@ -1511,6 +1538,7 @@ def test_references_from_999C5_0_h_m_o_r_t_y():
             ],
             't': 'CUORE: A Cryogenic underground Observatory for Rare Events',
             'y': 2005,
+            'z': 0,
         },
     ]
     result = hep2marc.do(result)

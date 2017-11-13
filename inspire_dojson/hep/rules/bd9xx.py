@@ -237,9 +237,12 @@ def publication_type2marc(self, key, value):
 @hep.over('references', '^999C5')
 @utils.for_each_value
 def references(self, key, value):
-    def _is_curated(value):
+    def _has_curator_flag(value):
         normalized_nine_values = [el.upper() for el in force_list(value.get('9'))]
-        return value.get('z') == '1' and 'CURATOR' in normalized_nine_values
+        return 'CURATOR' in normalized_nine_values
+
+    def _is_curated(value):
+        return value.get('z') == '1' and _has_curator_flag(value)
 
     def _set_record(el):
         recid = maybe_int(el)
@@ -276,6 +279,9 @@ def references(self, key, value):
     if _is_curated(value):
         rb.curate()
 
+    if _has_curator_flag(value):
+        rb.obj['legacy_curated'] = True
+
     return rb.obj
 
 
@@ -311,7 +317,7 @@ def references2marc(self, key, value):
 
     return {
         '0': get_recid_from_ref(value.get('record')),
-        '9': 'CURATOR' if value.get('curated_relation') else None,
+        '9': 'CURATOR' if value.get('legacy_curated') else None,
         'a': a_values,
         'b': get_value(reference, 'publication_info.cnum'),
         'c': reference.get('collaborations'),
@@ -329,4 +335,5 @@ def references2marc(self, key, value):
         'u': get_value(reference, 'urls.value'),
         'x': get_value(value, 'raw_refs.value'),
         'y': get_value(reference, 'publication_info.year'),
+        'z': 1 if value.get('curated_relation') else 0,
     }
