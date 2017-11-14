@@ -1581,6 +1581,68 @@ def test_author_from_100__a_i_m_u_v_x_y_z_strips_email_prefix():
     assert expected == result['100']
 
 
+def test_author_from_700__strips_dot_from_orcid():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="700" ind1=" " ind2=" ">'
+        '  <subfield code="a">Gainutdinov, Azat M.</subfield>'
+        '  <subfield code="j">ORCID:0000-0003-3127-682X.</subfield>'
+        '  <subfield code="u">Tours U., CNRS</subfield>'
+        '  <subfield code="v">Laboratoire de Mathématiques et Physique Théorique CNRS - Université de Tours - Parc de Grammont - 37200 Tours - France</subfield>'
+        '  <subfield code="w">A.Gainutdinov.1</subfield>'
+        '  <subfield code="y">0</subfield>'
+        '  <subfield code="z">909619</subfield>'
+        '</datafield>'
+    )  # record/1600830
+
+    expected = [
+        {
+            'full_name': 'Gainutdinov, Azat M.',
+            'ids': [
+                {
+                    'schema': 'ORCID',
+                    'value': '0000-0003-3127-682X',
+                },
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': 'A.Gainutdinov.1',
+                },
+            ],
+            'affiliations': [
+                {
+                    'value': 'Tours U., CNRS',
+                    'record': {'$ref': 'http://localhost:5000/api/institutions/909619'},
+                },
+            ],
+            'raw_affiliations': [
+                {'value': u'Laboratoire de Mathématiques et Physique Théorique CNRS - Université de Tours - Parc de Grammont - 37200 Tours - France'},
+            ],
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Gainutdinov, Azat M.',
+        'j': [
+            'ORCID:0000-0003-3127-682X',
+        ],
+        'u': [
+            'Tours U., CNRS',
+        ],
+        'v': [
+            u'Laboratoire de Mathématiques et Physique Théorique CNRS - Université de Tours - Parc de Grammont - 37200 Tours - France',
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
 def test_corporate_author_from_110__a():
     schema = load_schema('hep')
     subschema = schema['properties']['corporate_author']

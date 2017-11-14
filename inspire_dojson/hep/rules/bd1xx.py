@@ -117,7 +117,7 @@ def authors(self, key, value):
                 elif _is_orcid(j_value):
                     result.append({
                         'schema': 'ORCID',
-                        'value': j_value[6:],
+                        'value': j_value[6:].replace('.', ''),
                     })
                 elif _is_naked_orcid(j_value):
                     result.append({
