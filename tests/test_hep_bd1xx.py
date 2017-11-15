@@ -22,9 +22,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import mock
-import pytest
-
 from dojson.contrib.marc21.utils import create_record
 
 from inspire_dojson.hep import hep, hep2marc
@@ -599,8 +596,7 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
     assert expected_700 == result['700']
 
 
-@mock.patch('inspire_dojson.hep.rules.bd1xx.logger.warning')
-def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z(warning):
+def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
@@ -672,26 +668,24 @@ def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z
                     'value': 'Warwick U.',
                 },
             ],
-            'full_name': 'Gumplinger, P.',  # XXX: wrong, but the best we can do.
-            'ids': [
+            'full_name': 'Gumplinger, P.',
+        },
+        {
+            'affiliations': [
                 {
-                    'schema': 'INSPIRE BAI',
-                    'value': 'D.R.Hadley.2',
+                    'record': {
+                        '$ref': 'http://localhost:5000/api/institutions/903734',
+                    },
+                    'value': 'Warwick U.',
                 },
             ],
-            'record': {
-                '$ref': 'http://localhost:5000/api/authors/1066999',
-            },
+            'full_name': 'Hadley, D.R.',
         },
     ]
     result = hep.do(create_record(snippet))
 
     assert validate(result['authors'], subschema) is None
     assert expected == result['authors']
-    warning.assert_called_with(
-        'Record with mashed up authors list. Taking first author: %s',
-        'Gumplinger, P.',
-    )
 
     expected_100 = {
         'a': 'Abe, K.',
@@ -704,6 +698,12 @@ def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z
     expected_700 = [
         {
             'a': 'Gumplinger, P.',
+            'u': [
+                'Warwick U.',
+            ],
+        },
+        {
+            'a': 'Hadley, D.R.',
             'u': [
                 'Warwick U.',
             ],
@@ -1187,7 +1187,6 @@ def test_authors_supervisors_from_100__a_i_j_u_v_x_y_z_and_multiple_701__u_z():
     assert expected_701 == result['701']
 
 
-@pytest.mark.xfail(reason='should split mashed up author list')
 def test_authors_supervisors_from_100_a_u_w_y_z_and_701__double_a_u_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
