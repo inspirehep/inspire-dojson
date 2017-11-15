@@ -24,7 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import logging
 import re
 
 from dojson import utils
@@ -38,14 +37,12 @@ from ...utils import (
 )
 
 
-logger = logging.getLogger(__name__)
-
 ORCID = re.compile('\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
 
 
 @hep.over('authors', '^(100|700|701)..')
 def authors(self, key, value):
-    def _get_author(value):
+    def _get_authors(value):
         def _get_affiliations(value):
             result = []
 
@@ -74,16 +71,10 @@ def authors(self, key, value):
         def _get_emails(value):
             return [el[6:] if el.startswith('email:') else el for el in force_list(value.get('m'))]
 
-        def _get_full_name(value):
+        def _get_full_names(value):
             a_values = force_list(value.get('a'))
-            if a_values:
-                if len(a_values) > 1:
-                    logger.warning(
-                        'Record with mashed up authors list. '
-                        'Taking first author: %s', a_values[0]
-                    )
 
-                return a_values[0]
+            return a_values
 
         def _get_ids(value):
             def _is_jacow(j_value):
@@ -166,23 +157,34 @@ def authors(self, key, value):
             if x_value and x_value.isdigit():
                 return get_record_ref(x_value, 'authors')
 
-        return {
-            'affiliations': _get_affiliations(value),
-            'alternative_names': force_list(value.get('q')),
-            'curated_relation': _get_curated_relation(value),
-            'emails': _get_emails(value),
-            'full_name': _get_full_name(value),
-            'ids': _get_ids(value),
-            'record': _get_record(value),
-            'inspire_roles': _get_inspire_roles(value),
-            'raw_affiliations': _get_raw_affiliations(value),
-        }
+        full_names = _get_full_names(value)
+        if len(full_names) == 1:
+            authors = [{
+                'affiliations': _get_affiliations(value),
+                'alternative_names': force_list(value.get('q')),
+                'curated_relation': _get_curated_relation(value),
+                'emails': _get_emails(value),
+                'full_name': full_names[0],
+                'ids': _get_ids(value),
+                'record': _get_record(value),
+                'inspire_roles': _get_inspire_roles(value),
+                'raw_affiliations': _get_raw_affiliations(value),
+            }]
+        else:
+            authors = [{
+                'affiliations': _get_affiliations(value),
+                'full_name': full_name,
+                'inspire_roles': _get_inspire_roles(value),
+                'raw_affiliations': _get_raw_affiliations(value),
+            } for full_name in full_names]
+
+        return authors
 
     authors = self.get('authors', [])
 
     values = force_list(value)
     for value in values:
-        authors.append(_get_author(value))
+        authors.extend(_get_authors(value))
 
     return authors
 
