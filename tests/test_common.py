@@ -529,7 +529,7 @@ def test_urls_from_8564_s_u_ignores_s():
     assert expected == result['8564']
 
 
-def test_urls_from_8564_u_w_y_ignores_w():
+def test_urls_from_8564_u_w_y_ignores_w_and_translates_weblinks():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
 
@@ -543,7 +543,7 @@ def test_urls_from_8564_u_w_y_ignores_w():
 
     expected = [
         {
-            'description': 'FERMILABPUB',
+            'description': 'Fermilab Library Server (fulltext available)',
             'value': 'http://lss.fnal.gov/cgi-bin/find_paper.pl?pub-12-316',
         },
     ]
@@ -555,7 +555,7 @@ def test_urls_from_8564_u_w_y_ignores_w():
     expected = [
         {
             'u': 'http://lss.fnal.gov/cgi-bin/find_paper.pl?pub-12-316',
-            'y': 'FERMILABPUB',
+            'y': 'Fermilab Library Server (fulltext available)',
         },
     ]
     result = hep2marc.do(result)
