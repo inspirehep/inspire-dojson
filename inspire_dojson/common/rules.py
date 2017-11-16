@@ -279,6 +279,7 @@ WEBLINKS = {
     'DUBNA2': 'JINR DUBNA Preprint Server',
     'DURHAM': 'HepData',
     'ECONF': 'Proceedings write-up on eConf',
+    'ECONFPDF': 'pdf from eConf',
     'ECONFS': 'Slides on eConf',
     'EJP': 'Europ. J. Phys. server',
     'EJPHD': 'Eur. J. Phys. Server',
