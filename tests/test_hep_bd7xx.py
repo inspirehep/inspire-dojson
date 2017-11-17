@@ -510,6 +510,68 @@ def test_publication_info_from_773__p_populates_public_notes():
     assert 'publication_info' not in result
 
 
+def test_publication_info_from_773__p_1_populates_public_notes():
+    schema = load_schema('hep')
+    subschema = schema['properties']['public_notes']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="p">Phys.Rev.Lett.</subfield>'
+        '  <subfield code="1">1214495</subfield>'
+        '</datafield>'
+    )  # record/1470899
+
+    expected = [
+        {'value': 'Submitted to Phys.Rev.Lett.'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['public_notes'], subschema) is None
+    assert expected == result['public_notes']
+    assert 'publication_info' not in result
+
+
+def test_publication_info_from_773__p_and_773__c_p_v_y_1_also_populates_public_notes():
+    schema = load_schema('hep')
+    publication_info_schema = schema['properties']['publication_info']
+    public_notes_schema = schema['properties']['public_notes']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="773" ind1=" " ind2=" ">'
+        '    <subfield code="p">Eur.Phys.J.A</subfield>'
+        '  </datafield>'
+        '  <datafield tag="773" ind1=" " ind2=" ">'
+        '    <subfield code="p">Eur.Phys.J.</subfield>'
+        '    <subfield code="v">B64</subfield>'
+        '    <subfield code="c">615</subfield>'
+        '    <subfield code="y">2008</subfield>'
+        '    <subfield code="1">1212905</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/769448
+
+    expected_public_notes = [
+        {'value': 'Submitted to Eur.Phys.J.A'}
+    ]
+    expected_publication_info = [
+        {
+            'artid': '615',
+            'journal_title': 'Eur.Phys.J.B',
+            'journal_volume': '64',
+            'page_start': '615',
+            'year': 2008,
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], publication_info_schema) is None
+    assert expected_publication_info == result['publication_info']
+
+    assert validate(result['public_notes'], public_notes_schema) is None
+    assert expected_public_notes == result['public_notes']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
