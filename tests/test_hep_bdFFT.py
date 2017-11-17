@@ -298,7 +298,7 @@ def test_documents_to_FFT():
 
     expected = [
         {
-            'a': 'http://localhost:5000/files/1234-1234-1234-1234/some_document.pdf',
+            'a': 'http://example.com/some_document.pdf',
             'd': 'Thesis fulltext',
             't': 'INSPIRE-PUBLIC',
             'o': 'HIDDEN',
