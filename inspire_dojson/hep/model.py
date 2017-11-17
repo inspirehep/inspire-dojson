@@ -62,16 +62,15 @@ def convert_publication_infos(record, blob):
 
 def move_incomplete_publication_infos(record, blob):
     def _keys_with_truthy_values(d):
-        return [k for k, v in d.items() if v]
+        return {k for k, v in d.items() if v}
 
-    if not record.get('publication_info'):
-        return record
+    publication_infos = record.get('publication_info', [])
 
-    for publication_info in record['publication_info']:
-        if _keys_with_truthy_values(publication_info) == ['journal_title']:
+    for i, publication_info in enumerate(publication_infos[:]):
+        if _keys_with_truthy_values(publication_info).issubset({'journal_record', 'journal_title'}):
             public_note = {'value': u'Submitted to {}'.format(publication_info['journal_title'])}
             record.setdefault('public_notes', []).append(public_note)
-            del publication_info['journal_title']
+            publication_infos.pop(i)
 
     return record
 
