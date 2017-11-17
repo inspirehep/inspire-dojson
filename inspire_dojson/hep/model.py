@@ -153,11 +153,23 @@ def write_ids(record, blob):
     return record
 
 
+def reorder_abstracts(record, blob):
+    abstracts = record.get('abstracts', [])
+
+    for index, abstract in enumerate(abstracts[:]):
+        source = abstract.get('source') or ''
+        if source.lower() == 'arxiv':
+            abstracts.append(abstracts.pop(index))
+
+    return record
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
     convert_publication_infos,
     move_incomplete_publication_infos,
+    reorder_abstracts,
     ensure_curated,
     ensure_document_type,
     ensure_unique_documents_and_figures,

@@ -552,6 +552,53 @@ def test_abstracts_from_520__h_9():
     assert 'abstracts' not in result
 
 
+def test_abstracts_from_double_520__a_9_reorders_fields():
+    schema = load_schema('hep')
+    subschema = schema['properties']['abstracts']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="520" ind1=" " ind2=" ">'
+        '    <subfield code="a">The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday Rotation, in the propagation of Ultra High Energy Cosmic Rays, in the polarized signal from Fast Radio Bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (&lt;nG) uniform seed fields result more homogeneous and relatively easier to observe magnetic fields than than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday Rotation observed at the periphery of large-scale structures.</subfield>'
+        '    <subfield code="9">arXiv</subfield>'
+        '  </datafield>'
+        '  <datafield tag="520" ind1=" " ind2=" ">'
+        '    <subfield code="a">The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday rotation, in the propagation of ultra high energy cosmic rays, in the polarized signal from fast radio bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous and relatively easier to observe magnetic fields than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday rotation observed at the periphery of large-scale structures.</subfield>'
+        '    <subfield code="9">IOP</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1634941
+
+    expected = [
+        {
+            'source': 'IOP',
+            'value': u'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday rotation, in the propagation of ultra high energy cosmic rays, in the polarized signal from fast radio bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous and relatively easier to observe magnetic fields than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday rotation observed at the periphery of large-scale structures.',
+        },
+        {
+            'source': 'arXiv',
+            'value': 'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday Rotation, in the propagation of Ultra High Energy Cosmic Rays, in the polarized signal from Fast Radio Bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (<nG) uniform seed fields result more homogeneous and relatively easier to observe magnetic fields than than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday Rotation observed at the periphery of large-scale structures.',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['abstracts'], subschema) is None
+    assert expected == result['abstracts']
+
+    expected = [
+        {
+            '9': 'IOP',
+            'a': u'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday rotation, in the propagation of ultra high energy cosmic rays, in the polarized signal from fast radio bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous and relatively easier to observe magnetic fields than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday rotation observed at the periphery of large-scale structures.',
+        },
+        {
+            '9': 'arXiv',
+            'a': 'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday Rotation, in the propagation of Ultra High Energy Cosmic Rays, in the polarized signal from Fast Radio Bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (<nG) uniform seed fields result more homogeneous and relatively easier to observe magnetic fields than than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday Rotation observed at the periphery of large-scale structures.',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['520']
+
+
 def test_funding_info_from_536__a_c_f_0():
     schema = load_schema('hep')
     subschema = schema['properties']['funding_info']
