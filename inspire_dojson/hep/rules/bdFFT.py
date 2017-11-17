@@ -106,7 +106,7 @@ def documents2marc(self, key, value):
 
     return {
         'd': _get_description(value),
-        'a': absolute_url(value.get('url')),
+        'a': value.get('original_url', absolute_url(value.get('url'))),
         't': _get_type(value),
         'o': 'HIDDEN' if value.get('hidden') else None,
     }
