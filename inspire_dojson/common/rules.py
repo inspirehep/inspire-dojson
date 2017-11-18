@@ -322,6 +322,7 @@ WEBLINKS = {
     'FERMILABOTHER': 'Fermilab Library Server',
     'FERMILABPROPOSAL': 'Fermilab Library Server (fulltext available)',
     'FERMILABPUB': 'Fermilab Library Server (fulltext available)',
+    'FERMILABR': 'Fermilab Library Server (fulltext available)',
     'FERMILABRESEARCH': 'Fermilab Library Server (fulltext available)',
     'FERMILABSDC': 'Fermilab Library Server',
     'FERMILABTEST': 'Fermilab Library Server (fulltext available)',
@@ -577,7 +578,6 @@ WEBLINKS = {
     'ZNTFA': 'Z. Naturforsch. Server',
     'ZPA': 'Z. Phys. A Server',
     'ZPC': 'Z. Phys. C Server',
-    'FERMILABR': 'Fermilab Library Server (fulltext available)',
 }
 
 

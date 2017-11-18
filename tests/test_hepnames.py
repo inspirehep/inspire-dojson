@@ -310,7 +310,7 @@ def test_ids_from_035__a_9_with_cern():
         '  <subfield code="9">CERN</subfield>'
         '  <subfield code="a">CERN-622961</subfield>'
         '</datafield>'
-    )  # record/1064570/export/xme
+    )  # record/1064570
 
     expected = [
         {
@@ -343,23 +343,23 @@ def test_ids_from_035__a_9_with_cern_malformed():
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
         '    <subfield code="a">CERN-CERN-645257</subfield>'
-        '  </datafield>'  # record/1030771/export/xme
+        '  </datafield>'  # record/1030771
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
         '    <subfield code="a">cern-783683</subfield>'
-        '  </datafield>'  # record/1408145/export/xme
+        '  </datafield>'  # record/1408145
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
         '    <subfield code="a">CERM-724319</subfield>'
-        '  </datafield>'  # record/1244430/export/xme
+        '  </datafield>'  # record/1244430
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
         '    <subfield code="a">CNER-727986</subfield>'
-        '  </datafield>'  # record/1068077/export/xme
+        '  </datafield>'  # record/1068077
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
         '    <subfield code="a">CVERN-765559</subfield>'
-        '  </datafield>'  # record/1340631/export/xme
+        '  </datafield>'  # record/1340631
         '</record>'
     )
 
@@ -426,7 +426,7 @@ def test_ids_from_035__a_9_with_desy():
         '  <subfield code="a">DESY-1001805</subfield>'
         '  <subfield code="9">DESY</subfield>'
         '</datafield>'
-    )  # record/993224/export/xme
+    )  # record/993224
 
     expected = [
         {
@@ -459,7 +459,7 @@ def test_ids_from_035__a_9_with_wikipedia():
         '  <subfield code="9">Wikipedia</subfield>'
         '  <subfield code="a">Guido_Tonelli</subfield>'
         '</datafield>'
-    )  # record/985898/export/xme
+    )  # record/985898
 
     expected = [
         {
@@ -492,7 +492,7 @@ def test_ids_from_035__a_9_with_slac():
         '  <subfield code="9">SLAC</subfield>'
         '  <subfield code="a">SLAC-218626</subfield>'
         '</datafield>'
-    )  # record/1028379/export/xme
+    )  # record/1028379
 
     expected = [
         {
@@ -524,7 +524,7 @@ def test_ids_from_035__a_with_bai():
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="a">Jian.Long.Han.1</subfield>'
         '</datafield>'
-    )  # record/1464894/export/xme
+    )  # record/1464894
 
     expected = [
         {
@@ -563,7 +563,7 @@ def test_ids_from_double_035__a_9_with_kaken():
         '    <subfield code="a">70139070</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1474271/export/xme
+    )  # record/1474271
 
     expected = [
         {
@@ -604,7 +604,7 @@ def test_ids_from_035__a_9_with_googlescholar():
         '  <subfield code="9">GoogleScholar</subfield>'
         '  <subfield code="a">Tnl-9KoAAAAJ</subfield>'
         '</datafield>'
-    )  # record/1467553/export/xme
+    )  # record/1467553
 
     expected = [
         {
@@ -637,7 +637,7 @@ def test_ids_from_035__a_9_with_viaf():
         '  <subfield code="9">VIAF</subfield>'
         '  <subfield code="a">34517183</subfield>'
         '</datafield>'
-    )  # record/1008109/export/xme
+    )  # record/1008109
 
     expected = [
         {
@@ -670,7 +670,7 @@ def test_ids_from_035__a_9_with_researcherid():
         '  <subfield code="9">RESEARCHERID</subfield>'
         '  <subfield code="a">B-4717-2008</subfield>'
         '</datafield>'
-    )  # record/1051026/export/xme
+    )  # record/1051026
 
     expected = [
         {
@@ -703,7 +703,7 @@ def test_ids_from_035__a_9_with_scopus():
         '  <subfield code="9">SCOPUS</subfield>'
         '  <subfield code="a">7103280792</subfield>'
         '</datafield>'
-    )  # record/1017182/export/xme
+    )  # record/1017182
 
     expected = [
         {
@@ -735,10 +735,10 @@ def test_ids_from_035__9():
         '  </datafield>'  # record/edit/?ln=en#state=edit&recid=1474355&recrev=20160707223728
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
-        '  </datafield>'  # record/1364570/export/xme
+        '  </datafield>'  # record/1364570
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">KAKEN</subfield>'
-        '  </datafield>'  # record/1480252/export/xme
+        '  </datafield>'  # record/1480252
         '</record>'
     )
 
@@ -816,7 +816,7 @@ def test_other_names_from_400__triple_a():
         '  <subfield code="a">Josef Cohen, Hadar</subfield>'
         '  <subfield code="a">Cohen, Hadar Josef</subfield>'
         '</datafield>'
-    )  # record/1292399/export/xme
+    )  # record/1292399
 
     expected = [
         'Yosef Cohen, Hadar',
@@ -851,7 +851,7 @@ def test_advisors_from_701__a_g_i():
         '  <subfield code="x">991627</subfield>'
         '  <subfield code="y">1</subfield>'
         '</datafield>'
-    )  # record/1474091/export/xme
+    )  # record/1474091
 
     expected = [
         {

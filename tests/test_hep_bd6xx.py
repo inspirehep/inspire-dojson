@@ -71,7 +71,7 @@ def test_keywords_from_084__double_2_does_not_raise():
         '  <subfield code="2">PACS</subfield>'
         '  <subfield code="2">PACS</subfield>'
         '</datafield>'
-    )  # synthetic record
+    )  # synthetic data
 
     hep.do(create_record(snippet))
 
@@ -311,7 +311,7 @@ def test_accelerator_experiments_from_693__a_e():
         '  <subfield code="e">CERN-LHC-CMS</subfield>'
         '  <subfield code="0">1108642</subfield>'
         '</datafield>'
-    )  # record/1517829/export/xme
+    )  # record/1517829
 
     expected = [
         {

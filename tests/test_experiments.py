@@ -605,3 +605,20 @@ def test_project_type_from_double_980__a_recognizes_accelerators():
 
     assert validate(result['project_type'], subschema) is None
     assert expected == result['project_type']
+
+
+def test_deleted_from_980__c():
+    schema = load_schema('hep')
+    subschema = schema['properties']['deleted']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="c">DELETED</subfield>'
+        '</datafield>'
+    )  # synthetic data
+
+    expected = True
+    result = experiments.do(create_record(snippet))
+
+    assert validate(result['deleted'], subschema) is None
+    assert expected == result['deleted']

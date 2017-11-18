@@ -44,7 +44,7 @@ def test_documents_from_FFT():
         '  <subfield code="v">1</subfield>'
         '  <subfield code="z"/>'
         '</datafield>'
-    )  # record/1628455/export/xme
+    )  # record/1628455
 
     expected = [
         {
@@ -88,7 +88,7 @@ def test_documents_are_unique_from_FFT():
         '    <subfield code="z"/>'
         '  </datafield>'
         '</record>'
-    )  # record/1628455/export/xme
+    )  # record/1628455
 
     expected = [
         {
@@ -123,7 +123,7 @@ def test_figures_from_FFT():
         '  <subfield code="v">1</subfield>'
         '  <subfield code="z"/>'
         '</datafield>'
-    )  # record/1628455/export/xme
+    )  # record/1628455
 
     expected = [
         {
@@ -179,7 +179,7 @@ def test_figures_order_from_FFT():
         '    <subfield code="z"/>'
         '  </datafield>'
         '</record>'
-    )  # record/1628455/export/xme
+    )  # record/1628455
 
     expected = [
         {
@@ -217,7 +217,7 @@ def test_documents_from_FFT_ignores_context():
         '  <subfield code="v">1</subfield><subfield code="z"/>'
         '  <subfield code="o">HIDDEN</subfield>'
         '</datafield>'
-    )  # record/1610503/export/xme
+    )  # record/1610503
 
     result = hep.do(create_record(snippet))
 
@@ -293,8 +293,7 @@ def test_documents_to_FFT():
                 'source': 'submitter',
             }
         ]
-    }
-    # XXX record invented
+    }  # synthetic data
 
     expected = [
         {
@@ -326,8 +325,7 @@ def test_figures_to_FFT():
                 'source': 'arxiv',
             }
         ]
-    }
-    # XXX record invented
+    }  # synthetic data
 
     expected = [
         {
@@ -372,7 +370,7 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
         '    <subfield code="z"/>'
         '  </datafield>'
         '</record>'
-    )  # record/1628455/export/xme
+    )  # record/1628455
 
     expected_figures = [
         {

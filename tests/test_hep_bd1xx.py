@@ -40,7 +40,7 @@ def test_authors_from_100__a_i_u_x_y():
         '  <subfield code="x">1008235</subfield>'
         '  <subfield code="y">1</subfield>'
         '</datafield>'
-    )  # record/4328/export/xme
+    )  # record/4328
 
     expected = [
         {
@@ -101,7 +101,7 @@ def test_authors_from_100__a_u_w_y_and_700_a_u_w_x_y():
         '    <subfield code="y">1</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/81350/export/xme
+    )  # record/81350
 
     expected = [
         {
@@ -166,22 +166,22 @@ def test_authors_from_100__a_e_w_y_and_700_a_e_w_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = '''
-        <record>
-          <datafield tag="100" ind1=" " ind2=" ">
-            <subfield code="a">Vinokurov, Nikolay A.</subfield>
-            <subfield code="e">ed.</subfield>
-            <subfield code="w">N.A.Vinokurov.2</subfield>
-            <subfield code="y">0</subfield>
-          </datafield>
-          <datafield tag="700" ind1=" " ind2=" ">
-            <subfield code="a">Knyazev, Boris A.</subfield>
-            <subfield code="e">ed.</subfield>
-            <subfield code="w">B.A.Knyazev.2</subfield>
-            <subfield code="y">0</subfield>
-          </datafield>
-        </record>
-    '''  # 1505338/export/xme
+    snippet = (
+        '<record>'
+        '  <datafield tag="100" ind1=" " ind2=" ">'
+        '    <subfield code="a">Vinokurov, Nikolay A.</subfield>'
+        '    <subfield code="e">ed.</subfield>'
+        '    <subfield code="w">N.A.Vinokurov.2</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Knyazev, Boris A.</subfield>'
+        '    <subfield code="e">ed.</subfield>'
+        '    <subfield code="w">B.A.Knyazev.2</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1505338
 
     expected = [
         {
@@ -265,7 +265,7 @@ def test_authors_from_100__a_i_u_x_y_z_and_double_700__a_u_w_x_y_z():
         '    <subfield code="z">902796</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/712925/export/xme
+    )  # record/712925
 
     expected = [
         {
@@ -378,7 +378,7 @@ def test_authors_from_100__a_v_m_w_y():
         '  <subfield code="w">X.Gao.11</subfield>'
         '  <subfield code="y">0</subfield>'
         '</datafield>'
-    )  # record/1475380/export/xme
+    )  # record/1475380
 
     expected = [
         {
@@ -434,7 +434,7 @@ def test_authors_from_100__a_double_q_u_w_y_z():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">902780</subfield>'
         '</datafield>'
-    )  # record/144579/export/xme
+    )  # record/144579
 
     expected = [
         {
@@ -505,7 +505,7 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
         '    <subfield code="y">0</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1475380/export/xme
+    )  # record/1475380
 
     expected = [
         {
@@ -624,7 +624,7 @@ def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z
         '    <subfield code="z">903734</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1345256/export/xme
+    )  # record/1345256
 
     expected = [
         {
@@ -729,7 +729,7 @@ def test_authors_from_100__a_j_m_u_w_y_z():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">910325</subfield>'
         '</datafield>'
-    )  # record/1475499/export/xme
+    )  # record/1475499
 
     expected = [
         {
@@ -930,7 +930,7 @@ def test_authors_from_100__a_u_x_w_y_z_with_malformed_x():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">903073</subfield>'
         '</datafield>'
-    )  # record/931310/export/xme
+    )  # record/931310
 
     expected = [
         {
@@ -982,7 +982,7 @@ def test_authors_from_100__a_double_m_double_u_w_y_z():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">903393</subfield>'
         '</datafield>'
-    )  # record/413614/export/xme
+    )  # record/413614
 
     expected = [
         {
@@ -1058,7 +1058,7 @@ def test_authors_supervisors_from_100__a_i_j_u_v_x_y_z_and_multiple_701__u_z():
         '    <subfield code="z">913279</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1462486/export/xme
+    )  # record/1462486
 
     expected = [
         {
@@ -1207,7 +1207,7 @@ def test_authors_supervisors_from_100_a_u_w_y_z_and_701__double_a_u_z():
         '    <subfield code="z">903010</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/776962/export/xme
+    )  # record/776962
 
     expected = [
         {
@@ -1311,7 +1311,7 @@ def test_authors_supervisors_from_100_a_j_u_w_y_z_and_701__a_i_j_u_x_y_z():
         '    <subfield code="z">902624</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1504133/export/xme
+    )  # record/1504133
 
     expected = [
         {
@@ -1426,7 +1426,7 @@ def test_authors_from_100_a_double_u_w_z_y_double_z_and_700__a_double_u_w_y_doub
         '    <subfield code="z">903297</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1088610/export/xme
+    )  # record/1088610
 
     expected = [
         {
