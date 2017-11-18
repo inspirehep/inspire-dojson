@@ -71,7 +71,7 @@ def test_keywords_from_084__double_2_does_not_raise():
         '  <subfield code="2">PACS</subfield>'
         '  <subfield code="2">PACS</subfield>'
         '</datafield>'
-    )  # synthetic record
+    )  # synthetic data
 
     hep.do(create_record(snippet))
 

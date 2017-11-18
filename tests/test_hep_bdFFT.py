@@ -293,8 +293,7 @@ def test_documents_to_FFT():
                 'source': 'submitter',
             }
         ]
-    }
-    # XXX record invented
+    }  # synthetic data
 
     expected = [
         {
@@ -326,8 +325,7 @@ def test_figures_to_FFT():
                 'source': 'arxiv',
             }
         ]
-    }
-    # XXX record invented
+    }  # synthetic data
 
     expected = [
         {
