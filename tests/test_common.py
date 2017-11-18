@@ -39,7 +39,7 @@ def test_acquisition_source_from_541__a_c():
         '  <subfield code="a">IOP</subfield>'
         '  <subfield code="c">batchupload</subfield>'
         '</datafield>'
-    )  # record/1487640/export/xme
+    )  # record/1487640
 
     expected = {
         'source': 'IOP',
@@ -71,7 +71,7 @@ def test_acquisition_source_from_541__double_a_b_c_e():
         '  <subfield code="c">submission</subfield>'
         '  <subfield code="e">504296</subfield>'
         '</datafield>'
-    )  # record/1416571/export/xme
+    )  # record/1416571
 
     expected = {
         'email': 'oliver.schlotterer@web.de',
@@ -481,7 +481,7 @@ def test_urls_from_8564_ignores_internal_links():
         '  <subfield code="s">1506142</subfield>'
         '  <subfield code="u">http://inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
         '</datafield>'
-    )  # record/1610503/export/xme
+    )  # record/1610503
 
     result = hep.do(create_record(snippet))
 
@@ -495,7 +495,7 @@ def test_urls_from_8564_ignores_internal_links_https():
         '  <subfield code="u">https://inspirehep.net/record/1508108/files/fermilab-pub-16-617-cms.pdf</subfield>'
         '  <subfield code="y">Fulltext</subfield>'
         '</datafield>'
-    )  # record/1508036/export/xme
+    )  # record/1508036
 
     result = hep.do(create_record(snippet))
 

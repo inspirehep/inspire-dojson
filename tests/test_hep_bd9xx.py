@@ -234,7 +234,7 @@ def test_deleted_from_980__c():
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="c">DELETED</subfield>'
         '</datafield>'
-    )  # record/1508668/export/xme
+    )  # record/1508668
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -582,7 +582,7 @@ def test_references_from_999C5r_s_0():
         '  <subfield code="s">Prog.Part.Nucl.Phys.,65,149</subfield>'
         '  <subfield code="0">857206</subfield>'
         '</datafield>'
-    )  # record/863300/export/xme
+    )  # record/863300
 
     expected = [
         {
@@ -695,7 +695,7 @@ def test_references_from_999C5h_m_o_r_s_y_0():
         '  <subfield code="s">Phys.Rev.,D82,046006</subfield>'
         '  <subfield code="y">2010</subfield>'
         '</datafield>'
-    )  # record/1498589/export/xme
+    )  # record/1498589
 
     expected = [
         {
@@ -763,7 +763,7 @@ def test_references_from_999C5a_h_o_s_x_y_0():
         '  <subfield code="y">2008</subfield>'
         '  <subfield code="0">780399</subfield>'
         '</datafield>'
-    )  # record/1478478/export/xme
+    )  # record/1478478
 
     expected = [
         {
@@ -834,7 +834,7 @@ def test_references_from_999C50_h_m_o_r_y():
         '  <subfield code="r">SLAC-R-773</subfield>'
         '  <subfield code="y">2005</subfield>'
         '</datafield>'
-    )  # record/1478478/export/xme
+    )  # record/1478478
 
     expected = [
         {
@@ -1432,7 +1432,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
         '  <subfield code="y">1993</subfield>'
         '  <subfield code="0">338634</subfield>'
         '</datafield>'
-    )  # record/1613562/export/xme
+    )  # record/1613562
 
     expected = [
         {

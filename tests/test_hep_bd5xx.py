@@ -346,7 +346,7 @@ def test_thesis_from_502__b_c_d_z():
         '  <subfield code="d">2011</subfield>'
         '  <subfield code="z">909554</subfield>'
         '</datafield>'
-    )  # record/897773/export/xme
+    )  # record/897773
 
     expected = {
         'date': '2011',

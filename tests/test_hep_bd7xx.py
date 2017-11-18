@@ -63,7 +63,7 @@ def test_collaborations_from_710__g_0():
         '  <subfield code="g">ANTARES</subfield>'
         '  <subfield code="0">1110619</subfield>'
         '</datafield>'
-    )  # record/1422032/export/xme
+    )  # record/1422032
 
     expected = [
         {
@@ -108,7 +108,7 @@ def test_collaborations_from_multiple_710__g_0_and_710__g():
         '    <subfield code="0">1110601</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1422032/export/xme
+    )  # record/1422032
 
     expected = [
         {
@@ -162,7 +162,7 @@ def test_publication_info_from_773_c_m_p_v_y_1():
         '  <subfield code="y">1975</subfield>'
         '  <subfield code="1">1214495</subfield>'
         '</datafield>'
-    )  # record/1104/export/xme
+    )  # record/1104
 
     expected = [
         {
@@ -215,7 +215,7 @@ def test_publication_info_from_773_c_p_w_double_v_double_y_0_1_2():
         '  <subfield code="2">978924</subfield>'
         '  <subfield code="0">1408366</subfield>'
         '</datafield>'
-    )  # record/820763/export/xme
+    )  # record/820763
 
     expected = [
         {
@@ -271,7 +271,7 @@ def test_publication_info_from_773__c_w_y_z_0_2():
         '  <subfield code="2">1407887</subfield>'
         '  <subfield code="0">1500425</subfield>'
         '</datafield>'
-    )  # record/1501319/export/xme
+    )  # record/1501319
 
     expected = [
         {
@@ -323,7 +323,7 @@ def test_publication_info_from_773__c_r_w_triple_0_2():
         '  <subfield code="2">1484403</subfield>'
         '  <subfield code="0">1512294</subfield>'
         '</datafield>'
-    )  # record/1513005/export/xme
+    )  # record/1513005
 
     expected = [
         {

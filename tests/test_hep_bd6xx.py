@@ -311,7 +311,7 @@ def test_accelerator_experiments_from_693__a_e():
         '  <subfield code="e">CERN-LHC-CMS</subfield>'
         '  <subfield code="0">1108642</subfield>'
         '</datafield>'
-    )  # record/1517829/export/xme
+    )  # record/1517829
 
     expected = [
         {

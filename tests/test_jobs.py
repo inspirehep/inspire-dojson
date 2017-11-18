@@ -368,7 +368,7 @@ def test_experiments_from_693__e__0_and_e():
         '    <subfield code="e">IHEP-CEPC</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1393583/export/xme
+    )  # record/1393583
 
     expected = [
         {
@@ -503,7 +503,7 @@ def test_institutions_from_110__double_a_z():
         '  <subfield code="z">902874</subfield>'
         '  <subfield code="z">903056</subfield>'
         '</datafield>'
-    )  # record/1328021/export/xme
+    )  # record/1328021
 
     expected = [
         {
