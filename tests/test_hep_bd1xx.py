@@ -166,22 +166,22 @@ def test_authors_from_100__a_e_w_y_and_700_a_e_w_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = '''
-        <record>
-          <datafield tag="100" ind1=" " ind2=" ">
-            <subfield code="a">Vinokurov, Nikolay A.</subfield>
-            <subfield code="e">ed.</subfield>
-            <subfield code="w">N.A.Vinokurov.2</subfield>
-            <subfield code="y">0</subfield>
-          </datafield>
-          <datafield tag="700" ind1=" " ind2=" ">
-            <subfield code="a">Knyazev, Boris A.</subfield>
-            <subfield code="e">ed.</subfield>
-            <subfield code="w">B.A.Knyazev.2</subfield>
-            <subfield code="y">0</subfield>
-          </datafield>
-        </record>
-    '''  # 1505338/export/xme
+    snippet = (
+        '<record>'
+        '  <datafield tag="100" ind1=" " ind2=" ">'
+        '    <subfield code="a">Vinokurov, Nikolay A.</subfield>'
+        '    <subfield code="e">ed.</subfield>'
+        '    <subfield code="w">N.A.Vinokurov.2</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Knyazev, Boris A.</subfield>'
+        '    <subfield code="e">ed.</subfield>'
+        '    <subfield code="w">B.A.Knyazev.2</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # 1505338/export/xme
 
     expected = [
         {
