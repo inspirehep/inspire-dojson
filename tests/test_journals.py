@@ -583,3 +583,20 @@ def test_book_series_from_double_980__a():
 
     assert validate(result['book_series'], subschema) is None
     assert expected == result['book_series']
+
+
+def test_deleted_from_980__a():
+    schema = load_schema('journals')
+    subschema = schema['properties']['deleted']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">DELETED</subfield>'
+        '</datafield>'
+    )  # synthetic data
+
+    expected = True
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['deleted'], subschema) is None
+    assert expected == result['deleted']
