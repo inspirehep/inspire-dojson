@@ -41,152 +41,135 @@ ORCID = re.compile('\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
 
 
 @hep.over('authors', '^(100|700|701)..')
+@utils.flatten
+@utils.for_each_value
 def authors(self, key, value):
-    def _get_authors(value):
-        def _get_affiliations(value):
-            result = []
+    def _get_affiliations(value):
+        result = []
 
-            u_values = force_list(value.get('u'))
-            z_values = force_list(value.get('z'))
+        u_values = force_list(value.get('u'))
+        z_values = force_list(value.get('z'))
 
-            # XXX: we zip only when they have the same length, otherwise
-            #      we might match a value with the wrong recid.
-            if len(u_values) == len(z_values):
-                for u_value, z_value in zip(u_values, z_values):
-                    result.append({
-                        'record': get_record_ref(z_value, 'institutions'),
-                        'value': u_value,
-                    })
-            else:
-                for u_value in u_values:
-                    result.append({'value': u_value})
-
-            return result
-
-        def _get_curated_relation(value):
-            if value.get('y') == '1':
-                return True
-            return  # XXX: we don't return False because it would be preserved.
-
-        def _get_emails(value):
-            return [el[6:] if el.startswith('email:') else el for el in force_list(value.get('m'))]
-
-        def _get_full_names(value):
-            a_values = force_list(value.get('a'))
-
-            return a_values
-
-        def _get_ids(value):
-            def _is_jacow(j_value):
-                return j_value.upper().startswith('JACOW-')
-
-            def _is_orcid(j_value):
-                return j_value.upper().startswith('ORCID:') and len(j_value) > 6
-
-            def _is_naked_orcid(j_value):
-                return ORCID.match(j_value)
-
-            def _is_cern(j_value):
-                return j_value.startswith('CCID-')
-
-            result = []
-
-            i_values = force_list(value.get('i'))
-            for i_value in i_values:
+        # XXX: we zip only when they have the same length, otherwise
+        #      we might match a value with the wrong recid.
+        if len(u_values) == len(z_values):
+            for u_value, z_value in zip(u_values, z_values):
                 result.append({
-                    'schema': 'INSPIRE ID',
-                    'value': i_value,
+                    'record': get_record_ref(z_value, 'institutions'),
+                    'value': u_value,
+                })
+        else:
+            for u_value in u_values:
+                result.append({'value': u_value})
+
+        return result
+
+    def _get_curated_relation(value):
+        return value.get('y') == '1' or None
+
+    def _get_emails(value):
+        return [el[6:] if el.startswith('email:') else el for el in force_list(value.get('m'))]
+
+    def _get_full_names(value):
+        return force_list(value.get('a'))
+
+    def _get_ids(value):
+        def _is_jacow(j_value):
+            return j_value.upper().startswith('JACOW-')
+
+        def _is_orcid(j_value):
+            return j_value.upper().startswith('ORCID:') and len(j_value) > 6
+
+        def _is_naked_orcid(j_value):
+            return ORCID.match(j_value)
+
+        def _is_cern(j_value):
+            return j_value.startswith('CCID-')
+
+        result = []
+
+        i_values = force_list(value.get('i'))
+        for i_value in i_values:
+            result.append({
+                'schema': 'INSPIRE ID',
+                'value': i_value,
+            })
+
+        j_values = force_list(value.get('j'))
+        for j_value in j_values:
+            if _is_jacow(j_value):
+                result.append({
+                    'schema': 'JACOW',
+                    'value': 'JACoW-' + j_value[6:],
+                })
+            elif _is_orcid(j_value):
+                result.append({
+                    'schema': 'ORCID',
+                    'value': j_value[6:].replace('.', ''),
+                })
+            elif _is_naked_orcid(j_value):
+                result.append({
+                    'schema': 'ORCID',
+                    'value': j_value,
+                })
+            elif _is_cern(j_value):
+                result.append({
+                    'schema': 'CERN',
+                    'value': 'CERN-' + j_value[5:],
                 })
 
-            j_values = force_list(value.get('j'))
-            for j_value in j_values:
-                if _is_jacow(j_value):
-                    result.append({
-                        'schema': 'JACOW',
-                        'value': 'JACoW-' + j_value[6:],
-                    })
-                elif _is_orcid(j_value):
-                    result.append({
-                        'schema': 'ORCID',
-                        'value': j_value[6:].replace('.', ''),
-                    })
-                elif _is_naked_orcid(j_value):
-                    result.append({
-                        'schema': 'ORCID',
-                        'value': j_value,
-                    })
-                elif _is_cern(j_value):
-                    result.append({
-                        'schema': 'CERN',
-                        'value': 'CERN-' + j_value[5:],
-                    })
+        w_values = force_list(value.get('w'))
+        for w_value in w_values:
+            result.append({
+                'schema': 'INSPIRE BAI',
+                'value': w_value,
+            })
 
-            w_values = force_list(value.get('w'))
-            for w_value in w_values:
-                result.append({
-                    'schema': 'INSPIRE BAI',
-                    'value': w_value,
-                })
+        return result
 
-            return result
+    def _get_inspire_roles(value):
+        result = []
 
-        def _get_inspire_roles(value):
-            result = []
+        if value.get('e', '').lower().startswith('ed'):
+            result.append('editor')
 
-            if value.get('e', '').lower().startswith('ed'):
-                result.append('editor')
+        if key.startswith('701'):
+            result.append('supervisor')
 
-            if key.startswith('701'):
-                result.append('supervisor')
+        return result
 
-            return result
+    def _get_raw_affiliations(value):
+        return [{'value': el} for el in force_list(value.get('v'))]
 
-        def _get_raw_affiliations(value):
-            result = []
+    def _get_record(value):
+        x_value = force_single_element(value.get('x'))
+        if x_value and x_value.isdigit():
+            return get_record_ref(x_value, 'authors')
 
-            values = force_list(value.get('v'))
-            for value in values:
-                result.append({
-                    'value': value,
-                })
-
-            return result
-
-        def _get_record(value):
-            x_value = force_single_element(value.get('x'))
-            if x_value and x_value.isdigit():
-                return get_record_ref(x_value, 'authors')
-
-        full_names = _get_full_names(value)
-        if len(full_names) == 1:
-            authors = [{
+    full_names = _get_full_names(value)
+    if len(full_names) == 1:
+        return [
+            {
                 'affiliations': _get_affiliations(value),
                 'alternative_names': force_list(value.get('q')),
                 'curated_relation': _get_curated_relation(value),
                 'emails': _get_emails(value),
                 'full_name': full_names[0],
                 'ids': _get_ids(value),
-                'record': _get_record(value),
                 'inspire_roles': _get_inspire_roles(value),
                 'raw_affiliations': _get_raw_affiliations(value),
-            }]
-        else:
-            authors = [{
+                'record': _get_record(value),
+            },
+        ]
+    else:
+        return [
+            {
                 'affiliations': _get_affiliations(value),
                 'full_name': full_name,
                 'inspire_roles': _get_inspire_roles(value),
                 'raw_affiliations': _get_raw_affiliations(value),
-            } for full_name in full_names]
-
-        return authors
-
-    authors = self.get('authors', [])
-
-    values = force_list(value)
-    for value in values:
-        authors.extend(_get_authors(value))
-
-    return authors
+            } for full_name in full_names
+        ]
 
 
 @hep2marc.over('100', '^authors$')
