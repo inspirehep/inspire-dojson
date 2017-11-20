@@ -39,7 +39,7 @@ install_requires = [
     'Flask~=0.0,>=0.12.2',
     'IDUtils~=0.0,>=0.2.4',
     'dojson~=1.0,>=1.3.1',
-    'inspire-schemas~=53.0,>=53.0.11',
+    'inspire-schemas~=54.0,>=54.0.0',
     'inspire-utils~=0.0,>=0.1.0',
     'isbnid_fork~=0.0,>=0.5.2',
     'langdetect~=1.0,>=1.0.7',
