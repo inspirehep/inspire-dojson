@@ -54,6 +54,32 @@ def test_collaborations_from_710__g():
     assert expected == result['710']
 
 
+def test_collaborations_from_710__g_normalizes_value():
+    schema = load_schema('hep')
+    subschema = schema['properties']['collaborations']
+
+    snippet = (
+        '<datafield tag="710" ind1=" " ind2=" ">'
+        '  <subfield code="g">on behalf of the CMS Collaboration</subfield>'
+        '</datafield>'
+    )  # http://cds.cern.ch/record/2293683
+
+    expected = [
+        {'value': 'CMS'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['collaborations'], subschema) is None
+    assert expected == result['collaborations']
+
+    expected = [
+        {'g': 'CMS'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['710']
+
+
 def test_collaborations_from_710__g_0():
     schema = load_schema('hep')
     subschema = schema['properties']['collaborations']

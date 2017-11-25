@@ -31,6 +31,7 @@ from dojson import utils
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import (
     convert_new_publication_info_to_old,
+    normalize_collaboration,
     split_page_artid,
 )
 from inspire_utils.helpers import force_list, maybe_int
@@ -44,12 +45,20 @@ from ...utils import (
 
 
 @hep.over('collaborations', '^710..')
+@utils.flatten
 @utils.for_each_value
 def collaborations(self, key, value):
-    return {
-        'record': get_record_ref(maybe_int(value.get('0')), 'experiments'),
-        'value': value.get('g'),
-    }
+    collaborations = normalize_collaboration(value.get('g'))
+
+    if len(collaborations) == 1:
+        return [
+            {
+                'record': get_record_ref(maybe_int(value.get('0')), 'experiments'),
+                'value': collaborations[0],
+            },
+        ]
+    else:
+        return [{'value': collaboration} for collaboration in collaborations]
 
 
 @hep2marc.over('710', '^collaborations$')
