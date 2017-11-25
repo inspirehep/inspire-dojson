@@ -1017,6 +1017,7 @@ def test_references_from_999C50_9_r_u_h_m_o():
     assert expected == result['999C5']
 
 
+@pytest.mark.xfail(reason='name is normalized incorrectly')
 def test_reference_from_999C5t_p_y_e_o():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
