@@ -398,6 +398,19 @@ def _desy_bookkeeping(self, key, value):
 @hep2marc.over('595_D', '^_desy_bookkeeping$')
 @utils.for_each_value
 def _desy_bookkeeping2marc(self, key, value):
+    """Populate the ``595_D`` MARC field.
+
+    Also populates the ``035`` MARC field through side effects.
+    """
+    result_035 = self.get('035', [])
+
+    if 'identifier' in value:
+        result_035.append({
+            '9': 'DESY',
+            'z': value['identifier']
+        })
+
+    self['035'] = result_035
     return {
         'a': value.get('expert'),
         'd': value.get('date'),

@@ -181,16 +181,20 @@ def persistent_identifiers2marc(self, key, value):
 def texkeys(self, key, value):
     """Populate the ``texkeys`` key.
 
-    Also populates the ``external_system_identifiers`` key through side effects.
+    Also populates the ``external_system_identifiers`` and ``_desy_bookkeeping`` keys through side effects.
     """
     def _is_arxiv(id_, schema):
         return id_ and schema in ('arXiv',)
+
+    def _is_desy(id_, schema):
+        return id_ and schema in ('DESY',)
 
     def _is_texkey(id_, schema):
         return id_ and schema in ('INSPIRETeX', 'SPIRESTeX')
 
     texkeys = self.get('texkeys', [])
     external_system_identifiers = self.get('external_system_identifiers', [])
+    _desy_bookkeeping = self.get('_desy_bookkeeping', [])
 
     values = force_list(value)
     for value in values:
@@ -207,6 +211,8 @@ def texkeys(self, key, value):
                 texkeys.insert(0, id_)
             elif _is_arxiv(id_, schema):
                 continue  # XXX: ignored.
+            elif _is_desy(id_, schema):
+                _desy_bookkeeping.append({'identifier': id_})
             else:
                 external_system_identifiers.insert(0, {
                     'schema': schema,
@@ -222,6 +228,8 @@ def texkeys(self, key, value):
                 texkeys.append(id_)
             elif _is_arxiv(id_, schema):
                 continue  # XXX: ignored.
+            elif _is_desy(id_, schema):
+                _desy_bookkeeping.append({'identifier': id_})
             else:
                 external_system_identifiers.append({
                     'schema': schema,
@@ -229,6 +237,7 @@ def texkeys(self, key, value):
                 })
 
     self['external_system_identifiers'] = external_system_identifiers
+    self['_desy_bookkeeping'] = _desy_bookkeeping
     return texkeys
 
 
