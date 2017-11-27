@@ -598,6 +598,90 @@ def test_texkeys_from_035__z_9_and_035__a_9():
     assert expected == result['035']
 
 
+def test_desy_bookkeekping_from_035__z_9_DESY():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_desy_bookkeeping']
+
+    snippet = (
+        '<datafield tag="035" ind1=" " ind2=" ">'
+        '  <subfield code="9">DESY</subfield>'
+        '  <subfield code="z">DA17-kp47ch</subfield>'
+        '</datafield>'
+    )  # record/1635310
+
+    expected = [
+        {
+            'identifier': 'DA17-kp47ch',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['_desy_bookkeeping'], subschema) is None
+    assert expected == result['_desy_bookkeeping']
+
+    expected = [
+        {
+            '9': 'DESY',
+            'z': 'DA17-kp47ch',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['035']
+
+
+def test_desy_bookkeekping_from_035__z_9_DESY_and_595_Da_d_s():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_desy_bookkeeping']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">DESY</subfield>'
+        '    <subfield code="z">DA17-kp46cm</subfield>'
+        '  </datafield>'
+        '  <datafield tag="595" ind1=" " ind2="D">'
+        '    <subfield code="a">8</subfield>'
+        '    <subfield code="d">2017-11-15</subfield>'
+        '    <subfield code="s">abs</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1635310
+
+    expected = [
+        {
+            'identifier': 'DA17-kp46cm',
+        },
+        {
+            'expert': '8',
+            'date': '2017-11-15',
+            'status': 'abs',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['_desy_bookkeeping'], subschema) is None
+    assert expected == result['_desy_bookkeeping']
+
+    expected_035 = [
+        {
+            '9': 'DESY',
+            'z': 'DA17-kp46cm',
+        },
+    ]
+    expected_595_D = [
+        {
+            'a': '8',
+            'd': '2017-11-15',
+            's': 'abs',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected_035 == result['035']
+    assert expected_595_D == result['595_D']
+
+
 def test_external_system_identifiers_from_035__a_9_discards_arxiv():
     snippet = (
         '<datafield tag="035" ind1=" " ind2=" ">'
