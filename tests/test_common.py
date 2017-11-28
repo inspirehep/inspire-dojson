@@ -563,6 +563,40 @@ def test_urls_from_8564_u_w_y_ignores_w_and_translates_weblinks():
     assert expected == result['8564']
 
 
+def test_urls_from_8564_u_w_y_ignores_w_and_translates_weblinks_with_apostrophes():
+    schema = load_schema('hep')
+    subschema = schema['properties']['urls']
+
+    snippet = (
+        '<datafield tag="856" ind1="4" ind2=" ">'
+        '  <subfield code="w">Abstracts_2/Stanek.html</subfield>'
+        '  <subfield code="y">C95-10-29</subfield>'
+        '  <subfield code="u">http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html</subfield>'
+        '</datafield>'
+    )  # record/417789
+
+    expected = [
+        {
+            'description': 'ICALEPCS\'95 Server',
+            'value': 'http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html',
+        },
+    ]
+    result = hep.do(create_record(snippet))  # no roundtrip
+
+    assert validate(result['urls'], subschema) is None
+    assert expected == result['urls']
+
+    expected = [
+        {
+            'u': 'http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html',
+            'y': 'ICALEPCS\'95 Server',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['8564']
+
+
 def test_urls_from_8564_u_double_y_selects_the_first_y():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
