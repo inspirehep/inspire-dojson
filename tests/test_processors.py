@@ -22,10 +22,12 @@
 
 from __future__ import absolute_import, division, print_function
 
-from inspire_dojson.processors import overdo_marc_dict
+import pytest
+
+from inspire_dojson.processors import marc2record, json2marcxml
 
 
-def test_overdo_marc_dict_handles_data():
+def test_marc2record_handles_data():
     record = {
         '980__': [
             {'a': 'DATA'},
@@ -38,12 +40,12 @@ def test_overdo_marc_dict_handles_data():
             'Data',
         ],
     }
-    result = overdo_marc_dict(record)
+    result = marc2record(record)
 
     assert expected == result
 
 
-def test_overdo_marc_dict_handles_journalsnew():
+def test_marc2record_handles_journalsnew():
     record = {
         '980__': {'a': 'JOURNALSNEW'},
     }
@@ -54,6 +56,40 @@ def test_overdo_marc_dict_handles_journalsnew():
             'Journals',
         ],
     }
-    result = overdo_marc_dict(record)
+    result = marc2record(record)
 
     assert expected == result
+
+
+def test_record2marc_hep():
+    record = {
+        '$schema': 'https://localhost:5000/schemas/records/hep.json',
+        '_collections': [
+            'Literature',
+        ],
+        'titles': [{
+            'source': 'submitter',
+            'title': 'dummy',
+        }],
+    }
+
+    expected = {
+        '245': [{'a': 'dummy', '9': 'submitter'}],
+        '980': [{'a': 'HEP'}],
+    }
+
+    result = json2marcxml(record)
+
+    assert expected == result
+
+
+def test_record2marc_invalid_schema():
+    record = {
+        '$schema': 'https://localhost:5000/schemas/records/experiment.json',
+        '_collections': [
+            'Experiments',
+        ],
+    }
+
+    with pytest.raises(NotImplementedError):
+        json2marcxml(record)

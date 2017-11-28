@@ -130,7 +130,7 @@ def get_record_ref(recid, endpoint='record'):
 
 def legacy_export_as_marc(json, tabsize=4):
     """Create the MARCXML representation using the producer rules."""
-    export = ['<record>\n']
+    export = [u'<record>\n']
 
     for key, value in sorted(six.iteritems(json)):
         if not value:
@@ -139,23 +139,23 @@ def legacy_export_as_marc(json, tabsize=4):
             # Controlfield
             if isinstance(value, (tuple, list)):
                 value = value[0]
-            export += ['\t<controlfield tag="%s">%s'
-                       '</controlfield>\n'.expandtabs(tabsize)
+            export += [u'\t<controlfield tag="%s">%s'
+                       u'</controlfield>\n'.expandtabs(tabsize)
                        % (key, encode_for_xml(value, wash=True))]
         else:
             tag = key[:3]
             try:
-                ind1 = key[3].replace("_", "")
+                ind1 = key[3].replace(u"_", u"")
             except IndexError:
-                ind1 = ""
+                ind1 = u""
             try:
-                ind2 = key[4].replace("_", "")
+                ind2 = key[4].replace(u"_", u"")
             except IndexError:
-                ind2 = ""
+                ind2 = u""
             if isinstance(value, dict):
                 value = [value]
             for field in value:
-                export += ['\t<datafield tag="%s" ind1="%s" '
+                export += [u'\t<datafield tag="%s" ind1="%s" '
                            'ind2="%s">\n'.expandtabs(tabsize)
                            % (tag, ind1, ind2)]
                 if field:
@@ -163,17 +163,17 @@ def legacy_export_as_marc(json, tabsize=4):
                         if subfieldvalue:
                             if isinstance(subfieldvalue, (list, tuple)):
                                 for val in subfieldvalue:
-                                    export += ['\t\t<subfield code="%s">%s'
+                                    export += [u'\t\t<subfield code="%s">%s'
                                                '</subfield>\n'.expandtabs(tabsize)
                                                % (code, encode_for_xml(val, wash=True))]
                             else:
-                                export += ['\t\t<subfield code="%s">%s'
+                                export += [u'\t\t<subfield code="%s">%s'
                                            '</subfield>\n'.expandtabs(tabsize)
                                            % (code,
                                               encode_for_xml(subfieldvalue, wash=True))]
-                export += ['\t</datafield>\n'.expandtabs(tabsize)]
-    export += ['</record>\n']
-    return "".join(export)
+                export += [u'\t</datafield>\n'.expandtabs(tabsize)]
+    export += [u'</record>\n']
+    return u"".join(export)
 
 
 def strip_empty_values(obj):

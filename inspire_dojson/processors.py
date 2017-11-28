@@ -24,19 +24,23 @@
 
 from __future__ import absolute_import, division, print_function
 
+try:
+    from urlparse import urlsplit
+except ImportError:
+    from urllib.parse import urlsplit
 from inspire_utils.helpers import force_list
 
 from .conferences import conferences
 from .data import data
 from .experiments import experiments
-from .hep import hep
-from .hepnames import hepnames
+from .hep import hep, hep2marc
+from .hepnames import hepnames, hepnames2marc
 from .institutions import institutions
 from .jobs import jobs
 from .journals import journals
 
 
-def overdo_marc_dict(record):
+def marc2record(record):
     """Convert MARC Groupable Ordered Dict into JSON."""
     if _collection_in_record(record, 'institution'):
         return institutions.do(record)
@@ -58,6 +62,17 @@ def overdo_marc_dict(record):
         return hep.do(record)
 
 
+def json2marcxml(record):
+    """Convert INSPIRE JSON into MARC Groupable Ordered Dict."""
+    schema_name = _get_schema_name_from_record(record)
+    if schema_name == 'hep':
+        return hep2marc.do(record)
+    elif schema_name == 'authors':
+        return hepnames2marc.do(record)
+    else:
+        raise NotImplementedError(u"Conversion from JSON to MARCXML is not supported for the schema {}".format(schema_name))
+
+
 def _collection_in_record(record, collection):
     """Returns True if record is in collection"""
     colls = force_list(record.get("980__", []))
@@ -66,3 +81,7 @@ def _collection_in_record(record, collection):
         if collection in [c.lower() for c in coll]:
             return True
     return False
+
+
+def _get_schema_name_from_record(record):
+    return urlsplit(record['$schema']).path.split('/')[-1].split('.')[0]

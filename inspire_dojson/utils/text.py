@@ -31,17 +31,17 @@ try:
     six.unichr(0x100000)
     RE_ALLOWED_XML_1_0_CHARS = re.compile(
         u'[^\U00000009\U0000000A\U0000000D\U00000020-'
-        u'\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]')
+        u'\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]', re.U)
     RE_ALLOWED_XML_1_1_CHARS = re.compile(
-        u'[^\U00000001-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]')
+        u'[^\U00000001-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]', re.U)
 except ValueError:
     # oops, we are running on a narrow UTF/UCS Python build,
     # so we have to limit the UTF/UCS char range:
     RE_ALLOWED_XML_1_0_CHARS = re.compile(
         u'[^\U00000009\U0000000A\U0000000D\U00000020-'
-        u'\U0000D7FF\U0000E000-\U0000FFFD]')
+        u'\U0000D7FF\U0000E000-\U0000FFFD]', re.U)
     RE_ALLOWED_XML_1_1_CHARS = re.compile(
-        u'[^\U00000001-\U0000D7FF\U0000E000-\U0000FFFD]')
+        u'[^\U00000001-\U0000D7FF\U0000E000-\U0000FFFD]', re.U)
 
 
 def encode_for_xml(text, wash=False, xml_version='1.0', quote=False):
@@ -53,10 +53,10 @@ def encode_for_xml(text, wash=False, xml_version='1.0', quote=False):
     if not isinstance(text, six.text_type):
         text = six.text_type(text)
 
-    text = text.replace('&', '&amp;')
-    text = text.replace('<', '&lt;')
+    text = text.replace(u'&', u'&amp;')
+    text = text.replace(u'<', u'&lt;')
     if quote:
-        text = text.replace('"', '&quot;')
+        text = text.replace(u'"', u'&quot;')
     if wash:
         text = wash_for_xml(text, xml_version=xml_version)
     return text
@@ -77,6 +77,6 @@ def wash_for_xml(text, xml_version='1.0'):
         input. Value for this parameter can be '1.0' or '1.1'
     """
     if xml_version == '1.0':
-        return RE_ALLOWED_XML_1_0_CHARS.sub('', text)
+        return RE_ALLOWED_XML_1_0_CHARS.sub(u'', text)
     else:
-        return RE_ALLOWED_XML_1_1_CHARS.sub('', text)
+        return RE_ALLOWED_XML_1_1_CHARS.sub(u'', text)
