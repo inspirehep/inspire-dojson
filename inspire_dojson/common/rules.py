@@ -750,7 +750,7 @@ def inspire_categories(self, key, value):
         elif source == 'submitter':
             source = 'user'
         else:
-            source = 'undefined'
+            source = None
 
     terms = force_list(value.get('a'))
     for _term in terms:

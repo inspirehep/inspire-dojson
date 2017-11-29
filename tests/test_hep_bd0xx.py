@@ -728,10 +728,7 @@ def test_external_system_identifiers_from_035__z_9_handles_cernkey():
     assert expected == result['035']
 
 
-def test_external_system_numbers_from_035__a_d_h_m_9():
-    schema = load_schema('hep')
-    subschema = schema['properties']['external_system_identifiers']
-
+def test_external_system_numbers_from_035__a_d_h_m_9_ignores_oai():
     snippet = (
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">http://cds.cern.ch/oai2d</subfield>'
@@ -742,26 +739,9 @@ def test_external_system_numbers_from_035__a_d_h_m_9():
         '</datafield>'
     )  # record/1403324
 
-    expected = [
-        {
-            'value': 'oai:cds.cern.ch:325030',
-            'schema': 'http://cds.cern.ch/oai2d',
-        }
-    ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['external_system_identifiers'], subschema) is None
-    assert expected == result['external_system_identifiers']
-
-    expected = [
-        {
-            '9': 'http://cds.cern.ch/oai2d',
-            'a': 'oai:cds.cern.ch:325030',
-        },
-    ]
-    result = hep2marc.do(result)
-
-    assert expected == result['035']
+    assert 'external_system_identifiers' not in result
 
 
 def test_external_system_numbers_from_035__9_discards_incomplete_datafields():
