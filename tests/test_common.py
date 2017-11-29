@@ -303,7 +303,6 @@ def test_inspire_categories_from_65017a_2():
 
     expected = [
         {
-            'source': 'undefined',
             'term': 'Experiment-HEP',
         },
     ]
@@ -315,7 +314,6 @@ def test_inspire_categories_from_65017a_2():
     expected = [
         {
             '2': 'INSPIRE',
-            '9': 'undefined',
             'a': 'Experiment-HEP',
         },
     ]
@@ -338,7 +336,6 @@ def test_inspire_categories_from_65017a_2_9_discards_conference():
 
     expected = [
         {
-            'source': 'undefined',
             'term': 'Accelerators',
         },
     ]
@@ -350,7 +347,6 @@ def test_inspire_categories_from_65017a_2_9_discards_conference():
     expected = [
         {
             '2': 'INSPIRE',
-            '9': 'undefined',
             'a': 'Accelerators',
         },
     ]

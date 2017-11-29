@@ -183,8 +183,8 @@ def texkeys(self, key, value):
 
     Also populates the ``external_system_identifiers`` and ``_desy_bookkeeping`` keys through side effects.
     """
-    def _is_arxiv(id_, schema):
-        return id_ and schema in ('arXiv',)
+    def _is_oai(id_, schema):
+        return id_.startswith('oai:')
 
     def _is_desy(id_, schema):
         return id_ and schema in ('DESY',)
@@ -209,7 +209,7 @@ def texkeys(self, key, value):
 
             if _is_texkey(id_, schema):
                 texkeys.insert(0, id_)
-            elif _is_arxiv(id_, schema):
+            elif _is_oai(id_, schema):
                 continue  # XXX: ignored.
             elif _is_desy(id_, schema):
                 _desy_bookkeeping.append({'identifier': id_})
@@ -226,7 +226,7 @@ def texkeys(self, key, value):
 
             if _is_texkey(id_, schema):
                 texkeys.append(id_)
-            elif _is_arxiv(id_, schema):
+            elif _is_oai(id_, schema):
                 continue  # XXX: ignored.
             elif _is_desy(id_, schema):
                 _desy_bookkeeping.append({'identifier': id_})
