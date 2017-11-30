@@ -27,15 +27,12 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 
-import six
 from flask import current_app
 from six.moves import urllib
 
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
-
-from ..utils.text import encode_for_xml
 
 
 def normalize_rank(rank):
@@ -126,54 +123,6 @@ def get_record_ref(recid, endpoint='record'):
     if recid is None:
         return None
     return {'$ref': absolute_url(u'/api/{}/{}'.format(endpoint, recid))}
-
-
-def legacy_export_as_marc(json, tabsize=4):
-    """Create the MARCXML representation using the producer rules."""
-    export = ['<record>\n']
-
-    for key, value in sorted(six.iteritems(json)):
-        if not value:
-            continue
-        if key.startswith('00') and len(key) == 3:
-            # Controlfield
-            if isinstance(value, (tuple, list)):
-                value = value[0]
-            export += ['\t<controlfield tag="%s">%s'
-                       '</controlfield>\n'.expandtabs(tabsize)
-                       % (key, encode_for_xml(value, wash=True))]
-        else:
-            tag = key[:3]
-            try:
-                ind1 = key[3].replace("_", "")
-            except IndexError:
-                ind1 = ""
-            try:
-                ind2 = key[4].replace("_", "")
-            except IndexError:
-                ind2 = ""
-            if isinstance(value, dict):
-                value = [value]
-            for field in value:
-                export += ['\t<datafield tag="%s" ind1="%s" '
-                           'ind2="%s">\n'.expandtabs(tabsize)
-                           % (tag, ind1, ind2)]
-                if field:
-                    for code, subfieldvalue in six.iteritems(field):
-                        if subfieldvalue:
-                            if isinstance(subfieldvalue, (list, tuple)):
-                                for val in subfieldvalue:
-                                    export += ['\t\t<subfield code="%s">%s'
-                                               '</subfield>\n'.expandtabs(tabsize)
-                                               % (code, encode_for_xml(val, wash=True))]
-                            else:
-                                export += ['\t\t<subfield code="%s">%s'
-                                           '</subfield>\n'.expandtabs(tabsize)
-                                           % (code,
-                                              encode_for_xml(subfieldvalue, wash=True))]
-                export += ['\t</datafield>\n'.expandtabs(tabsize)]
-    export += ['</record>\n']
-    return "".join(export)
 
 
 def strip_empty_values(obj):

@@ -25,3 +25,4 @@
 from __future__ import absolute_import, division, print_function
 
 from . import common  # noqa
+from .api import marcxml2record, record2marcxml  # noqa
