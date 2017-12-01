@@ -35,7 +35,7 @@ from ..model import hep, hep2marc
 from ...utils import force_single_element, get_record_ref
 
 
-IS_DEFENSE_DATE = re.compile('Presented on (?P<defense_date>.*)', re.IGNORECASE)
+IS_DEFENSE_DATE = re.compile('Presented (on )?(?P<defense_date>.*)', re.IGNORECASE)
 
 
 @hep.over('public_notes', '^500..')

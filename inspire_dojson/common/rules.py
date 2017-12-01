@@ -743,9 +743,9 @@ def inspire_categories(self, key, value):
     if scheme == 'arXiv':          # XXX: we skip arXiv categories here because
         return inspire_categories  # we're going to add them later in a filter.
 
-    source = force_single_element(value.get('9'))
+    source = force_single_element(value.get('9', '')).lower()
     if source not in valid_sources:
-        if source == 'automatically added based on DCC, PPF, DK':
+        if source == 'automatically added based on dcc, ppf, dk':
             source = 'curator'
         elif source == 'submitter':
             source = 'user'

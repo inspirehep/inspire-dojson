@@ -27,9 +27,12 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 
+import six
+
 from flask import current_app
 from six.moves import urllib
 
+from dojson.utils import GroupableOrderedDict
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
@@ -183,3 +186,8 @@ def normalize_date_aggressively(date):
         else:
             new_date = _strip_last_part(date)
             return normalize_date_aggressively(new_date)
+
+
+def create_record_from_dict(dictionary):
+    """Create an input record for dojson from a dict."""
+    return GroupableOrderedDict(six.iteritems(dictionary))

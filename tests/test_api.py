@@ -79,6 +79,25 @@ def test_marcxml2record_falls_back_to_hep():
     assert expected == result['$schema']
 
 
+def test_marcxml2record_handles_cds():
+    snippet = (
+        '<record>'
+        '  <controlfield tag="001">2270264</controlfield>'
+        '  <controlfield tag="003">SzGeCERN</controlfield>'
+        '</record>'
+    )  # cds.cern.ch/record/2270264
+
+    expected = [
+        {
+            'schema': 'CDS',
+            'value': '2270264',
+        },
+    ]
+    result = marcxml2record(snippet)
+
+    assert expected == result['external_system_identifiers']
+
+
 def test_record2marcxml_generates_controlfields():
     record = {
         '$schema': 'http://localhost:5000/schemas/records/hep.json',
