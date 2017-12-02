@@ -33,7 +33,6 @@ from inspire_dojson.utils import (
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
-    legacy_export_as_marc,
     dedupe_all_lists,
     strip_empty_values,
     normalize_date_aggressively,
@@ -213,75 +212,6 @@ def test_get_recid_from_ref_returns_none_on_ref_a_simple_string():
 
 def test_get_recid_from_ref_returns_none_on_ref_malformed():
     assert get_recid_from_ref({'$ref': 'http://bad_url'}) is None
-
-
-def test_legacy_export_as_marc_empty_json():
-    empty_json = {}
-
-    expected = '<record>\n</record>\n'
-    result = legacy_export_as_marc(empty_json)
-
-    assert expected == result
-
-
-def test_legacy_export_as_marc_falsy_value():
-    falsy_value = {'001': ''}
-
-    expected = '<record>\n</record>\n'
-    result = legacy_export_as_marc(falsy_value)
-
-    assert expected == result
-
-
-def test_legacy_export_as_marc_json_with_controlfield():
-    json_with_controlfield = {'001': '4328'}
-
-    expected = (
-        '<record>\n'
-        '    <controlfield tag="001">4328</controlfield>\n'
-        '</record>\n'
-    )
-    result = legacy_export_as_marc(json_with_controlfield)
-
-    assert expected == result
-
-
-def test_legacy_export_as_marc_handles_unicode():
-    record = {
-        '100': [
-            {'a': u'Kätlne, J.'},
-        ],
-    }
-
-    expected = (
-        u'<record>\n'
-        u'    <datafield tag="100" ind1="" ind2="">\n'
-        u'        <subfield code="a">Kätlne, J.</subfield>\n'
-        u'    </datafield>\n'
-        u'</record>\n'
-    )
-    result = legacy_export_as_marc(record)
-
-    assert expected == result
-
-
-def test_legacy_export_as_marc_handles_numbers():
-    record = {
-        '773': [
-            {'y': 1975},
-        ],
-    }
-
-    expected = (
-        '<record>\n'
-        '    <datafield tag="773" ind1="" ind2="">\n'
-        '        <subfield code="y">1975</subfield>\n'
-        '    </datafield>\n'
-        '</record>\n'
-    )
-    result = legacy_export_as_marc(record)
-
-    assert expected == result
 
 
 def test_dedupe_all_lists():
