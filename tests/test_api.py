@@ -123,6 +123,22 @@ def test_record2marcxml_generates_indices():
     assert expected == result
 
 
+def test_record2marcxml_supports_authors():
+    record = {
+        '$schema': 'http://localhost:5000/schemas/records/authors.json',
+        'control_number': 1010819,
+    }
+
+    expected = (
+        b'<record>\n'
+        b'  <controlfield tag="001">1010819</controlfield>\n'
+        b'</record>\n'
+    )
+    result = record2marcxml(record)
+
+    assert expected == result
+
+
 def test_record2marcxml_supports_relative_urls():
     record = {
         '$schema': '/schemas/records/hep.json',

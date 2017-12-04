@@ -104,7 +104,7 @@ def record2marcxml(record):
 
     if schema_name == 'hep':
         marcjson = hep2marc.do(record)
-    elif schema_name == 'hepnames':
+    elif schema_name == 'authors':
         marcjson = hepnames2marc.do(record)
     else:
         raise NotImplementedError(u'JSON -> MARC rules missing for "{}"'.format(schema_name))
