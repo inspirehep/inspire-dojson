@@ -179,6 +179,30 @@ def test_record2marcxml_handles_numbers():
     assert expected == result
 
 
+def test_record2marcxml_handles_repeated_fields():
+    record = {
+        '$schema': 'http://localhost:5000/schemas/records/hep.json',
+        '_collections': [
+            'Literature',
+            'HAL Hidden',
+        ],
+    }
+
+    expected = (
+        b'<record>\n'
+        b'  <datafield tag="980" ind1=" " ind2=" ">\n'
+        b'    <subfield code="a">HEP</subfield>\n'
+        b'  </datafield>\n'
+        b'  <datafield tag="980" ind1=" " ind2=" ">\n'
+        b'    <subfield code="a">HALhidden</subfield>\n'
+        b'  </datafield>\n'
+        b'</record>\n'
+    )
+    result = record2marcxml(record)
+
+    assert expected == result
+
+
 def test_record2marcxml_handles_repeated_subfields():
     record = {
         '$schema': 'http://localhost:5000/schemas/records/hep.json',
