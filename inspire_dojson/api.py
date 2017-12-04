@@ -119,14 +119,14 @@ def record2marcxml(record):
                 value = text_type(value)
             record.append(CONTROLFIELD(value, {'tag': tag}))
         else:
-            datafield = DATAFIELD({'tag': tag, 'ind1': ind1, 'ind2': ind2})
             for value in force_list(values):
+                datafield = DATAFIELD({'tag': tag, 'ind1': ind1, 'ind2': ind2})
                 for code, els in sorted(iteritems(value)):
                     for el in force_list(els):
                         if not isinstance(el, text_type):
                             el = text_type(el)
                         datafield.append(SUBFIELD(el, {'code': code}))
-            record.append(datafield)
+                record.append(datafield)
 
     return tostring(record, encoding='utf8', pretty_print=True)
 
