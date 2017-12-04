@@ -40,6 +40,19 @@ def test_marcxml2record_handles_data():
     assert expected == result['$schema']
 
 
+def test_marcxml2record_handles_institutions():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">INSTITUTION</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'institutions.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
 def test_marcxml2record_handles_journalsnew():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'

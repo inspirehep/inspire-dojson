@@ -78,7 +78,7 @@ def marcxml2record(marcxml):
         return experiments.do(marcjson)
     elif 'hepnames' in collections:
         return hepnames.do(marcjson)
-    elif 'institutions' in collections:
+    elif 'institution' in collections:
         return institutions.do(marcjson)
     elif 'job' in collections or 'jobhidden' in collections:
         return jobs.do(marcjson)
