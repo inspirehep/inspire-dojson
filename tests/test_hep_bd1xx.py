@@ -162,6 +162,42 @@ def test_authors_from_100__a_u_w_y_and_700_a_u_w_x_y():
     assert expected_700 == result['700']
 
 
+def test_authors_from_100__a_and_700__a_orders_correctly():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Author, Second</subfield>'
+        '  </datafield>'
+        '  <datafield tag="100" ind1=" " ind2=" ">'
+        '    <subfield code="a">Author, First</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # synthetic data
+
+    expected = [
+        {'full_name': 'Author, First'},
+        {'full_name': 'Author, Second'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        '100': {'a': 'Author, First'},
+        '700': [
+            {'a': 'Author, Second'},
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected['100'] == result['100']
+    assert expected['700'] == result['700']
+
+
 def test_authors_from_100__a_e_w_y_and_700_a_e_w_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
