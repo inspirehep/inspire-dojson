@@ -163,12 +163,20 @@ def reorder_abstracts(record, blob):
     return record
 
 
+def merge_authors(record, blob):
+    authors_second = record.pop('authors_second', [])
+    record.setdefault('authors', []).extend(authors_second)
+
+    return record
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
     convert_publication_infos,
     move_incomplete_publication_infos,
     reorder_abstracts,
+    merge_authors,
     ensure_curated,
     ensure_document_type,
     ensure_unique_documents_and_figures,

@@ -40,10 +40,7 @@ from ...utils import (
 ORCID = re.compile('\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
 
 
-@hep.over('authors', '^(100|700|701)..')
-@utils.flatten
-@utils.for_each_value
-def authors(self, key, value):
+def _authors(key, value):
     def _get_affiliations(value):
         result = []
 
@@ -170,6 +167,20 @@ def authors(self, key, value):
                 'raw_affiliations': _get_raw_affiliations(value),
             } for full_name in full_names
         ]
+
+
+@hep.over('authors', '^100..')
+@utils.flatten
+@utils.for_each_value
+def authors(self, key, value):
+    return _authors(key, value)
+
+
+@hep.over('authors_second', '^700..', '^701..')
+@utils.flatten
+@utils.for_each_value
+def authors_second(self, key, value):
+    return _authors(key, value)
 
 
 @hep2marc.over('100', '^authors$')
