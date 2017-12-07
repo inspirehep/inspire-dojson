@@ -103,20 +103,13 @@ def dois(self, key, value):
 
     def _get_material(value):
         MATERIAL_MAP = {
-            'addendum': 'addendum',
             'ebook': 'publication',
-            'editorial note': 'editorial note',
-            'erratum': 'erratum',
-            'preprint': 'preprint',
-            'publication': 'publication',
-            'reprint': 'reprint',
-            'translation': 'translation',
         }
 
         q_value = force_single_element(value.get('q', ''))
         normalized_q_value = q_value.lower()
 
-        return MATERIAL_MAP.get(normalized_q_value)
+        return MATERIAL_MAP.get(normalized_q_value, normalized_q_value)
 
     def _is_doi(id_, type_):
         return (not type_ or type_.upper() == 'DOI') and is_doi(id_)
