@@ -40,7 +40,7 @@ install_requires = [
     'IDUtils~=0.0,>=0.2.4',
     'dojson~=1.0,>=1.3.1',
     'inspire-schemas~=56.0,>=56.0.9',
-    'inspire-utils~=1.0,>=1.0.0',
+    'inspire-utils~=1.0,>=1.0.2',
     'isbnid_fork~=0.0,>=0.5.2',
     'langdetect~=1.0,>=1.0.7',
     'pycountry~=17.0,>=17.5.4',
