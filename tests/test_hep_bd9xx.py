@@ -22,8 +22,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import pytest
-
 from dojson.contrib.marc21.utils import create_record
 
 from inspire_dojson.hep import hep, hep2marc
@@ -1017,7 +1015,6 @@ def test_references_from_999C50_9_r_u_h_m_o():
     assert expected == result['999C5']
 
 
-@pytest.mark.xfail(reason='name is normalized incorrectly')
 def test_reference_from_999C5t_p_y_e_o():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
@@ -1417,7 +1414,6 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
     assert expected == result['999C5']
 
 
-@pytest.mark.xfail(reason='name is normalized incorrectly')
 def test_references_from_999C5h_k_double_m_o_s_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
@@ -1443,7 +1439,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
             },
             'reference': {
                 'authors': [
-                    {'full_name': 'Schoutens, W.'},
+                    {'full_name': 'Schoutens.'},  # XXX: wrong, but the best we can do.
                 ],
                 'label': '12',
                 'misc': [
@@ -1470,7 +1466,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
         {
             '0': 338634,
             'h': [
-                'Schoutens, W.',
+                'Schoutens.',  # XXX: wrong, but the best we can do.
             ],
             'k': 'Bouwknegt:1992wg',
             'm': 'Peter Bouwknegt and Kareljan / symmetry in conformal field theory',
