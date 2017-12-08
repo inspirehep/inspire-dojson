@@ -37,6 +37,7 @@ from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list
 
 from ..conferences.model import conferences
+from ..data.model import data
 from ..experiments.model import experiments
 from ..hep.model import hep, hep2marc
 from ..hepnames.model import hepnames, hepnames2marc
@@ -588,13 +589,14 @@ def self_url(index):
     return _self_url
 
 
-institutions.over('self', '^001')(self_url('institutions'))
-hep.over('self', '^001')(self_url('literature'))
 conferences.over('self', '^001')(self_url('conferences'))
+data.over('self', '^001')(self_url('data'))
 experiments.over('self', '^001')(self_url('experiments'))
-journals.over('self', '^001')(self_url('journals'))
+hep.over('self', '^001')(self_url('literature'))
 hepnames.over('self', '^001')(self_url('authors'))
+institutions.over('self', '^001')(self_url('institutions'))
 jobs.over('self', '^001')(self_url('jobs'))
+journals.over('self', '^001')(self_url('journals'))
 
 
 @hep2marc.over('001', '^control_number$')
@@ -896,12 +898,14 @@ def new_record2marc(self, key, value):
 
 
 @conferences.over('deleted', '^980..')
+@data.over('deleted', '^980..')
 @jobs.over('deleted', '^980..')
 def deleted(self, key, value):
     return value.get('c', '').upper() == 'DELETED'
 
 
 @conferences.over('deleted_records', '^981..')
+@data.over('deleted_records', '^981..')
 @experiments.over('deleted_records', '^981..')
 @hep.over('deleted_records', '^981..')
 @hepnames.over('deleted_records', '^981..')

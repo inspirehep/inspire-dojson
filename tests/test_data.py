@@ -20,16 +20,26 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""DoJSON rules for Data."""
-
 from __future__ import absolute_import, division, print_function
 
-from .model import data
-from ..utils import force_single_element, get_record_ref
+from dojson.contrib.marc21.utils import create_record
+
+from inspire_dojson.data import data
+from inspire_schemas.api import load_schema, validate
 
 
-@data.over('new_record', '^970..')
-def new_record(self, key, value):
-    new_recid = force_single_element(value.get('d'))
-    if new_recid:
-        return get_record_ref(new_recid, 'data')
+def test_new_record_from_970__d():
+    schema = load_schema('data')
+    subschema = schema['properties']['new_record']
+
+    snippet = (
+        '<datafield tag="970" ind1=" " ind2=" ">'
+        '  <subfield code="d">361769</subfield>'
+        '</datafield>'
+    )  # synthetic data
+
+    expected = {'$ref': 'http://localhost:5000/api/data/361769'}
+    result = data.do(create_record(snippet))
+
+    assert validate(result['new_record'], subschema) is None
+    assert expected == result['new_record']
