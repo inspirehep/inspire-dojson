@@ -64,6 +64,13 @@ def documents(self, key, value):
             return fname
         return fname + extension
 
+    def _get_source(value):
+        source = value.get('t')
+        if source in ('INSPIRE-PUBLIC', 'Main'):
+            source = None
+
+        return source
+
     figures = self.get('figures', [])
     is_context = value.get('f', '').endswith('context')
 
@@ -85,7 +92,8 @@ def documents(self, key, value):
             'key': _get_key(value),
             'fulltext': _is_fulltext(value),
             'hidden': _is_hidden(force_list(value.get('o'))),
-            'url': afs_url(value)
+            'url': afs_url(value),
+            'source': _get_source(value),
         }
 
 

@@ -33,10 +33,11 @@ from six.moves import urllib
 
 from dojson.contrib.marc21.utils import create_record
 
-from inspire_dojson.utils import force_single_element
+from inspire_dojson.utils import create_record_from_dict, force_single_element
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
+from .cds import cds2hep_marc
 from .conferences import conferences
 from .data import data
 from .experiments import experiments
@@ -70,7 +71,9 @@ def marcxml2record(marcxml):
     marcjson = create_record(marcxml, keep_singletons=False)
     collections = _get_collections(marcjson)
 
-    if 'conferences' in collections:
+    if _is_from_cds(marcjson):
+        return hep.do(create_record_from_dict(cds2hep_marc.do(marcjson)))
+    elif 'conferences' in collections:
         return conferences.do(marcjson)
     elif 'data' in collections:
         return data.do(marcjson)
@@ -142,6 +145,10 @@ def _get_schema_name(record):
     schema_name, _ = os.path.splitext(filename)
 
     return schema_name
+
+
+def _is_from_cds(marcjson):
+    return marcjson.get('003', '').lower() == 'szgecern'
 
 
 def _is_controlfield(tag, ind1, ind2):

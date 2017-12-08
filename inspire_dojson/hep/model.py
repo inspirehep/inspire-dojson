@@ -32,6 +32,7 @@ from inspire_schemas.utils import (
     convert_old_publication_info_to_new,
     normalize_arxiv_category,
 )
+from inspire_schemas.builders.literature import is_citeable
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
@@ -170,6 +171,13 @@ def merge_authors(record, blob):
     return record
 
 
+def set_citeable(record, blob):
+    if is_citeable(record.get('publication_info', [])):
+        record['citeable'] = True
+
+    return record
+
+
 hep_filters = [
     add_schema('hep.json'),
     add_arxiv_categories,
@@ -181,6 +189,7 @@ hep_filters = [
     ensure_document_type,
     ensure_unique_documents_and_figures,
     ensure_ordered_figures,
+    set_citeable,
     clean_record,
 ]
 
