@@ -31,7 +31,7 @@ import pycountry
 from isbn import ISBN
 
 from dojson import utils
-from idutils import is_doi, is_handle, normalize_doi
+from idutils import is_arxiv_post_2007, is_doi, is_handle, normalize_doi
 
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import normalize_arxiv_category
@@ -348,7 +348,7 @@ def arxiv_eprints(self, key, value):
 
 
 @hep2marc.over('037', '^arxiv_eprints$')
-def arxiv_eprints2marc(self, key, value):
+def arxiv_eprints2marc(self, key, values):
     """Populate the ``037`` MARC field.
 
     Also populates the ``035`` and the ``65017`` MARC fields through side effects.
@@ -357,11 +357,12 @@ def arxiv_eprints2marc(self, key, value):
     result_035 = self.get('035', [])
     result_65017 = self.get('65017', [])
 
-    values = force_list(value)
     for value in values:
+        arxiv_id = value.get('value')
+        arxiv_id = 'arXiv:' + arxiv_id if is_arxiv_post_2007(arxiv_id) else arxiv_id
         result_037.append({
             '9': 'arXiv',
-            'a': 'arXiv:' + value.get('value'),
+            'a': arxiv_id,
             'c': force_single_element(value.get('categories')),
         })
 
