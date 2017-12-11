@@ -24,5 +24,5 @@
 
 from __future__ import absolute_import, division, print_function
 
-from . import common  # noqa
-from .api import marcxml2record, record2marcxml  # noqa
+from . import common  # noqa: F401
+from .api import marcxml2record, record2marcxml  # noqa: F401
