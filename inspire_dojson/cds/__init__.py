@@ -24,5 +24,5 @@
 
 from __future__ import absolute_import, division, print_function
 
-from . import rules  # noqa
-from .model import cds2hep_marc  # noqa
+from . import rules  # noqa: F401
+from .model import cds2hep_marc  # noqa: F401
