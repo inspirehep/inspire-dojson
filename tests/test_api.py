@@ -279,6 +279,30 @@ def test_record2marcxml_handles_repeated_subfields():
     assert expected == result
 
 
+def test_record2marcxml_strips_control_characters():
+    record = {
+        '$schema': 'http://localhost:5000/schemas/records/hep.json',
+        'abstracts': [
+            {
+                'source': 'submitter',
+                'value': u'A common feature shared by many quantum gravity models is modi\u001Ccations of two-point functions at energy scales around the Planck scale.',
+            },
+        ],
+    }  # holdingpen/812647
+
+    expected = (
+        b'<record>\n'
+        b'  <datafield tag="520" ind1=" " ind2=" ">\n'
+        b'    <subfield code="9">submitter</subfield>\n'
+        b'    <subfield code="a">A common feature shared by many quantum gravity models is modications of two-point functions at energy scales around the Planck scale.</subfield>\n'
+        b'  </datafield>\n'
+        b'</record>\n'
+    )
+    result = record2marcxml(record)
+
+    assert expected == result
+
+
 def test_record2marcxml_raises_when_rules_were_not_implemented():
     record = {'$schema': 'http://localhost:5000/schemas/records/data.json'}
 
