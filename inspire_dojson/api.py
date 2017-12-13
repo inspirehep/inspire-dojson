@@ -25,6 +25,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import re
 
 from lxml.builder import E
 from lxml.etree import tostring
@@ -46,6 +47,9 @@ from .hepnames import hepnames, hepnames2marc
 from .institutions import institutions
 from .jobs import jobs
 from .journals import journals
+
+RE_INVALID_CHARS_FOR_XML = re.compile(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+')
+"""See: https://stackoverflow.com/a/25920392/374865."""
 
 RECORD = E.record
 CONTROLFIELD = E.controlfield
@@ -120,7 +124,7 @@ def record2marcxml(record):
             value = force_single_element(values)
             if not isinstance(value, text_type):
                 value = text_type(value)
-            record.append(CONTROLFIELD(value, {'tag': tag}))
+            record.append(CONTROLFIELD(_strip_invalid_chars_for_xml(value), {'tag': tag}))
         else:
             for value in force_list(values):
                 datafield = DATAFIELD({'tag': tag, 'ind1': ind1, 'ind2': ind2})
@@ -128,7 +132,7 @@ def record2marcxml(record):
                     for el in force_list(els):
                         if not isinstance(el, text_type):
                             el = text_type(el)
-                        datafield.append(SUBFIELD(el, {'code': code}))
+                        datafield.append(SUBFIELD(_strip_invalid_chars_for_xml(el), {'code': code}))
                 record.append(datafield)
 
     return tostring(record, encoding='utf8', pretty_print=True)
@@ -157,3 +161,7 @@ def _is_controlfield(tag, ind1, ind2):
 
 def _parse_key(key):
     return key[:3], key[3:4] or ' ', key[4:5] or ' '
+
+
+def _strip_invalid_chars_for_xml(s):
+    return re.sub(RE_INVALID_CHARS_FOR_XML, '', s)
