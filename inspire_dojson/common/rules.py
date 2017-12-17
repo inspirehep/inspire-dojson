@@ -582,21 +582,26 @@ WEBLINKS = {
 }
 
 
-def self_url(index):
-    def _self_url(self, key, value):
-        self['control_number'] = int(value)
-        return get_record_ref(value, index)
-    return _self_url
+def control_number(endpoint):
+    """Populate the ``control_number`` key.
+
+    Also populates the ``self`` key through side effects.
+    """
+    def _control_number(self, key, value):
+        self['self'] = get_record_ref(int(value), endpoint)
+        return int(value)
+
+    return _control_number
 
 
-conferences.over('self', '^001')(self_url('conferences'))
-data.over('self', '^001')(self_url('data'))
-experiments.over('self', '^001')(self_url('experiments'))
-hep.over('self', '^001')(self_url('literature'))
-hepnames.over('self', '^001')(self_url('authors'))
-institutions.over('self', '^001')(self_url('institutions'))
-jobs.over('self', '^001')(self_url('jobs'))
-journals.over('self', '^001')(self_url('journals'))
+conferences.over('control_number', '^001')(control_number('conferences'))
+data.over('control_number', '^001')(control_number('data'))
+experiments.over('control_number', '^001')(control_number('experiments'))
+hep.over('control_number', '^001')(control_number('literature'))
+hepnames.over('control_number', '^001')(control_number('authors'))
+institutions.over('control_number', '^001')(control_number('institutions'))
+jobs.over('control_number', '^001')(control_number('jobs'))
+journals.over('control_number', '^001')(control_number('journals'))
 
 
 @hep2marc.over('001', '^control_number$')
