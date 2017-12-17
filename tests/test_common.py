@@ -254,7 +254,7 @@ def test_new_record_from_970__d():
         '</datafield>'
     )  # record/37545
 
-    expected = {'$ref': 'http://localhost:5000/api/record/361769'}
+    expected = {'$ref': 'http://localhost:5000/api/literature/361769'}
     result = hep.do(create_record(snippet))
 
     assert validate(result['new_record'], subschema) is None
@@ -276,7 +276,7 @@ def test_deleted_records_from_981__a():
         '</datafield>'
     )  # record/1508886
 
-    expected = [{'$ref': 'http://localhost:5000/api/record/1508668'}]
+    expected = [{'$ref': 'http://localhost:5000/api/literature/1508668'}]
     result = hep.do(create_record(snippet))
 
     assert validate(result['deleted_records'], subschema) is None

@@ -34,7 +34,7 @@ from dojson import utils
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import classify_field
 from inspire_utils.date import normalize_date
-from inspire_utils.helpers import force_list
+from inspire_utils.helpers import force_list, maybe_int
 
 from ..conferences.model import conferences
 from ..data.model import data
@@ -867,33 +867,38 @@ def legacy_creation_date2marc(self, key, value):
     return {'x': value}
 
 
-@conferences.over('external_system_identifiers', '^970..')
-@experiments.over('external_system_identifiers', '^970..')
-@hep.over('external_system_identifiers', '^970..')
-@institutions.over('external_system_identifiers', '^970..')
-@journals.over('external_system_identifiers', '^970..')
-@jobs.over('external_system_identifiers', '^970..')
-def external_system_identifiers(self, key, value):
+def external_system_identifiers(endpoint):
     """Populate the ``external_system_identifiers`` key.
 
     Also populates the ``new_record`` key through side effects.
     """
-    external_system_identifiers = self.get('external_system_identifiers', [])
-    new_record = self.get('new_record', {})
+    def _external_system_identifiers(self, key, values):
+        external_system_identifiers = self.get('external_system_identifiers', [])
+        new_record = self.get('new_record', {})
 
-    for value in force_list(value):
-        for id_ in force_list(value.get('a')):
-            external_system_identifiers.append({
-                'schema': 'SPIRES',
-                'value': id_,
-            })
+        for value in force_list(values):
+            for id_ in force_list(value.get('a')):
+                external_system_identifiers.append({
+                    'schema': 'SPIRES',
+                    'value': id_,
+                })
 
-        new_recid = force_single_element(value.get('d', ''))
-        if new_recid:
-            new_record = get_record_ref(new_recid)
+            new_recid = maybe_int(value.get('d'))
+            if new_recid:
+                new_record = get_record_ref(new_recid, endpoint)
 
-    self['new_record'] = new_record
-    return external_system_identifiers
+        self['new_record'] = new_record
+        return external_system_identifiers
+
+    return _external_system_identifiers
+
+
+conferences.over('external_system_identifiers', '^970..')(external_system_identifiers('conferences'))
+experiments.over('external_system_identifiers', '^970..')(external_system_identifiers('experiments'))
+hep.over('external_system_identifiers', '^970..')(external_system_identifiers('literature'))
+institutions.over('external_system_identifiers', '^970..')(external_system_identifiers('institutions'))
+jobs.over('external_system_identifiers', '^970..')(external_system_identifiers('jobs'))
+journals.over('external_system_identifiers', '^970..')(external_system_identifiers('journals'))
 
 
 @hep2marc.over('970', '^new_record$')
@@ -909,17 +914,28 @@ def deleted(self, key, value):
     return value.get('c', '').upper() == 'DELETED'
 
 
-@conferences.over('deleted_records', '^981..')
-@data.over('deleted_records', '^981..')
-@experiments.over('deleted_records', '^981..')
-@hep.over('deleted_records', '^981..')
-@hepnames.over('deleted_records', '^981..')
-@institutions.over('deleted_records', '^981..')
-@jobs.over('deleted_records', '^981..')
-@journals.over('deleted_records', '^981..')
-@utils.for_each_value
-def deleted_records(self, key, value):
-    return get_record_ref(value.get('a'))
+def deleted_records(endpoint):
+    def _deleted_records(self, key, values):
+        deleted_records = self.get('deleted_records', [])
+
+        for value in force_list(values):
+            deleted_recid = maybe_int(value.get('a'))
+            if deleted_recid:
+                deleted_records.append(get_record_ref(deleted_recid, endpoint))
+
+        return deleted_records
+
+    return _deleted_records
+
+
+conferences.over('deleted_records', '^981..')(deleted_records('conferences'))
+data.over('deleted_records', '^981..')(deleted_records('data'))
+experiments.over('deleted_records', '^981..')(deleted_records('experiments'))
+hep.over('deleted_records', '^981..')(deleted_records('literature'))
+hepnames.over('deleted_records', '^981..')(deleted_records('authors'))
+institutions.over('deleted_records', '^981..')(deleted_records('institutions'))
+jobs.over('deleted_records', '^981..')(deleted_records('jobs'))
+journals.over('deleted_records', '^981..')(deleted_records('journals'))
 
 
 @hep2marc.over('981', 'deleted_records')
