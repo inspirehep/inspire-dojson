@@ -29,7 +29,7 @@ import re
 
 from lxml.builder import E
 from lxml.etree import tostring
-from six import iteritems, text_type
+from six import iteritems, text_type, unichr
 from six.moves import urllib
 
 from dojson.contrib.marc21.utils import create_record
@@ -48,8 +48,13 @@ from .institutions import institutions
 from .jobs import jobs
 from .journals import journals
 
-RE_INVALID_CHARS_FOR_XML = re.compile(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+')
-"""See: https://stackoverflow.com/a/25920392/374865."""
+try:
+    unichr(0x100000)
+    RE_INVALID_CHARS_FOR_XML = re.compile(
+        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]+')
+except ValueError:  # pragma: no cover
+    RE_INVALID_CHARS_FOR_XML = re.compile(
+        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD]+')
 
 RECORD = E.record
 CONTROLFIELD = E.controlfield
