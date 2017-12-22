@@ -598,6 +598,33 @@ def test_publication_info_from_773__p_and_773__c_p_v_y_1_also_populates_public_n
     assert expected_public_notes == result['public_notes']
 
 
+def test_publication_info_from_double_773__p():
+    schema = load_schema('hep')
+    subschema = schema['properties']['public_notes']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="773" ind1=" " ind2=" ">'
+        '    <subfield code="p">Proc.HELAS Workshop on `New insights into the Sun\'</subfield>'
+        '  </datafield>'
+        '  <datafield tag="773" ind1=" " ind2=" ">'
+        '    <subfield code="p">&amp; M.J.Thompson (2009)</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/920292
+
+    expected = [
+        {'value': 'Submitted to Proc.HELAS Workshop on `New insights into the Sun\''},
+        {'value': 'Submitted to & M.J.Thompson (2009)'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert 'publication_info' not in result
+
+    assert validate(result['public_notes'], subschema) is None
+    assert expected == result['public_notes']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
