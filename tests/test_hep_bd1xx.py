@@ -1678,6 +1678,32 @@ def test_author_from_700__strips_dot_from_orcid():
     assert expected == result['100']
 
 
+def test_authors_from_700__a_double_e_handles_multiple_roles():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="700" ind1=" " ind2=" ">'
+        '  <subfield code="a">Peskin, M.E.</subfield>'
+        '  <subfield code="e">Convener</subfield>'
+        '  <subfield code="e">ed.</subfield>'
+        '</datafield>'
+    )  # record/1264604
+
+    expected = [
+        {
+            'full_name': 'Peskin, M.E.',
+            'inspire_roles': [
+                'editor',
+            ],
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+
 def test_corporate_author_from_110__a():
     schema = load_schema('hep')
     subschema = schema['properties']['corporate_author']

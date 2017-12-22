@@ -127,7 +127,8 @@ def _authors(key, value):
     def _get_inspire_roles(value):
         result = []
 
-        if value.get('e', '').lower().startswith('ed'):
+        e_values = force_list(value.get('e'))
+        if any(el.lower().startswith('ed') for el in e_values):
             result.append('editor')
 
         if key.startswith('701'):
