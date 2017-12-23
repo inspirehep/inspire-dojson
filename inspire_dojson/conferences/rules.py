@@ -26,7 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 
-from inspire_utils.helpers import force_list
+from inspire_utils.helpers import force_list, maybe_int
 
 from .model import conferences
 from ..utils import force_single_element
@@ -110,9 +110,7 @@ def series(self, key, value):
         return force_single_element(value.get('a'))
 
     def _get_number(value):
-        n_value = force_single_element(value.get('n'))
-        if n_value and n_value.isdigit():
-            return int(n_value)
+        return maybe_int(force_single_element(value.get('n')))
 
     def _last_is_incomplete(series, key):
         return series and not series[-1].get(key)

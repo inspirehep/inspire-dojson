@@ -28,7 +28,7 @@ import re
 
 from dojson import utils
 
-from inspire_utils.helpers import force_list
+from inspire_utils.helpers import force_list, maybe_int
 
 from ..model import hep, hep2marc
 from ...utils import (
@@ -140,9 +140,7 @@ def _authors(key, value):
         return [{'value': el} for el in force_list(value.get('v'))]
 
     def _get_record(value):
-        x_value = force_single_element(value.get('x'))
-        if x_value and x_value.isdigit():
-            return get_record_ref(x_value, 'authors')
+        return get_record_ref(maybe_int(force_single_element(value.get('x'))), 'authors')
 
     full_names = _get_full_names(value)
     if len(full_names) == 1:

@@ -188,23 +188,20 @@ def status2marc(self, key, value):
 @hepnames.over('positions', '^371..')
 @utils.for_each_value
 def positions(self, key, value):
-    curated = False
     current = False
-    recid = None
+    record = None
 
     recid_or_status = force_list(value.get('z'))
     for el in recid_or_status:
         if el.lower() == 'current':
             current = True
         else:
-            curated = el.isdigit()
-            if curated:
-                recid = int(el)
+            record = get_record_ref(maybe_int(el), 'institutions')
 
     institution = {
         'name': value.get('a'),
-        'record': get_record_ref(recid, 'institutions'),
-        'curated_relation': curated,
+        'record': record,
+        'curated_relation': record is not None,
     }
 
     emails = [el for el in force_list(value.get('m'))]
