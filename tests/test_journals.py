@@ -341,6 +341,27 @@ def test_private_notes_from_667__x():
     assert expected == result['_private_notes']
 
 
+def test_private_notes_from_667__double_x():
+    schema = load_schema('journals')
+    subschema = schema['properties']['_private_notes']
+
+    snippet = (
+        '<datafield tag="667" ind1=" " ind2=" ">'
+        '  <subfield code="x">Do not use vol, use year and page: 2006:2154,2006</subfield>'
+        '  <subfield code="x">even year is not unique</subfield>'
+        '</datafield>'
+    )  # record/1212189
+
+    expected = [
+        {'value': 'Do not use vol, use year and page: 2006:2154,2006'},
+        {'value': 'even year is not unique'},
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['_private_notes'], subschema) is None
+    assert expected == result['_private_notes']
+
+
 def test_doi_prefixes_from_677__d():
     schema = load_schema('journals')
     subschema = schema['properties']['doi_prefixes']
