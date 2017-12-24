@@ -713,15 +713,16 @@ def public_notes2marc(self, key, value):
 @institutions.over('_private_notes', '^595..')
 @jobs.over('_private_notes', '^595..')
 @journals.over('_private_notes', '^595..')
+@utils.flatten
 @utils.for_each_value
 def _private_notes_595(self, key, value):
-    _private_note = value.get('a')
-
-    if _private_note:
-        return {
+    """Populate the ``_private_notes`` key."""
+    return [
+        {
             'source': value.get('9'),
             'value': _private_note,
-        }
+        } for _private_note in force_list(value.get('a'))
+    ]
 
 
 @hep2marc.over('595', '^_private_notes$')
