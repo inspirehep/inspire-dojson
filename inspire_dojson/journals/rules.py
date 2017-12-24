@@ -144,15 +144,16 @@ def publisher(self, key, value):
 
 
 @journals.over('_private_notes', '^667..')
+@utils.flatten
 @utils.for_each_value
 def _private_notes(self, key, value):
-    _private_note = value.get('x')
-
-    if _private_note:
-        return {
+    """Populate the ``_private_notes`` key."""
+    return [
+        {
             'source': value.get('9'),
             'value': _private_note,
-        }
+        } for _private_note in force_list(value.get('x'))
+    ]
 
 
 @journals.over('doi_prefixes', '^677..')

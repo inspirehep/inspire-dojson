@@ -1323,6 +1323,35 @@ def test_private_notes_from_595__a_9():
     assert expected == result['595']
 
 
+def test_private_notes_from_595__double_a():
+    schema = load_schema('authors')
+    subschema = schema['properties']['_private_notes']
+
+    snippet = (
+        '<datafield tag="595" ind1=" " ind2=" ">'
+        '  <subfield code="a">"I want to hide my personal information on REDACTED" 7/2017</subfield>'
+        '  <subfield code="a">REDACTED</subfield>'
+        '</datafield>'
+    )  # record/1279232
+
+    expected = [
+        {'value': '"I want to hide my personal information on REDACTED" 7/2017'},
+        {'value': 'REDACTED'},
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['_private_notes'], subschema) is None
+    assert expected == result['_private_notes']
+
+    expected = [
+        {'a': '"I want to hide my personal information on REDACTED" 7/2017'},
+        {'a': 'REDACTED'},
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['595']
+
+
 def test_urls_from_8564_u_and_8564_g_u_y():
     schema = load_schema('authors')
     subschema = schema['properties']['urls']
