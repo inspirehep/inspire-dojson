@@ -154,12 +154,21 @@ def ids2marc(self, key, value):
 
 @hepnames.over('name', '^100..')
 def name(self, key, value):
+    """Populate the ``name`` key.
+
+    Also populates the ``status`` key through side effects.
+    """
+    def _get_title(value):
+        c_value = force_single_element(value.get('c', ''))
+        if c_value != 'title (e.g. Sir)':
+            return c_value
+
     self['status'] = force_single_element(value.get('g', '')).lower()
 
     return {
         'numeration': force_single_element(value.get('b', '')),
         'preferred_name': force_single_element(value.get('q', '')),
-        'title': force_single_element(value.get('c', '')),
+        'title': _get_title(value),
         'value': force_single_element(value.get('a', '')),
     }
 

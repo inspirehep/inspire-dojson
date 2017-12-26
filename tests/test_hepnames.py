@@ -778,6 +778,36 @@ def test_name_from_100__a_g_q():
     assert expected == result['100']
 
 
+def test_title_from_100__a_c_q_discards_default_title():
+    schema = load_schema('authors')
+    subschema = schema['properties']['name']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Joosten, Sylvester Johannes</subfield>'
+        '  <subfield code="c">title (e.g. Sir)</subfield>'
+        '  <subfield code="q">Sylvester Johannes Joosten</subfield>'
+        '</datafield>'
+    )  # record/1270441
+
+    expected = {
+        'preferred_name': 'Sylvester Johannes Joosten',
+        'value': 'Joosten, Sylvester Johannes',
+    }
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['name'], subschema) is None
+    assert expected == result['name']
+
+    expected = {
+        'a': 'Joosten, Sylvester Johannes',
+        'q': 'Sylvester Johannes Joosten',
+    }
+    result = hepnames2marc.do(result)
+
+    assert expected == result['100']
+
+
 def test_status_from_100__a_g_q():
     schema = load_schema('authors')
     subschema = schema['properties']['status']
