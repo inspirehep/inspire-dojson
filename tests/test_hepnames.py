@@ -778,6 +778,36 @@ def test_name_from_100__a_g_q():
     assert expected == result['100']
 
 
+def test_name_from_100__g_q_populates_value_from_preferred_name():
+    schema = load_schema('authors')
+    subschema = schema['properties']['name']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="g">ACTIVE</subfield>'
+        '  <subfield code="q">Vyacheslav I. Yukalova</subfield>'
+        '</datafield>'
+    )  # record/1259075
+
+    expected = {
+        'preferred_name': 'Vyacheslav I. Yukalova',
+        'value': 'Yukalova, Vyacheslav I.',
+    }
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['name'], subschema) is None
+    assert expected == result['name']
+
+    expected = {
+        'a': 'Yukalova, Vyacheslav I.',
+        'g': 'active',
+        'q': 'Vyacheslav I. Yukalova',
+    }
+    result = hepnames2marc.do(result)
+
+    assert expected == result['100']
+
+
 def test_title_from_100__a_c_q_discards_default_title():
     schema = load_schema('authors')
     subschema = schema['properties']['name']

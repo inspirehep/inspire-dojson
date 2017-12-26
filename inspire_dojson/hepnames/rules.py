@@ -35,6 +35,7 @@ from inspire_schemas.utils import (
 )
 from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
+from inspire_utils.name import normalize_name
 
 from .model import hepnames, hepnames2marc
 from ..utils import (
@@ -163,13 +164,18 @@ def name(self, key, value):
         if c_value != 'title (e.g. Sir)':
             return c_value
 
+    def _get_value(value):
+        a_value = force_single_element(value.get('a', ''))
+        q_value = force_single_element(value.get('q', ''))
+        return a_value or normalize_name(q_value)
+
     self['status'] = force_single_element(value.get('g', '')).lower()
 
     return {
         'numeration': force_single_element(value.get('b', '')),
         'preferred_name': force_single_element(value.get('q', '')),
         'title': _get_title(value),
-        'value': force_single_element(value.get('a', '')),
+        'value': _get_value(value),
     }
 
 
