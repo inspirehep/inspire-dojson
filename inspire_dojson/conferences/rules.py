@@ -34,6 +34,9 @@ from ..utils.geo import parse_conference_address
 
 
 def _trim_date(date):
+    if len(date) == 8:
+        date = '-'.join([date[:4], date[4:6], date[6:8]])
+
     try:
         year, month, day = map(int, date.split('-'))
     except ValueError:
