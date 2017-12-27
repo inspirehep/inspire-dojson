@@ -25,6 +25,7 @@
 from __future__ import absolute_import, division, print_function
 
 import re
+from datetime import datetime
 
 from flask import current_app
 from six.moves import urllib
@@ -33,7 +34,7 @@ from dojson import utils
 
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import classify_field
-from inspire_utils.date import normalize_date
+from inspire_utils.date import PartialDate, normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
 from ..conferences.model import conferences
@@ -613,6 +614,18 @@ def control_number2marc(self, key, value):
 @hep.over('acquisition_source', '^541..')
 @hepnames.over('acquisition_source', '^541..')
 def acquisition_source(self, key, value):
+    """Populate the ``acquisition_source`` key."""
+    def _get_datetime(value):
+        d_value = force_single_element(value.get('d', ''))
+        if d_value:
+            try:
+                date = PartialDate.loads(d_value)
+            except ValueError:
+                return d_value
+            else:
+                datetime_ = datetime(year=date.year, month=date.month, day=date.day)
+                return datetime_.isoformat()
+
     internal_uid, orcid, source = None, None, None
 
     a_values = force_list(value.get('a'))
@@ -641,7 +654,7 @@ def acquisition_source(self, key, value):
         method = normalized_c_value
 
     return {
-        'datetime': value.get('d'),
+        'datetime': _get_datetime(value),
         'email': value.get('b'),
         'internal_uid': internal_uid,
         'method': method,

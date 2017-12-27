@@ -26,7 +26,7 @@ from dojson.contrib.marc21.utils import create_record
 
 from inspire_dojson.conferences import conferences
 from inspire_dojson.hep import hep, hep2marc
-from inspire_dojson.hepnames import hepnames
+from inspire_dojson.hepnames import hepnames, hepnames2marc
 from inspire_schemas.api import load_schema, validate
 
 
@@ -90,6 +90,81 @@ def test_acquisition_source_from_541__double_a_b_c_e():
         'b': 'oliver.schlotterer@web.de',
         'c': 'submission',
         'e': '504296',
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['541']
+
+
+def test_acquisition_source_from_541__a_b_c_d_e_converts_dates_to_datetimes():
+    schema = load_schema('authors')
+    subschema = schema['properties']['acquisition_source']
+
+    snippet = (
+        '<datafield tag="541" ind1=" " ind2=" ">'
+        '  <subfield code="a">inspire:uid:51852</subfield>'
+        '  <subfield code="b">jmyang@itp.ac.cn</subfield>'
+        '  <subfield code="c">submission</subfield>'
+        '  <subfield code="d">2016-05-24</subfield>'
+        '  <subfield code="e">805819</subfield>'
+        '</datafield>'
+    )  # record/982806
+
+    expected = {
+        'datetime': '2016-05-24T00:00:00',
+        'email': 'jmyang@itp.ac.cn',
+        'internal_uid': 51852,
+        'method': 'submitter',
+        'submission_number': '805819',
+    }
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['acquisition_source'], subschema) is None
+    assert expected == result['acquisition_source']
+
+    expected = {
+        'b': 'jmyang@itp.ac.cn',
+        'c': 'submission',
+        'd': '2016-05-24T00:00:00',
+        'e': '805819',
+    }
+    result = hepnames2marc.do(result)
+
+    assert expected == result['541']
+
+
+def test_acquisition_source_from_541__a_b_c_d_e_handles_datetime():
+    schema = load_schema('hep')
+    subschema = schema['properties']['acquisition_source']
+
+    snippet = (
+        '<datafield tag="541" ind1=" " ind2=" ">'
+        '  <subfield code="a">orcid:0000-0002-7307-0726</subfield>'
+        '  <subfield code="b">ratra@phys.ksu.edu</subfield>'
+        '  <subfield code="c">submission</subfield>'
+        '  <subfield code="d">2017-12-23T18:39:38.751244</subfield>'
+        '  <subfield code="e">832953</subfield>'
+        '</datafield>'
+    )  # record/1644748
+
+    expected = {
+        'datetime': '2017-12-23T18:39:38.751244',
+        'email': 'ratra@phys.ksu.edu',
+        'method': 'submitter',
+        'orcid': '0000-0002-7307-0726',
+        'submission_number': '832953',
+    }
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['acquisition_source'], subschema) is None
+    assert expected == result['acquisition_source']
+
+    expected = {
+        'a': 'orcid:0000-0002-7307-0726',
+        'b': 'ratra@phys.ksu.edu',
+        'c': 'submission',
+        'd': '2017-12-23T18:39:38.751244',
+        'e': '832953',
     }
     result = hep2marc.do(result)
 
