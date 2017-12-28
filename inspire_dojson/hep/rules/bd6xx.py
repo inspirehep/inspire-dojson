@@ -117,17 +117,14 @@ def keywords(self, key, values):
 
 
 @hep2marc.over('695', '^energy_ranges$')
-def energy_ranges2marc(self, key, values):
-    result_695 = self.get('695', [])
-
-    for value in values:
-        if value in REVERSE_ENERGY_RANGES_MAP:
-            result_695.append({
-                '2': 'INSPIRE',
-                'e': REVERSE_ENERGY_RANGES_MAP.get(value),
-            })
-
-    return result_695
+@utils.for_each_value
+def energy_ranges2marc(self, key, value):
+    """Populate the ``695`` MARC field."""
+    if value in REVERSE_ENERGY_RANGES_MAP:
+        return {
+            '2': 'INSPIRE',
+            'e': REVERSE_ENERGY_RANGES_MAP[value],
+        }
 
 
 @hep2marc.over('695', '^keywords$')
