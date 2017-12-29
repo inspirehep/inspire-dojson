@@ -26,8 +26,8 @@ from dojson.contrib.marc21.utils import create_record
 
 from inspire_dojson.hep import hep, hep2marc
 from inspire_dojson.hep.rules.bd9xx import (
-    _COLLECTIONS_MAP,
-    _COLLECTIONS_REVERSE_MAP,
+    COLLECTIONS_MAP,
+    COLLECTIONS_REVERSE_MAP,
     DOCUMENT_TYPE_MAP,
     DOCUMENT_TYPE_REVERSE_MAP,
 )
@@ -39,7 +39,7 @@ def test_collections_map_contains_all_valid_collections():
     subschema = schema['properties']['_collections']
 
     expected = subschema['items']['enum']
-    result = _COLLECTIONS_MAP.values()
+    result = COLLECTIONS_MAP.values()
 
     assert sorted(expected) == sorted(result)
 
@@ -49,7 +49,7 @@ def test_collections_reverse_map_contains_all_valid_collections():
     subschema = schema['properties']['_collections']
 
     expected = subschema['items']['enum']
-    result = _COLLECTIONS_REVERSE_MAP.keys()
+    result = COLLECTIONS_REVERSE_MAP.keys()
 
     assert sorted(expected) == sorted(result)
 
