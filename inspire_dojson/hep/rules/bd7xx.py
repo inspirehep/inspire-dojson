@@ -169,20 +169,16 @@ def publication_info2marc(self, key, values):
 
 
 @hep.over('related_records', '^78002')
-def related_records_78002(self, key, values):
-    result = self.get('related_records', [])
-
-    for value in force_list(values):
-        record = get_record_ref(maybe_int(value.get('w')), 'literature')
-
-        if record:
-            result.append({
-                'curated_relation': record is not None,
-                'record': record,
-                'relation': 'predecessor',
-            })
-
-    return result
+@utils.for_each_value
+def related_records_78002(self, key, value):
+    """Populate the ``related_records`` key."""
+    record = get_record_ref(maybe_int(value.get('w')), 'literature')
+    if record:
+        return {
+            'curated_relation': record is not None,
+            'record': record,
+            'relation': 'predecessor',
+        }
 
 
 @hep.over('related_records', '^78708')
