@@ -24,8 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from isbn import ISBN
-
 from dojson import utils
 
 from inspire_schemas.api import load_schema
@@ -41,6 +39,7 @@ from ...utils import (
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
+    normalize_isbn,
 )
 
 
@@ -89,10 +88,7 @@ def publication_info(self, key, value):
     def _get_parent_isbn(value):
         z_value = force_single_element(value.get('z', ''))
         if z_value:
-            try:
-                return str(ISBN(z_value))
-            except Exception:
-                return z_value
+            return normalize_isbn(z_value)
 
     page_start, page_end, artid = split_page_artid(value.get('c'))
 

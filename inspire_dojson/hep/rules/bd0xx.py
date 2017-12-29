@@ -28,7 +28,6 @@ import re
 from collections import defaultdict
 
 import pycountry
-from isbn import ISBN
 
 from dojson import utils
 from idutils import is_arxiv_post_2007, is_doi, is_handle, normalize_doi
@@ -38,7 +37,7 @@ from inspire_schemas.utils import normalize_arxiv_category
 from inspire_utils.helpers import force_list
 
 from ..model import hep, hep2marc
-from ...utils import force_single_element
+from ...utils import force_single_element, normalize_isbn
 
 
 RE_LANGUAGE = re.compile('\/| or | and |,|=|\s+')
@@ -71,10 +70,7 @@ def isbns(self, key, value):
         a_value = force_single_element(value.get('a', ''))
         normalized_a_value = a_value.replace('.', '')
         if normalized_a_value:
-            try:
-                return str(ISBN(normalized_a_value))
-            except Exception:
-                return normalized_a_value
+            return normalize_isbn(normalized_a_value)
 
     return {
         'medium': _get_medium(value),
