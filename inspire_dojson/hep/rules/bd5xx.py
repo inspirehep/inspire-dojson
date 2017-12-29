@@ -405,20 +405,17 @@ def _desy_bookkeeping2marc(self, key, value):
 
     Also populates the ``035`` MARC field through side effects.
     """
-    result_035 = self.get('035', [])
+    if 'identifier' not in value:
+        return {
+            'a': value.get('expert'),
+            'd': value.get('date'),
+            's': value.get('status'),
+        }
 
-    if 'identifier' in value:
-        result_035.append({
-            '9': 'DESY',
-            'z': value['identifier']
-        })
-
-    self['035'] = result_035
-    return {
-        'a': value.get('expert'),
-        'd': value.get('date'),
-        's': value.get('status'),
-    }
+    self.setdefault('035', []).append({
+        '9': 'DESY',
+        'z': value['identifier']
+    })
 
 
 @hep.over('_private_notes', '^595.H')
