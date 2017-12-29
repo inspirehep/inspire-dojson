@@ -172,11 +172,8 @@ def position(self, key, value):
 
 
 @jobs.over('ranks', '^656..')
+@utils.flatten
+@utils.for_each_value
 def ranks(self, key, value):
-    ranks = self.get('ranks', [])
-
-    for value in force_list(value):
-        for rank in force_list(value.get('a')):
-            ranks.append(normalize_rank(rank))
-
-    return ranks
+    """Populate the ``ranks`` key."""
+    return [normalize_rank(el) for el in force_list(value.get('a'))]
