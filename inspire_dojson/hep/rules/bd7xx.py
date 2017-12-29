@@ -47,6 +47,7 @@ from ...utils import (
 @utils.flatten
 @utils.for_each_value
 def collaborations(self, key, value):
+    """Populate the ``collaborations`` key."""
     collaborations = normalize_collaboration(value.get('g'))
 
     if len(collaborations) == 1:
@@ -63,12 +64,14 @@ def collaborations(self, key, value):
 @hep2marc.over('710', '^collaborations$')
 @utils.for_each_value
 def collaborations2marc(self, key, value):
+    """Populate the ``710`` MARC field."""
     return {'g': value.get('value')}
 
 
 @hep.over('publication_info', '^773..')
 @utils.for_each_value
 def publication_info(self, key, value):
+    """Populate the ``publication_info`` key."""
     def _get_cnum(value):
         w_value = force_single_element(value.get('w', ''))
         normalized_w_value = w_value.replace('/', '-').upper()
