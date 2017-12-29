@@ -419,15 +419,13 @@ def _desy_bookkeeping2marc(self, key, value):
 
 
 @hep.over('_private_notes', '^595.H')
+@utils.flatten
+@utils.for_each_value
 def _private_notes_hal(self, key, value):
     """Populate the ``_private_notes`` key."""
-    _private_notes = self.get('_private_notes', [])
-
-    for value in force_list(value):
-        for _private_note in force_list(value.get('a')):
-            _private_notes.append({
-                'source': 'HAL',
-                'value': _private_note,
-            })
-
-    return _private_notes
+    return [
+        {
+            'source': 'HAL',
+            'value': _private_note,
+        } for _private_note in force_list(value.get('a'))
+    ]
