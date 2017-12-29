@@ -169,55 +169,45 @@ def publication_info2marc(self, key, values):
 
 
 @hep.over('related_records', '^78002')
-def related_records_78002(self, key, values):
-    result = self.get('related_records', [])
-
-    for value in force_list(values):
-        record = get_record_ref(maybe_int(value.get('w')), 'literature')
-
-        if record:
-            result.append({
-                'curated_relation': record is not None,
-                'record': record,
-                'relation': 'predecessor',
-            })
-
-    return result
+@utils.for_each_value
+def related_records_78002(self, key, value):
+    """Populate the ``related_records`` key."""
+    record = get_record_ref(maybe_int(value.get('w')), 'literature')
+    if record:
+        return {
+            'curated_relation': record is not None,
+            'record': record,
+            'relation': 'predecessor',
+        }
 
 
 @hep.over('related_records', '^78708')
-def related_records_78708(self, key, values):
-    result = self.get('related_records', [])
-
-    for value in force_list(values):
-        record = get_record_ref(maybe_int(value.get('w')), 'literature')
-
-        if record:
-            result.append({
-                'curated_relation': record is not None,
-                'record': record,
-                'relation_freetext': value.get('i'),
-            })
-
-    return result
+@utils.for_each_value
+def related_records_78708(self, key, value):
+    """Populate the ``related_records`` key."""
+    record = get_record_ref(maybe_int(value.get('w')), 'literature')
+    if record:
+        return {
+            'curated_relation': record is not None,
+            'record': record,
+            'relation_freetext': value.get('i'),
+        }
 
 
 @hep2marc.over('78002', '^related_records$')
-def related_records2marc(self, key, values):
-    result_78002 = self.get('78002', [])
-    result_78708 = self.get('78708', [])
+@utils.for_each_value
+def related_records2marc(self, key, value):
+    """Populate the ``78002`` MARC field.
 
-    for value in force_list(values):
-        if value.get('relation_freetext'):
-            result_78708.append({
-                'i': value.get('relation_freetext'),
-                'w': get_recid_from_ref(value.get('record')),
-            })
-        else:
-            result_78002.append({
-                'i': 'supersedes',
-                'w': get_recid_from_ref(value.get('record')),
-            })
+    Also populates the ``78708`` MARC field through side effects.
+    """
+    if not value.get('relation_freetext'):
+        return {
+            'i': 'supersedes',
+            'w': get_recid_from_ref(value.get('record')),
+        }
 
-    self['78708'] = result_78708
-    return result_78002
+    self.setdefault('78708', []).append({
+        'i': value.get('relation_freetext'),
+        'w': get_recid_from_ref(value.get('record')),
+    })
