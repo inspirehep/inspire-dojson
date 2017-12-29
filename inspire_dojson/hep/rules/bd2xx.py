@@ -65,23 +65,26 @@ def title_translations(self, key, value):
 
 
 @hep2marc.over('246', '^titles$')
-def titles2marc(self, key, value):
+def titles2marc(self, key, values):
     """Populate the ``246`` MARC field.
 
     Also populates the ``245`` MARC field through side effects.
     """
-    def get_transformed_title(val):
-        return {
-            'a': val.get('title'),
-            'b': val.get('subtitle'),
-            '9': val.get('source'),
-        }
+    first, rest = values[0], values[1:]
 
-    values = force_list(value)
-    if values:
-        # Anything but the first element is the main title
-        self['245'] = [get_transformed_title(values[0])]
-    return [get_transformed_title(el) for el in values[1:]]
+    self.setdefault('245', []).append({
+        'a': first.get('title'),
+        'b': first.get('subtitle'),
+        '9': first.get('source'),
+    })
+
+    return [
+        {
+            'a': value.get('title'),
+            'b': value.get('subtitle'),
+            '9': value.get('source'),
+        } for value in rest
+    ]
 
 
 @hep2marc.over('242', '^title_translations$')
