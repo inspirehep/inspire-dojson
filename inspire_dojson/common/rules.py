@@ -683,18 +683,16 @@ def acquisition_source2marc(self, key, value):
 @institutions.over('public_notes', '^500..')
 @jobs.over('public_notes', '^500..')
 @journals.over('public_notes', '^500..')
+@utils.flatten
+@utils.for_each_value
 def public_notes_500(self, key, value):
-    public_notes = self.get('public_notes', [])
-
-    source = force_single_element(value.get('9', ''))
-    for value in force_list(value):
-        for public_note in force_list(value.get('a')):
-            public_notes.append({
-                'source': source,
-                'value': public_note,
-            })
-
-    return public_notes
+    """Populate the ``public_notes`` key."""
+    return [
+        {
+            'source': value.get('9'),
+            'value': public_note,
+        } for public_note in force_list(value.get('a'))
+    ]
 
 
 @hep2marc.over('500', '^public_notes$')
