@@ -24,7 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import re
 from functools import partial
 
 from dojson import utils
@@ -107,8 +106,6 @@ DOCUMENT_TYPE_REVERSE_MAP = {
     'report': 'Report',
     'thesis': 'Thesis',
 }
-
-RE_VALID_PUBNOTE = re.compile(".*,.*,.*(,.*)?")
 
 
 @hep.over('record_affiliations', '^902..')
