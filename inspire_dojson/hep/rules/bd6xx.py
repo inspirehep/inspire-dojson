@@ -33,7 +33,6 @@ from inspire_utils.helpers import force_list
 from ..model import hep, hep2marc
 from ...utils import force_single_element, get_record_ref
 
-
 ENERGY_RANGES_MAP = {
     '1': '0-3 GeV',
     '2': '3-10 GeV',
@@ -45,7 +44,7 @@ ENERGY_RANGES_MAP = {
     '8': '> 10 TeV',
 }
 
-REVERSE_ENERGY_RANGES_MAP = {v: k for k, v in six.iteritems(ENERGY_RANGES_MAP)}
+ENERGY_RANGES_REVERSE_MAP = {v: k for k, v in six.iteritems(ENERGY_RANGES_MAP)}
 
 
 @hep.over('accelerator_experiments', '^693..')
@@ -120,10 +119,10 @@ def keywords(self, key, values):
 @utils.for_each_value
 def energy_ranges2marc(self, key, value):
     """Populate the ``695`` MARC field."""
-    if value in REVERSE_ENERGY_RANGES_MAP:
+    if value in ENERGY_RANGES_REVERSE_MAP:
         return {
             '2': 'INSPIRE',
-            'e': REVERSE_ENERGY_RANGES_MAP[value],
+            'e': ENERGY_RANGES_REVERSE_MAP[value],
         }
 
 
