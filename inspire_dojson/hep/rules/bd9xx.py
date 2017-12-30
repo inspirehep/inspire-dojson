@@ -24,7 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import re
 from functools import partial
 
 from dojson import utils
@@ -41,8 +40,7 @@ from inspire_utils.record import get_value
 from ..model import hep, hep2marc
 from ...utils import force_single_element, get_recid_from_ref, get_record_ref
 
-
-_COLLECTIONS_MAP = {
+COLLECTIONS_MAP = {
     'babar-analysisdocument': 'BABAR Analysis Documents',
     'babar-internal-bais': 'BABAR Internal BAIS',
     'babar-internal-note': 'BABAR Internal Notes',
@@ -63,7 +61,7 @@ _COLLECTIONS_MAP = {
     'zeus-preliminary-note': 'ZEUS Preliminary Notes',
 }
 
-_COLLECTIONS_REVERSE_MAP = {
+COLLECTIONS_REVERSE_MAP = {
     'BABAR Analysis Documents': 'BABAR-AnalysisDocument',
     'BABAR Internal BAIS': 'BABAR-INTERNAL-BAIS',
     'BABAR Internal Notes': 'BABAR-INTERNAL-NOTE',
@@ -107,8 +105,6 @@ DOCUMENT_TYPE_REVERSE_MAP = {
     'report': 'Report',
     'thesis': 'Thesis',
 }
-
-RE_VALID_PUBNOTE = re.compile(".*,.*,.*(,.*)?")
 
 
 @hep.over('record_affiliations', '^902..')
@@ -160,8 +156,8 @@ def document_type(self, key, value):
             self['refereed'] = True
         elif normalized_a_value == 'withdrawn':
             self['withdrawn'] = True
-        elif normalized_a_value in _COLLECTIONS_MAP:
-            self.setdefault('_collections', []).append(_COLLECTIONS_MAP[normalized_a_value])
+        elif normalized_a_value in COLLECTIONS_MAP:
+            self.setdefault('_collections', []).append(COLLECTIONS_MAP[normalized_a_value])
         elif normalized_a_value in DOCUMENT_TYPE_MAP:
             document_type.append(DOCUMENT_TYPE_MAP[normalized_a_value])
         elif normalized_a_value in valid_publication_types:
@@ -217,8 +213,8 @@ def withdrawn2marc(self, key, value):
 @hep2marc.over('980', '^_collections$')
 @utils.for_each_value
 def _collections2marc(self, key, value):
-    if value in _COLLECTIONS_REVERSE_MAP:
-        return {'a': _COLLECTIONS_REVERSE_MAP[value]}
+    if value in COLLECTIONS_REVERSE_MAP:
+        return {'a': COLLECTIONS_REVERSE_MAP[value]}
 
 
 @hep2marc.over('980', '^document_type$')
