@@ -31,42 +31,37 @@ from dojson import utils
 from inspire_utils.helpers import force_list
 
 from ..model import hep, hep2marc
-from ...utils import force_single_element, normalize_date_aggressively
+from ...utils import normalize_date_aggressively
 
 
-@hep.over('titles', '^(210|242|245|246|247)..')
+@hep.over('titles', '^(210|245|246|247)..')
+@utils.for_each_value
 def titles(self, key, value):
-    """Populate the ``titles`` key.
-
-    Also populates the ``title_translations`` key through side effects.
-    """
-    def is_main_title(key):
-        return key.startswith('245')
-
-    def is_translated_title(key):
-        return key.startswith('242')
-
-    titles = self.setdefault('titles', [])
-    values = force_list(value)
-    for val in values:
-        title_obj = {
-            'title': val.get('a'),
-            'subtitle': force_single_element(val.get('b')),  # FIXME: #1484
-            'source': val.get('9'),
+    """Populate the ``titles`` key."""
+    if not key.startswith('245'):
+        return {
+            'source': value.get('9'),
+            'subtitle': value.get('b'),
+            'title': value.get('a'),
         }
-        if is_main_title(key):
-            titles.insert(0, title_obj)
-        elif is_translated_title(key):
-            title = val.get('a')
-            if title:
-                lang = langdetect.detect(title)
-                if lang:
-                    title_obj['language'] = lang
-                    self.setdefault('title_translations', []).append(title_obj)
-        else:
-            titles.append(title_obj)
 
-    return titles
+    self.setdefault('titles', []).insert(0, {
+        'source': value.get('9'),
+        'subtitle': value.get('b'),
+        'title': value.get('a'),
+    })
+
+
+@hep.over('title_translations', '^242..')
+@utils.for_each_value
+def title_translations(self, key, value):
+    """Populate the ``title_translations`` key."""
+    return {
+        'language': langdetect.detect(value.get('a')),
+        'source': value.get('9'),
+        'subtitle': value.get('b'),
+        'title': value.get('a'),
+    }
 
 
 @hep2marc.over('246', '^titles$')
