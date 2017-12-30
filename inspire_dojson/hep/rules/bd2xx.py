@@ -36,6 +36,10 @@ from ...utils import force_single_element, normalize_date_aggressively
 
 @hep.over('titles', '^(210|242|245|246|247)..')
 def titles(self, key, value):
+    """Populate the ``titles`` key.
+
+    Also populates the ``title_translations`` key through side effects.
+    """
     def is_main_title(key):
         return key.startswith('245')
 
@@ -67,6 +71,10 @@ def titles(self, key, value):
 
 @hep2marc.over('246', '^titles$')
 def titles2marc(self, key, value):
+    """Populate the ``246`` MARC field.
+
+    Also populates the ``245`` MARC field through side effects.
+    """
     def get_transformed_title(val):
         return {
             'a': val.get('title'),
@@ -83,6 +91,7 @@ def titles2marc(self, key, value):
 
 @hep2marc.over('242', '^title_translations$')
 def title_translations2marc(self, key, value):
+    """Populate the ``242`` MARC field."""
     def get_transformed_title(val):
         return {
             'a': val.get('title'),
@@ -98,18 +107,21 @@ def title_translations2marc(self, key, value):
 @utils.flatten
 @utils.for_each_value
 def editions(self, key, value):
+    """Populate the ``editions`` key."""
     return force_list(value.get('a'))
 
 
 @hep2marc.over('250', '^editions$')
 @utils.for_each_value
 def editions2marc(self, key, value):
+    """Populate the ``250`` MARC field."""
     return {'a': value}
 
 
 @hep.over('imprints', '^260..')
 @utils.for_each_value
 def imprints(self, key, value):
+    """Populate the ``imprints`` key."""
     return {
         'place': value.get('a'),
         'publisher': value.get('b'),
@@ -120,6 +132,7 @@ def imprints(self, key, value):
 @hep2marc.over('260', '^imprints$')
 @utils.for_each_value
 def imprints2marc(self, key, value):
+    """Populate the ``260`` MARC field."""
     return {
         'a': value.get('place'),
         'b': value.get('publisher'),
@@ -129,10 +142,12 @@ def imprints2marc(self, key, value):
 
 @hep.over('preprint_date', '^269..')
 def preprint_date(self, key, value):
+    """Populate the ``preprint_date`` key."""
     return normalize_date_aggressively(value.get('c'))
 
 
 @hep2marc.over('269', '^preprint_date$')
 @utils.for_each_value
 def preprint_date2marc(self, key, value):
+    """Populate the ``269`` MARC field."""
     return {'c': value}

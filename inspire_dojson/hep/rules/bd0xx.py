@@ -46,6 +46,7 @@ RE_LANGUAGE = re.compile('\/| or | and |,|=|\s+')
 @hep.over('isbns', '^020..')
 @utils.for_each_value
 def isbns(self, key, value):
+    """Populate the ``isbns`` key."""
     def _get_medium(value):
         def _normalize(medium):
             schema = load_schema('hep')
@@ -81,6 +82,7 @@ def isbns(self, key, value):
 @hep2marc.over('020', 'isbns')
 @utils.for_each_value
 def isbns2marc(self, key, value):
+    """Populate the ``020`` MARC field."""
     return {
         'a': value.get('value'),
         'b': value.get('medium'),
@@ -147,6 +149,7 @@ def dois(self, key, value):
 @hep2marc.over('0247', '^dois$')
 @utils.for_each_value
 def dois2marc(self, key, value):
+    """Populate the ``0247`` MARC field."""
     return {
         '2': 'DOI',
         '9': value.get('source'),
@@ -158,6 +161,7 @@ def dois2marc(self, key, value):
 @hep2marc.over('0247', '^persistent_identifiers$')
 @utils.for_each_value
 def persistent_identifiers2marc(self, key, value):
+    """Populate the ``0247`` MARC field."""
     return {
         '2': value.get('schema'),
         '9': value.get('source'),
@@ -232,6 +236,7 @@ def texkeys(self, key, value):
 
 @hep2marc.over('035', '^texkeys$')
 def texkeys2marc(self, key, value):
+    """Populate the ``035`` MARC field."""
     result = []
 
     values = force_list(value)
@@ -382,6 +387,7 @@ def arxiv_eprints2marc(self, key, values):
 @hep2marc.over('037', '^report_numbers$')
 @utils.for_each_value
 def report_numbers2marc(self, key, value):
+    """Populate the ``037`` MARC field."""
     def _get_mangled_source(source):
         if source == 'arXiv':
             return 'arXiv:reportnumber'
@@ -403,6 +409,7 @@ def report_numbers2marc(self, key, value):
 
 @hep.over('languages', '^041..')
 def languages(self, key, value):
+    """Populate the ``languages`` key."""
     languages = self.get('languages', [])
 
     values = force_list(value.get('a'))
@@ -420,4 +427,5 @@ def languages(self, key, value):
 @hep2marc.over('041', '^languages$')
 @utils.for_each_value
 def languages2marc(self, key, value):
+    """Populate the ``041`` MARC field."""
     return {'a': pycountry.languages.get(alpha_2=value).name.lower()}

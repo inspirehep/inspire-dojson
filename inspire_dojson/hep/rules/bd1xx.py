@@ -172,6 +172,7 @@ def _authors(key, value):
 @utils.flatten
 @utils.for_each_value
 def authors(self, key, value):
+    """Populate the ``authors`` key."""
     return _authors(key, value)
 
 
@@ -179,11 +180,16 @@ def authors(self, key, value):
 @utils.flatten
 @utils.for_each_value
 def authors_second(self, key, value):
+    """Populate the ``authors`` key."""
     return _authors(key, value)
 
 
 @hep2marc.over('100', '^authors$')
 def authors2marc(self, key, value):
+    """Populate the ``100`` MARC field.
+
+    Also populates the ``700`` and the ``701`` MARC fields through side effects.
+    """
     value = force_list(value)
 
     def _get_ids(value):
@@ -257,10 +263,12 @@ def authors2marc(self, key, value):
 @hep.over('corporate_author', '^110..')
 @utils.for_each_value
 def corporate_author(self, key, value):
+    """Populate the ``corporate_author`` key."""
     return value.get('a')
 
 
 @hep2marc.over('110', '^corporate_author$')
 @utils.for_each_value
 def corporate_author2marc(self, key, value):
+    """Populate the ``110`` MARC field."""
     return {'a': value}

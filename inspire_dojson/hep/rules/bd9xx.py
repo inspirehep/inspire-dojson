@@ -110,6 +110,7 @@ DOCUMENT_TYPE_REVERSE_MAP = {
 @hep.over('record_affiliations', '^902..')
 @utils.for_each_value
 def record_affiliations(self, key, value):
+    """Populate the ``record_affiliations`` key."""
     record = get_record_ref(value.get('z'), 'institutions')
 
     return {
@@ -122,6 +123,7 @@ def record_affiliations(self, key, value):
 @hep2marc.over('902', '^record_affiliations$')
 @utils.for_each_value
 def record_affiliations2marc(self, key, value):
+    """Populate the ``902`` MARC field."""
     return {'a': value.get('value')}
 
 
@@ -176,6 +178,7 @@ def document_type(self, key, value):
 @hep2marc.over('980', '^citeable$')
 @utils.for_each_value
 def citeable2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value:
         return {'a': 'Citeable'}
 
@@ -183,6 +186,7 @@ def citeable2marc(self, key, value):
 @hep2marc.over('980', '^core$')
 @utils.for_each_value
 def core2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value:
         return {'a': 'CORE'}
 
@@ -192,6 +196,7 @@ def core2marc(self, key, value):
 @hep2marc.over('980', '^deleted$')
 @utils.for_each_value
 def deleted2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value:
         return {'c': 'DELETED'}
 
@@ -199,6 +204,7 @@ def deleted2marc(self, key, value):
 @hep2marc.over('980', '^refereed$')
 @utils.for_each_value
 def referred2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value:
         return {'a': 'Published'}
 
@@ -206,6 +212,7 @@ def referred2marc(self, key, value):
 @hep2marc.over('980', '^withdrawn$')
 @utils.for_each_value
 def withdrawn2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value:
         return {'a': 'Withdrawn'}
 
@@ -213,6 +220,7 @@ def withdrawn2marc(self, key, value):
 @hep2marc.over('980', '^_collections$')
 @utils.for_each_value
 def _collections2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value in COLLECTIONS_REVERSE_MAP:
         return {'a': COLLECTIONS_REVERSE_MAP[value]}
 
@@ -220,6 +228,7 @@ def _collections2marc(self, key, value):
 @hep2marc.over('980', '^document_type$')
 @utils.for_each_value
 def document_type2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     if value in DOCUMENT_TYPE_REVERSE_MAP and DOCUMENT_TYPE_REVERSE_MAP[value]:
         return {'a': DOCUMENT_TYPE_REVERSE_MAP[value]}
 
@@ -227,12 +236,14 @@ def document_type2marc(self, key, value):
 @hep2marc.over('980', '^publication_type$')
 @utils.for_each_value
 def publication_type2marc(self, key, value):
+    """Populate the ``980`` MARC field."""
     return {'a': value}
 
 
 @hep.over('references', '^999C5')
 @utils.for_each_value
 def references(self, key, value):
+    """Populate the ``references`` key."""
     def _has_curator_flag(value):
         normalized_nine_values = [el.upper() for el in force_list(value.get('9'))]
         return 'CURATOR' in normalized_nine_values
@@ -284,6 +295,7 @@ def references(self, key, value):
 @hep2marc.over('999C5', '^references$')
 @utils.for_each_value
 def references2marc(self, key, value):
+    """Populate the ``999C5`` MARC field."""
     reference = value.get('reference', {})
 
     pids = force_list(reference.get('persistent_identifiers'))

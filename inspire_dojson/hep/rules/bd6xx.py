@@ -51,6 +51,7 @@ ENERGY_RANGES_REVERSE_MAP = {v: k for k, v in six.iteritems(ENERGY_RANGES_MAP)}
 @utils.flatten
 @utils.for_each_value
 def accelerator_experiments(self, key, value):
+    """Populate the ``accelerator_experiments`` key."""
     result = []
 
     a_value = force_single_element(value.get('a'))
@@ -78,6 +79,7 @@ def accelerator_experiments(self, key, value):
 @hep2marc.over('693', '^accelerator_experiments$')
 @utils.for_each_value
 def accelerator_experiments2marc(self, key, value):
+    """Populate the ``693`` MARC field."""
     return {
         'a': value.get('accelerator'),
         'e': value.get('legacy_name'),

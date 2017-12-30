@@ -85,6 +85,7 @@ def public_notes(self, key, value):
 
 @hep.over('thesis_info', '^502..')
 def thesis_info(self, key, value):
+    """Populate the ``thesis_info`` key."""
     def _get_degree_type(value):
         DEGREE_TYPES_MAP = {
             'RAPPORT DE STAGE': 'other',
@@ -171,6 +172,7 @@ def thesis_info2marc(self, key, value):
 @utils.flatten
 @utils.for_each_value
 def abstracts(self, key, value):
+    """Populate the ``abstracts`` key."""
     result = []
 
     source = force_single_element(value.get('9'))
@@ -187,6 +189,7 @@ def abstracts(self, key, value):
 @hep2marc.over('520', '^abstracts$')
 @utils.for_each_value
 def abstract2marc(self, key, value):
+    """Populate the ``520`` MARC field."""
     return {
         '9': value.get('source'),
         'a': value.get('value'),
@@ -196,6 +199,7 @@ def abstract2marc(self, key, value):
 @hep.over('funding_info', '^536..')
 @utils.for_each_value
 def funding_info(self, key, value):
+    """Populate the ``funding_info`` key."""
     return {
         'agency': value.get('a'),
         'grant_number': value.get('c'),
@@ -206,6 +210,7 @@ def funding_info(self, key, value):
 @hep2marc.over('536', '^funding_info$')
 @utils.for_each_value
 def funding_info2marc(self, key, value):
+    """Populate the ``536`` MARC field."""
     return {
         'a': value.get('agency'),
         'c': value.get('grant_number'),
@@ -216,6 +221,7 @@ def funding_info2marc(self, key, value):
 @hep.over('license', '^540..')
 @utils.for_each_value
 def license(self, key, value):
+    """Populate the ``license`` key."""
     def _get_license(value):
         a_values = force_list(value.get('a'))
 
@@ -248,6 +254,7 @@ def license(self, key, value):
 @hep2marc.over('540', '^license$')
 @utils.for_each_value
 def license2marc(self, key, value):
+    """Populate the ``540`` MARC field."""
     return {
         'a': value.get('license'),
         'b': value.get('imposing'),
@@ -259,6 +266,7 @@ def license2marc(self, key, value):
 @hep.over('copyright', '^542..')
 @utils.for_each_value
 def copyright(self, key, value):
+    """Populate the ``copyright`` key."""
     MATERIAL_MAP = {
         'Article': 'publication',
         'Published thesis as a book': 'publication',
@@ -278,6 +286,7 @@ def copyright(self, key, value):
 @hep2marc.over('542', '^copyright$')
 @utils.for_each_value
 def copyright2marc(self, key, value):
+    """Populate the ``542`` MARC field."""
     E_MAP = {
         'publication': 'Article',
     }
@@ -363,6 +372,7 @@ def _private_notes2marc(self, key, value):
 
 @hep2marc.over('595', '^_export_to$')
 def _export_to2marc(self, key, value):
+    """Populate the ``595`` MARC field."""
     def _is_for_cds(value):
         return 'CDS' in value
 
@@ -388,6 +398,7 @@ def _export_to2marc(self, key, value):
 @hep.over('_desy_bookkeeping', '^595.D')
 @utils.for_each_value
 def _desy_bookkeeping(self, key, value):
+    """Populate the ``_desy_bookkeeping`` key."""
     return {
         'date': normalize_date(value.get('d')),
         'expert': force_single_element(value.get('a')),
@@ -420,6 +431,7 @@ def _desy_bookkeeping2marc(self, key, value):
 
 @hep.over('_private_notes', '^595.H')
 def _private_notes_hal(self, key, value):
+    """Populate the ``_private_notes`` key."""
     _private_notes = self.get('_private_notes', [])
 
     for value in force_list(value):
