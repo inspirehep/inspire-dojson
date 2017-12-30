@@ -32,6 +32,7 @@ from ..model import hep, hep2marc
 @hep.over('book_series', '^490..')
 @utils.for_each_value
 def book_series(self, key, value):
+    """Populate the ``book_series`` key."""
     return {
         'title': value.get('a'),
         'volume': value.get('v'),
@@ -41,6 +42,7 @@ def book_series(self, key, value):
 @hep2marc.over('490', '^book_series$')
 @utils.for_each_value
 def book_series2marc(self, key, value):
+    """Populate the ``490`` MARC field."""
     return {
         'a': value.get('title'),
         'v': value.get('volume'),
