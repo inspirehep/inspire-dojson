@@ -20,27 +20,35 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""DoJSON related utilities."""
+"""DoJSON utils."""
 
 from __future__ import absolute_import, division, print_function
 
 import os
 import re
 
-import six
-
 from flask import current_app
+from isbn import ISBN
+from six import iteritems
 from six.moves import urllib
 
 from dojson.utils import GroupableOrderedDict
+
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
 
 
+def normalize_isbn(isbn):
+    """Normalize an ISBN in order to be schema-compliant."""
+    try:
+        return str(ISBN(isbn))
+    except Exception:
+        return isbn
+
+
 def normalize_rank(rank):
-    """Normalize the rank in order to be schema-compliant
-    """
+    """Normalize a rank in order to be schema-compliant."""
     normalized_ranks = {
         'BA': 'UNDERGRADUATE',
         'BACHELOR': 'UNDERGRADUATE',
@@ -190,4 +198,4 @@ def normalize_date_aggressively(date):
 
 def create_record_from_dict(dictionary):
     """Create an input record for dojson from a dict."""
-    return GroupableOrderedDict(six.iteritems(dictionary))
+    return GroupableOrderedDict(iteritems(dictionary))
