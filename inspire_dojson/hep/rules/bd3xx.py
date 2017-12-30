@@ -32,6 +32,7 @@ from ...utils import force_single_element
 
 @hep.over('number_of_pages', '^300..')
 def number_of_pages(self, key, value):
+    """Populate the ``number_of_pages`` key."""
     result = maybe_int(force_single_element(value.get('a', '')))
     if result and result > 0:
         return result
@@ -39,4 +40,5 @@ def number_of_pages(self, key, value):
 
 @hep2marc.over('300', '^number_of_pages$')
 def number_of_pages2marc(self, key, value):
+    """Populate the ``300`` MARC field."""
     return {'a': value}
