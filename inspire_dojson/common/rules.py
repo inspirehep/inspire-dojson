@@ -873,23 +873,19 @@ def external_system_identifiers(endpoint):
 
     Also populates the ``new_record`` key through side effects.
     """
-    def _external_system_identifiers(self, key, values):
-        external_system_identifiers = self.get('external_system_identifiers', [])
-        new_record = self.get('new_record', {})
+    @utils.flatten
+    @utils.for_each_value
+    def _external_system_identifiers(self, key, value):
+        new_recid = maybe_int(value.get('d'))
+        if new_recid:
+            self['new_record'] = get_record_ref(new_recid, endpoint)
 
-        for value in force_list(values):
-            for id_ in force_list(value.get('a')):
-                external_system_identifiers.append({
-                    'schema': 'SPIRES',
-                    'value': id_,
-                })
-
-            new_recid = maybe_int(value.get('d'))
-            if new_recid:
-                new_record = get_record_ref(new_recid, endpoint)
-
-        self['new_record'] = new_record
-        return external_system_identifiers
+        return [
+            {
+                'schema': 'SPIRES',
+                'value': ext_sys_id,
+            } for ext_sys_id in force_list(value.get('a'))
+        ]
 
     return _external_system_identifiers
 
