@@ -910,15 +910,12 @@ def deleted(self, key, value):
 
 
 def deleted_records(endpoint):
-    def _deleted_records(self, key, values):
-        deleted_records = self.get('deleted_records', [])
-
-        for value in force_list(values):
-            deleted_recid = maybe_int(value.get('a'))
-            if deleted_recid:
-                deleted_records.append(get_record_ref(deleted_recid, endpoint))
-
-        return deleted_records
+    """Populate the ``deleted_records`` key."""
+    @utils.for_each_value
+    def _deleted_records(self, key, value):
+        deleted_recid = maybe_int(value.get('a'))
+        if deleted_recid:
+            return get_record_ref(deleted_recid, endpoint)
 
     return _deleted_records
 
