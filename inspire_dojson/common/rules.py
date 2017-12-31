@@ -683,18 +683,16 @@ def acquisition_source2marc(self, key, value):
 @institutions.over('public_notes', '^500..')
 @jobs.over('public_notes', '^500..')
 @journals.over('public_notes', '^500..')
+@utils.flatten
+@utils.for_each_value
 def public_notes_500(self, key, value):
-    public_notes = self.get('public_notes', [])
-
-    source = force_single_element(value.get('9', ''))
-    for value in force_list(value):
-        for public_note in force_list(value.get('a')):
-            public_notes.append({
-                'source': source,
-                'value': public_note,
-            })
-
-    return public_notes
+    """Populate the ``public_notes`` key."""
+    return [
+        {
+            'source': value.get('9'),
+            'value': public_note,
+        } for public_note in force_list(value.get('a'))
+    ]
 
 
 @hep2marc.over('500', '^public_notes$')
@@ -873,23 +871,19 @@ def external_system_identifiers(endpoint):
 
     Also populates the ``new_record`` key through side effects.
     """
-    def _external_system_identifiers(self, key, values):
-        external_system_identifiers = self.get('external_system_identifiers', [])
-        new_record = self.get('new_record', {})
+    @utils.flatten
+    @utils.for_each_value
+    def _external_system_identifiers(self, key, value):
+        new_recid = maybe_int(value.get('d'))
+        if new_recid:
+            self['new_record'] = get_record_ref(new_recid, endpoint)
 
-        for value in force_list(values):
-            for id_ in force_list(value.get('a')):
-                external_system_identifiers.append({
-                    'schema': 'SPIRES',
-                    'value': id_,
-                })
-
-            new_recid = maybe_int(value.get('d'))
-            if new_recid:
-                new_record = get_record_ref(new_recid, endpoint)
-
-        self['new_record'] = new_record
-        return external_system_identifiers
+        return [
+            {
+                'schema': 'SPIRES',
+                'value': ext_sys_id,
+            } for ext_sys_id in force_list(value.get('a'))
+        ]
 
     return _external_system_identifiers
 
@@ -916,15 +910,12 @@ def deleted(self, key, value):
 
 
 def deleted_records(endpoint):
-    def _deleted_records(self, key, values):
-        deleted_records = self.get('deleted_records', [])
-
-        for value in force_list(values):
-            deleted_recid = maybe_int(value.get('a'))
-            if deleted_recid:
-                deleted_records.append(get_record_ref(deleted_recid, endpoint))
-
-        return deleted_records
+    """Populate the ``deleted_records`` key."""
+    @utils.for_each_value
+    def _deleted_records(self, key, value):
+        deleted_recid = maybe_int(value.get('a'))
+        if deleted_recid:
+            return get_record_ref(deleted_recid, endpoint)
 
     return _deleted_records
 
