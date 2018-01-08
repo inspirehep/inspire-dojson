@@ -95,6 +95,40 @@ def test_private_notes_from_001_and_980__c_hidden():
     assert expected == result['_private_notes']
 
 
+def test_dois_from_0247_a_2():
+    schema = load_schema('hep')
+    subschema = schema['properties']['dois']
+
+    snippet = (
+        '<datafield tag="024" ind1="7" ind2=" ">'
+        '  <subfield code="2">DOI</subfield>'
+        '  <subfield code="a">10.1016/j.nima.2017.11.093</subfield>'
+        '</datafield>'
+    )  # cds.cern.ch/record/2297288
+
+    expected = [
+        {
+            '2': 'DOI',
+            '9': 'CDS',
+            'a': '10.1016/j.nima.2017.11.093',
+        },
+    ]
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert expected == result['0247_']
+
+    expected = [
+        {
+            'source': 'CDS',
+            'value': '10.1016/j.nima.2017.11.093',
+        },
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['dois'], subschema) is None
+    assert expected == result['dois']
+
+
 def test_dois_from_0247_a_2_9():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
