@@ -29,8 +29,6 @@ language: python
 
 cache:
   pip: true
-  directories:
-    - .cache
 
 python:
   - 2.7
