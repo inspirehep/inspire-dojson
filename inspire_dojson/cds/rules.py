@@ -100,9 +100,9 @@ def vanilla_dict(god):
 @cds2hep_marc.over('0247_', '^0247.')
 @utils.for_each_value
 def persistent_identifiers(self, key, value):
+    value = vanilla_dict(value)
     add_source(value)
-
-    return vanilla_dict(value)
+    return value
 
 
 @cds2hep_marc.over('035__', '^035..')
