@@ -344,6 +344,7 @@ def _private_notes(self, key, value):
 
 
 @hep2marc.over('595', '^_private_notes$')
+@utils.for_each_value
 def _private_notes2marc(self, key, value):
     """Populate the ``595`` MARC key.
 
@@ -352,22 +353,13 @@ def _private_notes2marc(self, key, value):
     def _is_from_hal(value):
         return value.get('source') == 'HAL'
 
-    result_595 = self.get('595', [])
-    result_595_H = self.get('595_H', [])
+    if not _is_from_hal(value):
+        return {
+            '9': value.get('source'),
+            'a': value.get('value'),
+        }
 
-    for value in force_list(value):
-        if _is_from_hal(value):
-            result_595_H.append({
-                'a': value.get('value'),
-            })
-        else:
-            result_595.append({
-                '9': value.get('source'),
-                'a': value.get('value'),
-            })
-
-    self['595_H'] = result_595_H
-    return result_595
+    self.setdefault('595_H', []).append({'a': value.get('value')})
 
 
 @hep2marc.over('595', '^_export_to$')
@@ -413,32 +405,27 @@ def _desy_bookkeeping2marc(self, key, value):
 
     Also populates the ``035`` MARC field through side effects.
     """
-    result_035 = self.get('035', [])
+    if 'identifier' not in value:
+        return {
+            'a': value.get('expert'),
+            'd': value.get('date'),
+            's': value.get('status'),
+        }
 
-    if 'identifier' in value:
-        result_035.append({
-            '9': 'DESY',
-            'z': value['identifier']
-        })
-
-    self['035'] = result_035
-    return {
-        'a': value.get('expert'),
-        'd': value.get('date'),
-        's': value.get('status'),
-    }
+    self.setdefault('035', []).append({
+        '9': 'DESY',
+        'z': value['identifier']
+    })
 
 
 @hep.over('_private_notes', '^595.H')
+@utils.flatten
+@utils.for_each_value
 def _private_notes_hal(self, key, value):
     """Populate the ``_private_notes`` key."""
-    _private_notes = self.get('_private_notes', [])
-
-    for value in force_list(value):
-        for _private_note in force_list(value.get('a')):
-            _private_notes.append({
-                'source': 'HAL',
-                'value': _private_note,
-            })
-
-    return _private_notes
+    return [
+        {
+            'source': 'HAL',
+            'value': _private_note,
+        } for _private_note in force_list(value.get('a'))
+    ]

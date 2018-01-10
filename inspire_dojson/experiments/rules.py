@@ -38,18 +38,24 @@ from ..utils import force_single_element, get_record_ref
 
 
 @experiments.over('_dates', '^046..')
-def dates(self, key, values):
-    for value in force_list(values):
-        if value.get('q'):
-            self['date_proposed'] = normalize_date(value.get('q'))
-        if value.get('r'):
-            self['date_approved'] = normalize_date(value.get('r'))
-        if value.get('s'):
-            self['date_started'] = normalize_date(value.get('s'))
-        if value.get('c'):
-            self['date_cancelled'] = normalize_date(value.get('c'))
-        if value.get('t'):
-            self['date_completed'] = normalize_date(value.get('t'))
+@utils.for_each_value
+def _dates(self, key, value):
+    """Don't populate any key through the return value.
+
+    On the other hand, populates the ``date_proposed``, ``date_approved``,
+    ``date_started``, ``date_cancelled``, and the ``date_completed`` keys
+    through side effects.
+    """
+    if value.get('q'):
+        self['date_proposed'] = normalize_date(value['q'])
+    if value.get('r'):
+        self['date_approved'] = normalize_date(value['r'])
+    if value.get('s'):
+        self['date_started'] = normalize_date(value['s'])
+    if value.get('c'):
+        self['date_cancelled'] = normalize_date(value['c'])
+    if value.get('t'):
+        self['date_completed'] = normalize_date(value['t'])
 
     raise IgnoreKey
 
