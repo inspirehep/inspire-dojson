@@ -371,20 +371,13 @@ def _public_notes2marc(self, key, value):
 
 
 @hepnames.over('source', '^670..')
+@utils.for_each_value
 def source(self, key, value):
-    def _get_source(value):
-        return {
-            'name': value.get('a'),
-            'date_verified': normalize_date(value.get('d')),
-        }
-
-    source = self.get('source', [])
-
-    values = force_list(value)
-    for value in values:
-        source.append(_get_source(value))
-
-    return source
+    """Populate the ``source`` key."""
+    return {
+        'date_verified': normalize_date(value.get('d')),
+        'name': value.get('a'),
+    }
 
 
 @hepnames2marc.over('670', '^source$')
