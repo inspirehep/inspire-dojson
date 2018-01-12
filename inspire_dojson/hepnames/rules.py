@@ -108,49 +108,41 @@ def ids(self, key, value):
 
 
 @hepnames2marc.over('035', '^ids$')
+@utils.for_each_value
 def ids2marc(self, key, value):
     """Populate the ``035`` MARC field.
 
     Also populates the ``970`` MARC field through side effects.
     """
-    def _is_scheme_inspire_bai(id_, schema):
+    def _is_schema_inspire_bai(id_, schema):
         return schema == 'INSPIRE BAI'
 
-    def _is_scheme_inspire_id(id_, schema):
+    def _is_schema_inspire_id(id_, schema):
         return schema == 'INSPIRE ID'
 
-    def _is_scheme_spires(id_, schema):
+    def _is_schema_spires(id_, schema):
         return schema == 'SPIRES'
 
-    result_035 = self.get('035', [])
-    result_970 = self.get('970', [])
+    id_ = value.get('value')
+    schema = value.get('schema')
 
-    for value in force_list(value):
-        id_ = value.get('value')
-        schema = value.get('schema')
-
-        if _is_scheme_spires(id_, schema):
-            result_970.append({
-                'a': id_,
-            })
-        elif _is_scheme_inspire_id(id_, schema):
-            result_035.append({
-                '9': 'INSPIRE',
-                'a': id_,
-            })
-        elif _is_scheme_inspire_bai(id_, schema):
-            result_035.append({
-                '9': 'BAI',
-                'a': id_,
-            })
-        else:
-            result_035.append({
-                '9': schema,
-                'a': id_,
-            })
-
-    self['970'] = result_970
-    return result_035
+    if _is_schema_spires(id_, schema):
+        self.setdefault('970', []).append({'a': id_})
+    elif _is_schema_inspire_id(id_, schema):
+        return {
+            'a': id_,
+            '9': 'INSPIRE',
+        }
+    elif _is_schema_inspire_bai(id_, schema):
+        return {
+            'a': id_,
+            '9': 'BAI',
+        }
+    else:
+        return {
+            'a': id_,
+            '9': schema,
+        }
 
 
 @hepnames.over('name', '^100..')
