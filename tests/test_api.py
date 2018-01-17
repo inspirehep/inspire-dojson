@@ -68,9 +68,9 @@ def test_marcxml2record_handles_journalsnew():
 
 def test_marcxml2record_falls_back_to_hep():
     snippet = (
-       '<datafield tag="980" ind1=" " ind2=" ">'
-       '  <subfield code="a">HALhidden</subfield>'
-       '</datafield>'
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">HALhidden</subfield>'
+        '</datafield>'
     )
 
     expected = 'hep.json'
@@ -96,6 +96,37 @@ def test_marcxml2record_handles_cds():
     result = marcxml2record(snippet)
 
     assert expected == result['external_system_identifiers']
+
+
+def test_marcxml2record_handles_multiple_collections():
+    snippet = '''
+        <record>
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">Published</subfield>
+            </datafield>
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">citeable</subfield>
+            </datafield>
+            <datafield tag="980" ind1=" " ind2=" ">
+                <subfield code="a">HEP</subfield>
+                <subfield code="a">NONCORE</subfield>
+            </datafield>
+        </record>
+    '''
+
+    expected = {
+        'refereed': True,
+        'core': False,
+        'citeable': True,
+        '_collections': ['Literature'],
+        '$schema': 'hep.json',
+        'document_type': ['article'],
+        'curated': True,
+    }
+
+    result = marcxml2record(snippet)
+
+    assert expected == result
 
 
 def test_record2marcxml_generates_controlfields():

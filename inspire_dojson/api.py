@@ -144,7 +144,13 @@ def record2marcxml(record):
 
 
 def _get_collections(marcjson):
-    return [el.lower() for el in force_list(get_value(marcjson, '980__.a'))]
+    collections = []
+    for collection_group in force_list(get_value(marcjson, '980__.a')):
+        collections.extend(
+            collection.lower() for collection in force_list(collection_group)
+        )
+
+    return collections
 
 
 def _get_schema_name(record):
