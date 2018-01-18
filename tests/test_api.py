@@ -66,6 +66,28 @@ def test_marcxml2record_handles_journalsnew():
     assert expected == result['$schema']
 
 
+def test_marcxml2record_handles_multiple_as_in_the_same_980():
+    snippet = (
+        '<record>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">Published</subfield>'
+        '  </datafield>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">citeable</subfield>'
+        '  </datafield>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">HEP</subfield>'
+        '    <subfield code="a">NONCORE</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1247377
+
+    expected = 'hep.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
 def test_marcxml2record_falls_back_to_hep():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
