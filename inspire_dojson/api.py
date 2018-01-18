@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+from itertools import chain
 
 from lxml.builder import E
 from lxml.etree import tostring
@@ -144,7 +145,10 @@ def record2marcxml(record):
 
 
 def _get_collections(marcjson):
-    return [el.lower() for el in force_list(get_value(marcjson, '980__.a'))]
+    collections = chain.from_iterable([force_list(el) for el in force_list(get_value(marcjson, '980__.a'))])
+    normalized_collections = [el.lower() for el in collections]
+
+    return normalized_collections
 
 
 def _get_schema_name(record):
