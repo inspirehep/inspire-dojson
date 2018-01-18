@@ -68,9 +68,9 @@ def test_marcxml2record_handles_journalsnew():
 
 def test_marcxml2record_falls_back_to_hep():
     snippet = (
-       '<datafield tag="980" ind1=" " ind2=" ">'
-       '  <subfield code="a">HALhidden</subfield>'
-       '</datafield>'
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">HALhidden</subfield>'
+        '</datafield>'
     )
 
     expected = 'hep.json'
