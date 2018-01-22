@@ -113,15 +113,19 @@ def afs_url(file_path):
 
     If ``file_path`` doesn't start with ``/opt/cds-invenio/``, and hence is not on
     AFS, it returns it unchanged.
+
+    The base AFS path is taken from the Flask app config if present, otherwise
+    it falls back to ``/afs/cern.ch/project/inspire/PROD``.
     """
     default_afs_path = '/afs/cern.ch/project/inspire/PROD'
+    afs_path = current_app.config.get('LEGACY_AFS_PATH', default_afs_path)
 
     if file_path is None:
         return
 
     if file_path.startswith('/opt/cds-invenio/'):
         file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
-        file_path = os.path.join(default_afs_path, file_path)
+        file_path = os.path.join(afs_path, file_path)
         return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path))
 
     return file_path

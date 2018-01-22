@@ -165,6 +165,16 @@ def test_afs_url_handles_none():
     assert expected == result
 
 
+def test_afs_url_with_custom_afs_path():
+    config = {'LEGACY_AFS_PATH': '/custom/path/'}
+
+    with patch.dict(current_app.config, config):
+        expected = 'file:///custom/path/var/file.txt'
+        result = afs_url('/opt/cds-invenio/var/file.txt')
+
+        assert expected == result
+
+
 def test_get_record_ref_with_empty_server_name():
     config = {}
 
