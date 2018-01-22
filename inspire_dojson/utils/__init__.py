@@ -108,20 +108,22 @@ def absolute_url(relative_url):
     return urllib.parse.urljoin(server, relative_url)
 
 
-def afs_url(value):
-    """Returns the AFS absolute path from the FFT ``path`` key.
+def afs_url(file_path):
+    """Convert a file path to a URL pointing to its path on AFS.
 
-    If ``path`` doesn't start with ``/opt/cds-invenio/`` it returns it unchanged.
+    If ``file_path`` doesn't start with ``/opt/cds-invenio/``, and hence is not on
+    AFS, it returns it unchanged.
     """
     default_afs_path = '/afs/cern.ch/project/inspire/PROD'
-    file_path = value.get('a')
 
     if file_path is None:
         return
 
     if file_path.startswith('/opt/cds-invenio/'):
         file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
-        return os.path.join(default_afs_path, file_path)
+        file_path = os.path.join(default_afs_path, file_path)
+        return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path))
+
     return file_path
 
 

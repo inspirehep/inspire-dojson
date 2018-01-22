@@ -29,6 +29,7 @@ from mock import patch
 
 from inspire_dojson.utils import (
     absolute_url,
+    afs_url,
     normalize_rank,
     force_single_element,
     get_recid_from_ref,
@@ -134,6 +135,34 @@ def test_absolute_url_with_https_server_name():
         result = absolute_url('foo')
 
         assert expected == result
+
+
+def test_afs_url_ignores_non_afs_path():
+    expected = 'http://example.com/file.pdf'
+    result = afs_url('http://example.com/file.pdf')
+
+    assert expected == result
+
+
+def test_afs_url_converts_afs_path():
+    expected = 'file:///afs/cern.ch/project/inspire/PROD/var/file.txt'
+    result = afs_url('/opt/cds-invenio/var/file.txt')
+
+    assert expected == result
+
+
+def test_afs_url_encodes_characters():
+    expected = 'file:///afs/cern.ch/project/inspire/PROD/var/file%20with%20spaces.txt'
+    result = afs_url('/opt/cds-invenio/var/file with spaces.txt')
+
+    assert expected == result
+
+
+def test_afs_url_handles_none():
+    expected = None
+    result = afs_url(None)
+
+    assert expected == result
 
 
 def test_get_record_ref_with_empty_server_name():

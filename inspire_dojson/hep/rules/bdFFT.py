@@ -82,7 +82,7 @@ def documents(self, key, value):
         figures.append({
             'key': _get_key(value),
             'caption': caption,
-            'url': afs_url(value),
+            'url': afs_url(value.get('a')),
             'order': index
         })
         self['figures'] = figures
@@ -92,7 +92,7 @@ def documents(self, key, value):
             'key': _get_key(value),
             'fulltext': _is_fulltext(value),
             'hidden': _is_hidden(force_list(value.get('o'))),
-            'url': afs_url(value),
+            'url': afs_url(value.get('a')),
             'source': _get_source(value),
         }
 
