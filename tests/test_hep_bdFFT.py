@@ -49,7 +49,7 @@ def test_documents_from_FFT():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -93,11 +93,11 @@ def test_documents_are_unique_from_FFT():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
         },
         {
             'key': '1_arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -129,7 +129,7 @@ def test_figures_from_FFT():
         {
             'key': 'FIG10.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -185,17 +185,17 @@ def test_figures_order_from_FFT():
         {
             'key': 'FIG10.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
         },
         {
             'key': 'FIG11.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037400/content.png;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037400/content.png%3B1',
         },
         {
             'key': 'FIG12.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037401/content.png;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037401/content.png%3B1',
         }
     ]
     result = hep.do(create_record(snippet))
@@ -342,6 +342,48 @@ def test_figures_to_FFT():
     assert expected == result['FFT']
 
 
+def test_figure_from_FFT_generates_valid_uri():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
+    snippet = (
+        '<datafield tag="FFT" ind1=" " ind2=" ">'
+        '  <subfield code="a">/opt/cds-invenio/var/data/files/g83/1678426/FKLP new_VF.png;1</subfield>'
+        '  <subfield code="d">00000 Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.</subfield>'
+        '  <subfield code="f">.png</subfield>'
+        '  <subfield code="n">FKLP new_VF</subfield>'
+        '  <subfield code="r"></subfield>'
+        '  <subfield code="s">2013-10-22 05:04:33</subfield>'
+        '  <subfield code="t">Plot</subfield>'
+        '  <subfield code="v">1</subfield>'
+        '  <subfield code="z"></subfield>'
+        '</datafield>'
+    )  # record/1245001
+
+    expected = [
+        {
+            'key': 'FKLP new_VF.png',
+            'caption': 'Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g83/1678426/FKLP%20new_VF.png%3B1',
+        }
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['figures'], subschema) is None
+    assert expected == result['figures']
+
+    expected = [
+        {
+            'a': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g83/1678426/FKLP%20new_VF.png%3B1',
+            'd': '00000 Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.',
+            't': 'Plot',
+        }
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['FFT']
+
+
 def test_figures_and_documents_from_FFT_without_d_subfield():
     schema = load_schema('hep')
     figures_subschema = schema['properties']['figures']
@@ -375,14 +417,14 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
     expected_figures = [
         {
             'key': 'FIG10.png',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
         },
     ]
 
     expected_documents = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': '/afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf;1',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
         },
     ]
 
