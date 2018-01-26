@@ -311,7 +311,7 @@ def test_documents_to_FFT():
     assert expected == result['FFT']
 
 
-def test_documents_to_FFT_capitalizes_arxiv_properly():
+def test_documents_to_FFT_special_cases_arxiv_properly():
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
 
@@ -334,7 +334,6 @@ def test_documents_to_FFT_capitalizes_arxiv_properly():
             'a': 'http://localhost:5000/api/files/d82dc015-83ea-4d83-820b-adb7ce1e42d0/1712.04934.pdf',
             'd': 'Fulltext',
             't': 'arXiv',
-            'o': 'HIDDEN',
         }
     ]
 
