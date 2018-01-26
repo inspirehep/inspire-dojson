@@ -104,6 +104,8 @@ def documents2marc(self, key, value):
         doctype = value.get('source', 'INSPIRE-PUBLIC')
         if doctype == 'submitter':
             return 'INSPIRE-PUBLIC'
+        elif doctype.lower() == 'arxiv':
+            return 'arXiv'
         return doctype
 
     def _get_description(value):
@@ -112,11 +114,16 @@ def documents2marc(self, key, value):
         if value.get('fulltext'):
             return 'Fulltext'
 
+    def _get_hidden(value):
+        if value.get('hidden') and value.get('source', '').lower() != 'arxiv':
+            return 'HIDDEN'
+        return None
+
     return {
         'd': _get_description(value),
         'a': absolute_url(value.get('url')),
         't': _get_type(value),
-        'o': 'HIDDEN' if value.get('hidden') else None,
+        'o': _get_hidden(value),
     }
 
 
