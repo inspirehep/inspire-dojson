@@ -104,6 +104,8 @@ def documents2marc(self, key, value):
         doctype = value.get('source', 'INSPIRE-PUBLIC')
         if doctype == 'submitter':
             return 'INSPIRE-PUBLIC'
+        elif doctype.lower() == 'arxiv':
+            return 'arXiv'
         return doctype
 
     def _get_description(value):
