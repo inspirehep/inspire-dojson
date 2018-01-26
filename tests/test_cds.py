@@ -669,7 +669,37 @@ def test_authors_from_100__a_u_and_multiple_700__a_u_e():
     assert expected == result['authors']
 
 
-def test_corporate_author_from_110_a():
+def test_authors_from_100__a_normalizes_name():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Tagliente, G</subfield>'
+        '</datafield>'
+    )  # cds.cern.ch/record/1099557
+
+    expected = [
+        {
+            'a': 'Tagliente, G.',
+        },
+    ]
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert expected == result['100__']
+
+    expected = [
+        {
+            'full_name': 'Tagliente, G.',
+        },
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+
+def test_corporate_author_from_110__a():
     schema = load_schema('hep')
     subschema = schema['properties']['corporate_author']
 

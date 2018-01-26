@@ -37,6 +37,7 @@ from dojson import utils
 from six.moves import urllib
 
 from inspire_utils.helpers import force_list
+from inspire_utils.name import normalize_name
 
 from .model import cds2hep_marc
 from ..utils import force_single_element
@@ -211,6 +212,7 @@ def _converted_author(value):
         subfields_i.extend(ids_i)
         subfields_j.extend(ids_j)
 
+    value['a'] = normalize_name(value['a'])
     value['i'] = subfields_i
     value['j'] = subfields_j
 
