@@ -175,6 +175,13 @@ def test_afs_url_with_custom_afs_path():
         assert expected == result
 
 
+def test_afs_url_handles_unicode():
+    expected = u'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g70/1407585/%E7%89%A9%E7%90%86%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%AD%A6%E9%99%A2-%E6%9D%8E%E5%A8%9C-200650218-%E5%AD%A6%E4%BD%8D%E7%BA%A7....pdf%3B1'
+    result = afs_url(u'/opt/cds-invenio/var/data/files/g70/1407585/物理科学与技术学院-李娜-200650218-学位级....pdf;1')
+
+    assert expected == result
+
+
 def test_get_record_ref_with_empty_server_name():
     config = {}
 

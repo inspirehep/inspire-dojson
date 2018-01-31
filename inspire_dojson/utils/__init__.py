@@ -126,7 +126,7 @@ def afs_url(file_path):
     if file_path.startswith('/opt/cds-invenio/'):
         file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
         file_path = os.path.join(afs_path, file_path)
-        return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path))
+        return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path.encode('utf-8')))
 
     return file_path
 
