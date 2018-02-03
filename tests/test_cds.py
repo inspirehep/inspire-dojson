@@ -1194,13 +1194,13 @@ def test_documents_from_8564_s_u_y_8():
     )  # cds.cern.ch/record/2294664
 
     expected = [
-            {
-                't': 'CDS',
-                'a': 'http://cds.cern.ch/record/2294664/files/James.pdf',
-                'd': 'Fulltext',
-                'n': 'James.pdf',
-                'f': '.pdf',
-            },
+        {
+            't': 'CDS',
+            'a': 'http://cds.cern.ch/record/2294664/files/James.pdf',
+            'd': 'Fulltext',
+            'n': 'James.pdf',
+            'f': '.pdf',
+        },
     ]
     result = cds2hep_marc.do(create_record(snippet))
 
@@ -1208,12 +1208,12 @@ def test_documents_from_8564_s_u_y_8():
 
     expected = [
         {
-                'key': 'James.pdf',
-                'fulltext': True,
-                'source': 'CDS',
-                'url': 'http://cds.cern.ch/record/2294664/files/James.pdf',
-            },
-        ]
+            'key': 'James.pdf',
+            'fulltext': True,
+            'source': 'CDS',
+            'url': 'http://cds.cern.ch/record/2294664/files/James.pdf',
+        },
+    ]
     result = hep.do(create_record_from_dict(result))
 
     assert validate(result['documents'], subschema) is None

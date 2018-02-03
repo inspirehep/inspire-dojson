@@ -45,7 +45,7 @@ install:
   - travis_retry pip install -e .[tests]
 
 script:
-  - py.test inspire_dojson tests
+  - ./run-tests.sh
 
 after_success:
   - coveralls

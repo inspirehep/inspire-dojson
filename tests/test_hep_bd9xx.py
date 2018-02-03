@@ -1340,7 +1340,7 @@ def test_references_from_999C5k():
         {
             'k': 'Robilotta:2008js',
             'z': 0,
-         },
+        },
     ]
     result = hep2marc.do(result)
 
