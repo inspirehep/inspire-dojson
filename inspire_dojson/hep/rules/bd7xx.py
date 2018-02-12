@@ -180,6 +180,19 @@ def related_records_78002(self, key, value):
         }
 
 
+@hep.over('related_records', '^78502')
+@utils.for_each_value
+def related_records_78502(self, key, value):
+    """Populate the ``related_records`` key."""
+    record = get_record_ref(maybe_int(value.get('w')), 'literature')
+    if record:
+        return {
+            'curated_relation': record is not None,
+            'record': record,
+            'relation': 'successor',
+        }
+
+
 @hep.over('related_records', '^78708')
 @utils.for_each_value
 def related_records_78708(self, key, value):
@@ -193,20 +206,27 @@ def related_records_78708(self, key, value):
         }
 
 
-@hep2marc.over('78002', '^related_records$')
+@hep2marc.over('78708', '^related_records$')
 @utils.for_each_value
 def related_records2marc(self, key, value):
-    """Populate the ``78002`` MARC field.
+    """Populate the ``78708`` MARC field
 
-    Also populates the ``78708`` MARC field through side effects.
+    Also populates the ``78002``, ``78502`` MARC fields through side effects.
     """
-    if not value.get('relation_freetext'):
+    if value.get('relation_freetext'):
         return {
-            'i': 'supersedes',
+            'i': value.get('relation_freetext'),
             'w': get_recid_from_ref(value.get('record')),
         }
-
-    self.setdefault('78708', []).append({
-        'i': value.get('relation_freetext'),
-        'w': get_recid_from_ref(value.get('record')),
-    })
+    elif value.get('relation') == 'successor':
+        self.setdefault('78502', []).append({
+            'i': 'superseded by',
+            'w': get_recid_from_ref(value.get('record')),
+        })
+    elif value.get('relation') == 'predecessor':
+        self.setdefault('78002', []).append({
+            'i': 'supersedes',
+            'w': get_recid_from_ref(value.get('record')),
+        })
+    else:
+        raise NotImplementedError(u"Unhandled relation in related_records: {}".format(value.get('relation')))

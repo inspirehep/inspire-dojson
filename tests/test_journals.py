@@ -219,6 +219,33 @@ def test_related_records_from_530__a_i_w_0():
     assert expected == result['related_records']
 
 
+def test_related_successor_records_from_530__a_i_w_0():
+    schema = load_schema('journals')
+    subschema = schema['properties']['related_records']
+
+    snippet = (
+        '<datafield tag="530" ind1=" " ind2=" ">'
+        '<subfield code="0">1214520</subfield>'
+        '<subfield code="a">Phil.Mag.</subfield>'
+        '<subfield code="w">b</subfield>'
+        '/datafield>'
+    )  # record/1504005
+
+    expected = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/journals/1214520',
+            },
+            'relation': 'successor',
+        },
+    ]
+    result = journals.do(create_record(snippet))
+
+    assert validate(result['related_records'], subschema) is None
+    assert expected == result['related_records']
+
+
 def test_license_from_540__a():
     schema = load_schema('journals')
     subschema = schema['properties']['license']
