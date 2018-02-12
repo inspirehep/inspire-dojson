@@ -642,7 +642,10 @@ def test_related_records_from_510__a_w_0_accepts_other():
     assert expected == result['related_records']
 
 
-def test_related_records_from__510__a_w_0_discards_successors():
+def test_related_records_from__510__a_w_0_accepts_successors():
+    schema = load_schema('institutions')
+    subschema = schema['properties']['related_records']
+
     snippet = (
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">911753</subfield>'
@@ -651,9 +654,19 @@ def test_related_records_from__510__a_w_0_discards_successors():
         '</datafield>'
     )  # record/902831
 
+    expected = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/institutions/911753',
+            },
+            'relation': 'successor',
+        },
+    ]
     result = institutions.do(create_record(snippet))
 
-    assert 'related_records' not in result
+    assert validate(result['related_records'], subschema) is None
+    assert expected == result['related_records']
 
 
 def test_related_records_from_510__w_discards_malformed():

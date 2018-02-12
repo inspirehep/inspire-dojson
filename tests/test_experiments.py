@@ -523,7 +523,9 @@ def test_related_records_from_double_510__a_w_0_accepts_predecessors():
     assert expected == result['related_records']
 
 
-def test_related_records_from_510__a_w_0_discards_successors():
+def test_related_records_from_510__a_w_0_accepts_successors():
+    schema = load_schema('experiments')
+    subschema = schema['properties']['related_records']
     snippet = (
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">1262631</subfield>'
@@ -532,9 +534,18 @@ def test_related_records_from_510__a_w_0_discards_successors():
         '</datafield>'
     )  # record/1108192
 
+    expected = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/experiments/1262631',
+            },
+            'relation': 'successor',
+        }
+    ]
     result = experiments.do(create_record(snippet))
-
-    assert 'related_records' not in result
+    assert validate(result['related_records'], subschema) is None
+    assert expected == result['related_records']
 
 
 def test_collaboration_from_710__g_0():

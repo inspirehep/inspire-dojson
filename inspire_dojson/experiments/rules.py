@@ -126,7 +126,8 @@ def name_variants(self, key, value):
 def related_records(self, key, value):
     def _get_relation(value):
         RELATIONS_MAP = {
-            'a': 'predecessor'
+            'a': 'predecessor',
+            'b': 'successor'
         }
 
         return RELATIONS_MAP.get(value.get('w'))

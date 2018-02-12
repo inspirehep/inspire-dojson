@@ -189,6 +189,7 @@ def related_records(self, key, value):
     def _get_relation(value):
         RELATIONS_MAP = {
             'a': 'predecessor',
+            'b': 'successor',
             'r': 'other',
             't': 'parent',
         }

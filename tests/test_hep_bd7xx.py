@@ -800,6 +800,41 @@ def test_related_records_from_78002i_r_w():
     assert expected == result['78002']
 
 
+def test_related_superseding_records_78502r_w_z():
+    schema = load_schema('hep')
+    subschema = schema['properties']['related_records']
+    snippet = (
+        '<datafield tag="785" ind1="0" ind2="2">'
+        '<subfield code="i">superseded by</subfield>'
+        '<subfield code="r">CERN-EP-2016-305</subfield>'
+        '<subfield code="w">1510564</subfield>'
+        '</datafield>'
+    )  # record/1503270
+
+    expected = [
+        {
+            'curated_relation': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/literature/1510564',
+            },
+            'relation': 'successor',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['related_records'], subschema) is None
+    assert expected == result['related_records']
+    expected = [
+        {
+            'i': 'superseded by',
+            'w': 1510564,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['78502']
+
+
 def test_related_records_from_78708i_w():
     schema = load_schema('hep')
     subschema = schema['properties']['related_records']
