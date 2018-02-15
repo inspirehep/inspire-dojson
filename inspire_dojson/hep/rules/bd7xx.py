@@ -93,6 +93,11 @@ def publication_info(self, key, value):
         if z_value:
             return normalize_isbn(z_value)
 
+    def _get_pubinfo_freetext(value):
+        x_value = force_single_element(value.get('x', ''))
+        if not x_value.startswith('#DONE'):
+            return x_value
+
     page_start, page_end, artid = split_page_artid(value.get('c'))
 
     parent_recid = maybe_int(force_single_element(value.get('0')))
@@ -120,7 +125,7 @@ def publication_info(self, key, value):
         'parent_isbn': _get_parent_isbn(value),
         'parent_record': parent_record,
         'parent_report_number': force_single_element(value.get('r')),
-        'pubinfo_freetext': force_single_element(value.get('x')),
+        'pubinfo_freetext': _get_pubinfo_freetext(value),
         'year': maybe_int(force_single_element(value.get('y'))),
     }
 

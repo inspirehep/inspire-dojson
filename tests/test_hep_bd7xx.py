@@ -625,6 +625,49 @@ def test_publication_info_from_double_773__p():
     assert expected == result['public_notes']
 
 
+def test_publication_info_from_773__c_p_v_x_y_1_discards_done_x():
+    schema = load_schema('hep')
+    subschema = schema['properties']['publication_info']
+
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="c">134516</subfield>'
+        '  <subfield code="p">Phys.Rev.</subfield>'
+        '  <subfield code="v">B93</subfield>'
+        '  <subfield code="x">#DONE: Phys. Rev. B 93, 134516 (2016)</subfield>'
+        '  <subfield code="y">2016</subfield>'
+        '  <subfield code="1">1214516</subfield>'
+        '</datafield>'
+    )  # record/1479030
+
+    expected = [
+        {
+            'artid': '134516',
+            'journal_title': 'Phys.Rev.B',
+            'journal_volume': '93',
+            'year': 2016,
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['publication_info'], subschema) is None
+    assert expected == result['publication_info']
+
+    expected = [
+        {
+            'c': [
+                '134516',
+            ],
+            'p': 'Phys.Rev.',
+            'v': 'B93',
+            'y': 2016,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['773']
+
+
 def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
