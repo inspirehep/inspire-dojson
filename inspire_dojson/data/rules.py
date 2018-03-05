@@ -24,8 +24,20 @@
 
 from __future__ import absolute_import, division, print_function
 
+from dojson import utils
+from idutils import normalize_doi
+
 from .model import data
 from ..utils import force_single_element, get_record_ref
+
+
+@data.over('dois', '^0247.')
+@utils.for_each_value
+def dois(self, key, value):
+    return {
+        'source': value.get('9'),
+        'value': normalize_doi(value.get('a')),
+    }
 
 
 @data.over('new_record', '^970..')
