@@ -28,6 +28,28 @@ from inspire_dojson.data import data
 from inspire_schemas.api import load_schema, validate
 
 
+def test_dois_from_0247_2_a():
+    schema = load_schema('data')
+    subschema = schema['properties']['dois']
+
+    snippet = (
+        '<datafield tag="024" ind1="7" ind2=" ">'
+        '  <subfield code="a">10.17182/hepdata.77268.v1/t6</subfield>'
+        '  <subfield code="2">DOI</subfield>'
+        '</datafield>'
+    )  # record/1639676
+
+    expected = [
+        {
+            'value': '10.17182/hepdata.77268.v1/t6',
+        }
+    ]
+    result = data.do(create_record(snippet))
+
+    assert validate(result['dois'], subschema) is None
+    assert expected == result['dois']
+
+
 def test_new_record_from_970__d():
     schema = load_schema('data')
     subschema = schema['properties']['new_record']
