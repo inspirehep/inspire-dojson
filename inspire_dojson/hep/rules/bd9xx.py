@@ -108,6 +108,10 @@ DOCUMENT_TYPE_REVERSE_MAP = {
     'thesis': 'Thesis',
 }
 
+CDS_RECORD_FORMAT = 'http://cds.cern.ch/record/{}'
+
+ADS_RECORD_FORMAT = 'http://adsabs.harvard.edu/abs/{}'
+
 
 @hep.over('record_affiliations', '^902..')
 @utils.for_each_value
@@ -305,6 +309,11 @@ def references2marc(self, key, value):
     a_values.extend(['hdl:' + el['value'] for el in pids if el.get('schema') == 'HDL'])
     a_values.extend(['urn:' + el['value'] for el in pids if el.get('schema') == 'URN'])
 
+    external_ids = force_list(reference.get('external_system_identifiers'))
+    u_values = force_list(get_value(reference, 'urls.value'))
+    u_values.extend(CDS_RECORD_FORMAT.format(el['value']) for el in external_ids if el.get('schema') == 'CDS')
+    u_values.extend(ADS_RECORD_FORMAT.format(el['value']) for el in external_ids if el.get('schema') == 'ADS')
+
     authors = force_list(reference.get('authors'))
     e_values = [el['full_name'] for el in authors if el.get('inspire_role') == 'editor']
     h_values = [el['full_name'] for el in authors if el.get('inspire_role') != 'editor']
@@ -342,7 +351,7 @@ def references2marc(self, key, value):
         'r': r_values,
         's': s_value,
         't': get_value(reference, 'title.title'),
-        'u': get_value(reference, 'urls.value'),
+        'u': u_values,
         'x': get_value(value, 'raw_refs.value'),
         'y': get_value(reference, 'publication_info.year'),
         'z': 1 if value.get('curated_relation') else 0,

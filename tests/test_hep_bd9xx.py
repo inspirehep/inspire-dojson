@@ -1541,3 +1541,167 @@ def test_references_from_999C5_0_h_m_o_r_t_y():
     result = hep2marc.do(result)
 
     assert expected == result['999C5']
+
+
+def test_references_from_999C5u_as_cds_system_identifiers():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="o">59</subfield>'
+        '  <subfield code="c">ATLAS Collaboration</subfield>'
+        '  <subfield code="c">CMS Collaboration</subfield>'
+        '  <subfield code="m">The LHC Higgs Combination Group Collaboration Tech. Rep CERN, Geneva, Aug</subfield>'
+        '  <subfield code="h">G. Aad et al.</subfield>'
+        '  <subfield code="t">Procedure for the LHC Higgs boson search combination in Summer 2011</subfield>'
+        '  <subfield code="r">CMS-NOTE-2011-005</subfield>'
+        '  <subfield code="r">ATL-PHYS-PUB-2011-11</subfield>'
+        '  <subfield code="u">http://cds.cern.ch/record/1379837</subfield>'
+        '  <subfield code="y">2011</subfield>'
+        '  <subfield code="0">1196797</subfield>'
+        '</datafield>'
+    )  # record/1665526
+
+    expected = [
+        {
+            'record': {
+                '$ref': u'http://localhost:5000/api/literature/1196797',
+            },
+            'reference': {
+                'report_numbers': [
+                    'CMS-NOTE-2011-005',
+                    'ATL-PHYS-PUB-2011-11',
+                ],
+                'title': {
+                    'title': 'Procedure for the LHC Higgs boson search combination in Summer 2011',
+                },
+                'collaborations': [
+                    'ATLAS Collaboration',
+                    'CMS Collaboration',
+                ],
+                'misc': [
+                    'The LHC Higgs Combination Group Collaboration Tech. Rep CERN, Geneva, Aug',
+                ],
+                'label': '59',
+                'publication_info': {
+                    'year': 2011,
+                },
+                'authors': [
+                    {
+                        'full_name': u'Aad, G.',
+                    },
+                ],
+                'external_system_identifiers': [
+                    {
+                        'value': '1379837',
+                        'schema': 'CDS',
+                    },
+                ],
+            },
+            'curated_relation': False
+        }
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            'c': [
+                'ATLAS Collaboration',
+                'CMS Collaboration',
+            ],
+            'h': [
+                u'Aad, G.',
+            ],
+            'm': 'The LHC Higgs Combination Group Collaboration Tech. Rep CERN, Geneva, Aug',
+            'o': '59',
+            '0': 1196797,
+            'r': [
+                'CMS-NOTE-2011-005',
+                'ATL-PHYS-PUB-2011-11',
+            ],
+            'u': [
+                'http://cds.cern.ch/record/1379837',
+            ],
+            't': 'Procedure for the LHC Higgs boson search combination in Summer 2011',
+            'y': 2011,
+            'z': 0,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
+
+
+def test_references_from_999C5u_as_ads_system_identifiers():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="o">25</subfield>'
+        '  <subfield code="m">Kragh, Helge Bibcode:PhP...17..107K</subfield>'
+        '  <subfield code="t">Pascual Jordan, Varying Gravity, and the Expanding Earth</subfield>'
+        '  <subfield code="s">Phys.Perspect.,17,107</subfield>'
+        '  <subfield code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield>'
+        '  <subfield code="a">doi:10.1007/s00016-015-0157-9</subfield>'
+        '  <subfield code="y">2015</subfield>'
+        '</datafield>'
+    )  # record/1663135
+
+    expected = [
+        {
+            'reference': {
+                'title': {
+                    'title': 'Pascual Jordan, Varying Gravity, and the Expanding Earth',
+                },
+                'misc': [
+                    'Kragh, Helge Bibcode:PhP...17..107K',
+                ],
+                'label': '25',
+                'publication_info': {
+                    'artid': '107',
+                    'journal_volume': '17',
+                    'page_start': '107',
+                    'journal_title': 'Phys.Perspect.',
+                    'year': 2015,
+                },
+                'external_system_identifiers': [
+                    {
+                        'value': '2015PhP...17..107K',
+                        'schema': 'ADS',
+                    },
+                ],
+                'dois': [
+                    '10.1007/s00016-015-0157-9',
+                ]
+            },
+        }
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            'a': [
+                'doi:10.1007/s00016-015-0157-9',
+            ],
+            'm': 'Kragh, Helge Bibcode:PhP...17..107K',
+            'o': '25',
+            's': 'Phys.Perspect.,17,107',
+            'u': [
+                'http://adsabs.harvard.edu/abs/2015PhP...17..107K',
+            ],
+            't': 'Pascual Jordan, Varying Gravity, and the Expanding Earth',
+            'y': 2015,
+            'z': 0,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
