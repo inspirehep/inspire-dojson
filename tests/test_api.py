@@ -27,6 +27,19 @@ import pytest
 from inspire_dojson.api import marcxml2record, record2marcxml
 
 
+def test_marcxml2record_handles_conferences():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">CONFERENCES</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'conferences.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
 def test_marcxml2record_handles_data():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
@@ -40,6 +53,32 @@ def test_marcxml2record_handles_data():
     assert expected == result['$schema']
 
 
+def test_marcxml2record_handles_experiments():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">EXPERIMENT</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'experiments.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
+def test_marcxml2record_handles_hepnames():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">HEPNAMES</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'authors.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
 def test_marcxml2record_handles_institutions():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
@@ -48,6 +87,45 @@ def test_marcxml2record_handles_institutions():
     )
 
     expected = 'institutions.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
+def test_marcxml2record_handles_jobs():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">JOB</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'jobs.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
+def test_marcxml2record_handles_jobhidden():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">JOBHIDDEN</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'jobs.json'
+    result = marcxml2record(snippet)
+
+    assert expected == result['$schema']
+
+
+def test_marcxml2record_handles_journals():
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">JOURNALS</subfield>'
+        '</datafield>'
+    )
+
+    expected = 'journals.json'
     result = marcxml2record(snippet)
 
     assert expected == result['$schema']
