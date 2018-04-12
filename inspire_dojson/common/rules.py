@@ -867,7 +867,7 @@ def urls2marc(self, key, value):
 @jobs.over('legacy_creation_date', '^961..')
 @journals.over('legacy_creation_date', '^961..')
 def legacy_creation_date(self, key, value):
-    if 'legacy_creation_date' in self:
+    if 'legacy_creation_date' in self and self['legacy_creation_date']:
         return self['legacy_creation_date']
 
     x_values = force_list(value.get('x'))
