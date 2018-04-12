@@ -34,7 +34,7 @@ from dojson import utils
 
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import classify_field
-from inspire_utils.date import PartialDate, normalize_date
+from inspire_utils.date import PartialDate, earliest_date
 from inspire_utils.helpers import force_list, maybe_int
 
 from ..conferences.model import conferences
@@ -870,7 +870,9 @@ def legacy_creation_date(self, key, value):
     if 'legacy_creation_date' in self:
         return self['legacy_creation_date']
 
-    return normalize_date(value.get('x'))
+    x_values = force_list(value.get('x'))
+    if x_values:
+        return earliest_date(x_values)
 
 
 @hep2marc.over('961', '^legacy_creation_date$')
