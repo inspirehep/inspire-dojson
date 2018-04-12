@@ -48,17 +48,19 @@ from ...utils import (
 @utils.for_each_value
 def collaborations(self, key, value):
     """Populate the ``collaborations`` key."""
-    collaborations = normalize_collaboration(value.get('g'))
+    result = []
 
-    if len(collaborations) == 1:
-        return [
-            {
+    for g_value in force_list(value.get('g')):
+        collaborations = normalize_collaboration(g_value)
+        if len(collaborations) == 1:
+            result.append({
                 'record': get_record_ref(maybe_int(value.get('0')), 'experiments'),
                 'value': collaborations[0],
-            },
-        ]
-    else:
-        return [{'value': collaboration} for collaboration in collaborations]
+            })
+        else:
+            result.extend({'value': collaboration} for collaboration in collaborations)
+
+    return result
 
 
 @hep2marc.over('710', '^collaborations$')

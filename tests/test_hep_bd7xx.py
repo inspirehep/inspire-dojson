@@ -175,6 +175,35 @@ def test_collaborations_from_multiple_710__g_0_and_710__g():
     assert expected == result['710']
 
 
+def test_collaborations_from_710__double_g_does_not_raise():
+    schema = load_schema('hep')
+    subschema = schema['properties']['collaborations']
+
+    snippet = (
+        '<datafield tag="710" ind1=" " ind2=" ">'
+        '  <subfield code="g">ATLAS</subfield>'
+        '  <subfield code="g">CMS</subfield>'
+        '</datafield>'
+    )  # record/1665755
+
+    expected = [
+        {'value': 'ATLAS'},
+        {'value': 'CMS'},
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['collaborations'], subschema) is None
+    assert expected == result['collaborations']
+
+    expected = [
+        {'g': 'ATLAS'},
+        {'g': 'CMS'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['710']
+
+
 def test_publication_info_from_773_c_m_p_v_y_1():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
