@@ -233,6 +233,66 @@ def test_legacy_creation_date_from_961__x_and_961__c():
     assert expected == result['961']
 
 
+def test_legacy_creation_date_from_961__c_and_961__x():
+    schema = load_schema('hep')
+    subschema = schema['properties']['legacy_creation_date']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="961" ind1=" " ind2=" ">'
+        '    <subfield code="c">2012-11-20</subfield>'
+        '  </datafield>'
+        '  <datafield tag="961" ind1=" " ind2=" ">'
+        '    <subfield code="x">2012-07-30</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # synthetic data
+
+    expected = '2012-07-30'
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['legacy_creation_date'], subschema) is None
+    assert expected == result['legacy_creation_date']
+
+    expected = {'x': '2012-07-30'}
+    result = hep2marc.do(result)
+
+    assert expected == result['961']
+
+
+def test_legacy_creation_date_from_961__c_does_not_raise():
+    snippet = (
+        '<datafield tag="961" ind1=" " ind2=" ">'
+        '  <subfield code="c">2009-07-12</subfield>'
+        '</datafield>'
+    )  # record/1501611
+
+    assert 'legacy_creation_date' not in hep.do(create_record(snippet))
+
+
+def test_legacy_creation_date_from_961__double_x_does_not_raise():
+    schema = load_schema('authors')
+    subschema = schema['properties']['legacy_creation_date']
+
+    snippet = (
+        '<datafield tag="961" ind1=" " ind2=" ">'
+        '  <subfield code="x">2006-04-21</subfield>'
+        '  <subfield code="x">1996-09-01</subfield>'
+        '</datafield>'
+    )  # record/982164
+
+    expected = '1996-09-01'
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['legacy_creation_date'], subschema) is None
+    assert expected == result['legacy_creation_date']
+
+    expected = {'x': '1996-09-01'}
+    result = hepnames2marc.do(result)
+
+    assert expected == result['961']
+
+
 def test_external_system_identifiers_from_970__a():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
