@@ -28,8 +28,14 @@ which are applied in succession to the result of the DoJSON rules.
 
 from __future__ import absolute_import, division, print_function
 
-from dojson import Overdo
+from functools import wraps
 
+from dojson import Overdo
+from dojson.errors import IgnoreKey
+
+from six import raise_from
+
+from .errors import DoJsonError
 from .utils import dedupe_all_lists, strip_empty_values
 
 
@@ -46,6 +52,27 @@ class FilterOverdo(Overdo):
             result = filter_(result, blob)
 
         return result
+
+    def over(self, name, *source_tags):
+        def decorator(creator):
+            return super(FilterOverdo, self).over(name, *source_tags)(self._wrap_exception(creator, name))
+
+        return decorator
+
+    @staticmethod
+    def _wrap_exception(rule, name):
+        @wraps(rule)
+        def func(self, key, value):
+            try:
+                return rule(self, key, value)
+            except Exception as exc:
+                if type(exc) is IgnoreKey:
+                    raise exc
+                raise_from(DoJsonError(
+                    u'Error in rule "{name}" for field "{key}"'.format(name=name, key=key), exc.args, value
+                ), exc)
+
+        return func
 
 
 def add_schema(schema):

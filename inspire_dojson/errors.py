@@ -20,10 +20,20 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-"""INSPIRE DoJSON rules."""
+"""Custom errors for INSPIRE DoJSON."""
 
 from __future__ import absolute_import, division, print_function
 
-from . import common  # noqa: F401
-from .api import marcxml2record, record2marcxml  # noqa: F401
-from .errors import DoJsonError  # noqa: F401
+from six import python_2_unicode_compatible, text_type
+
+
+@python_2_unicode_compatible
+class DoJsonError(Exception):
+    """Error during DoJSON processing."""
+    def __str__(self):
+        message = self.args[0]
+        exc = u' '.join(text_type(arg) for arg in self.args[1])
+        subfields = [(k, v) for (k, v) in self.args[2].items() if k != '__order__']
+        return u'{message}\n\n{exc}\n\nSubfields: {subfields}'.format(
+            message=message, exc=exc, subfields=subfields
+        )
