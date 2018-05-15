@@ -36,7 +36,7 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask~=0.0,>=0.12.2',
+    'Flask~=1.0,>=1.0',
     'IDUtils~=0.0,>=0.2.4',
     'dojson~=1.0,>=1.3.1',
     'inspire-schemas~=57.0,>=57.1.0',
