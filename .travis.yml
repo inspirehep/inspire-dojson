@@ -23,12 +23,20 @@
 notifications:
   email: false
 
-sudo: false
+sudo: required
 
 language: python
 
+addons:
+  sonarcloud:
+    organization: "inspirehep-github"
+    token:
+      secure: "lvWps3O9kJmNGu5WG0QAq/c1XMVCxl0PpQ+FtcFIc1aw/8KHOL3d4hLUP0XAnYmVeI1yJOhFvWvKD5ZagJYvX0Iq6EYLxBU954fHekrFIGSMmMWHLAORuy1s6NUGQClIUcXKFMbzMhwFcOB0IK7KtY85dSicC1D1rcBBL9fj4kOa6YdH3FUnW3J68mQIXYlwW7sBSvW+BHM/jbwt6kgBxkXBIN6nvqnae0L87mBvyBwle0apiLo900plHEK1DNFwqcqP574P2vUrafCbSLSks88JXGn7WL/ETml4B9/L68mb2PrAtDcdoZSzO0b7/CCy13lSyW3U8JMTJCqseA4ugievqy8ml8z2ryqdeJlUMaKZCH6HRTsYtqCJWv5NeXlG/3H6U75ZWASsjRlYbqlkrrekRMc1ch7SyvKR1ExoeH/RWuN4XvAqbAof2nO04Gj8+Iutpo9b4CSt+hRnySZ9wz14aTmXwn+2nlksbpWjma7pcwIgOBVsgFuvrr0jgjO+s1X+gaoTShH6Pfo6+PPNKmijDHLcSVhik99PXIhlbnVHTuUAjvHrHiF1dSv4dGh2rrMJp+iHQED6z9M6MaU7O0s4DOPHbHCOa6kZwWpHUmHfgZ7XzTltY3rkPSPum/z5xmPZV9nl+HQkBm83/i+Lmm2sr4TIpK1/fqZ2/X0SoMM="
+
 cache:
   pip: true
+  directories:
+    - '$HOME/.sonar/cache'
 
 python:
   - 2.7
@@ -46,6 +54,7 @@ install:
 
 script:
   - ./run-tests.sh
+  - sonar-scanner
 
 after_success:
   - coveralls
