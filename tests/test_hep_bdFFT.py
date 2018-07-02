@@ -255,6 +255,7 @@ def test_documents_from_FFT_does_not_require_s():
             'a': 'http://www.mdpi.com/2218-1997/3/1/24/pdf',
             'd': 'Fulltext',
             't': 'INSPIRE-PUBLIC',
+            'n': 'document',
         },
     ]
     result = hep2marc.do(result)
@@ -301,6 +302,7 @@ def test_documents_to_FFT():
             'd': 'Thesis fulltext',
             't': 'INSPIRE-PUBLIC',
             'o': 'HIDDEN',
+            'n': 'some_document',
         }
     ]
 
@@ -334,6 +336,7 @@ def test_documents_to_FFT_special_cases_arxiv_properly():
             'a': 'http://localhost:5000/api/files/d82dc015-83ea-4d83-820b-adb7ce1e42d0/1712.04934.pdf',
             'd': 'Fulltext',
             't': 'arXiv',
+            'n': '1712.04934',
         }
     ]
 
@@ -365,6 +368,7 @@ def test_figures_to_FFT():
             'a': 'http://localhost:5000/files/1234-1234-1234-1234/some_figure.png',
             'd': '00000 This figure illustrates something',
             't': 'Plot',
+            'n': 'some_figure',
         }
     ]
 
@@ -410,6 +414,7 @@ def test_figure_from_FFT_generates_valid_uri():
             'a': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g83/1678426/FKLP%20new_VF.png%3B1',
             'd': '00000 Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.',
             't': 'Plot',
+            'n': 'FKLP new_VF',
         }
     ]
     result = hep2marc.do(result)
@@ -495,6 +500,7 @@ def test_figures2marc_handles_unicode():
             'a': 'http://localhost:5000/api/files/feb489f4-7e13-4ca4-b51c-2c8c2242d596/Fig21.png',
             'd': u'00000 Hard gaps. (a) Differential conductance $G_S$ of an epitaxial nanowire device as a function of backgate voltage $V_{BG}$ and source\xd0drain voltage $V_{SD}$. Increasing $V_{BG}$, the conductance increases from the tunneling to the Andreev regime (orange and blue plots in the bottom). Adapted from Ref. \\cite{Chang2015}. (b) Subgap conductance $G_s$ as a function of the normal (above-gap) conductance $G_n$. Red curve is the theory prediction for a single channel NS contact, Eq. (\\ref{NS-Andreev}). Inset shows different $dI/dV$ taken at different values of $G_n$. Adapted from Ref. \\cite{Zhang2016}.',
             't': 'Plot',
+            'n': 'Fig21',
         },
     ]
     result = hep2marc.do(record)
