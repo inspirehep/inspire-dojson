@@ -86,6 +86,9 @@ docs/_api/
 # PyBuilder
 target/
 
+# PyTest
+.pytest_cache/
+
 # IPython Notebook
 .ipynb_checkpoints
 
