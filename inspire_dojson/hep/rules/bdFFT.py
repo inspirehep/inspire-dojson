@@ -24,6 +24,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 
 from dojson import utils
@@ -119,11 +120,16 @@ def documents2marc(self, key, value):
             return 'HIDDEN'
         return None
 
+    def _get_key(value):
+        file_name, _ = os.path.splitext(value['key'])
+        return file_name
+
     return {
         'd': _get_description(value),
         'a': absolute_url(value.get('url')),
         't': _get_type(value),
         'o': _get_hidden(value),
+        'n': _get_key(value),
     }
 
 
@@ -131,10 +137,12 @@ def documents2marc(self, key, value):
 def figures2marc(self, key, values):
     fft = self.setdefault('FFT', [])
     for index, value in enumerate(values):
+        file_name, _ = os.path.splitext(value['key'])
         fft.append({
             'd': u'{:05d} {}'.format(index, value.get('caption')),
             'a': absolute_url(value.get('url')),
             't': 'Plot',
+            'n': file_name,
         })
 
     return fft
