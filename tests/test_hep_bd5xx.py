@@ -705,6 +705,42 @@ def test_license_from_540__a_u_3():
     assert expected == result['540']
 
 
+def test_license_from_540__a_u_3_handles_preprint():
+    schema = load_schema('hep')
+    subschema = schema['properties']['license']
+
+    snippet = (
+        '<datafield tag="540" ind1=" " ind2=" ">'
+        '  <subfield code="3">preprint</subfield>'
+        '  <subfield code="a">arXiv nonexclusive-distrib 1.0</subfield>'
+        '  <subfield code="u">http://arxiv.org/licenses/nonexclusive-distrib/1.0/</subfield>'
+        '</datafield>'
+    )  # record/1682011
+
+    expected = [
+        {
+            'license': 'arXiv nonexclusive-distrib 1.0',
+            'material': 'preprint',
+            'url': 'http://arxiv.org/licenses/nonexclusive-distrib/1.0/',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['license'], subschema) is None
+    assert expected == result['license']
+
+    expected = [
+        {
+            'a': 'arXiv nonexclusive-distrib 1.0',
+            '3': 'preprint',
+            'u': 'http://arxiv.org/licenses/nonexclusive-distrib/1.0/',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['540']
+
+
 def test_license_from_540__double_a_u():
     schema = load_schema('hep')
     subschema = schema['properties']['license']

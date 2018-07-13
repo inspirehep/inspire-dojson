@@ -233,15 +233,10 @@ def license(self, key, value):
         return force_single_element(other_licenses)
 
     def _get_material(value):
-        MATERIAL_MAP = {
-            'Article': 'publication',
-            'Publication': 'publication',
-            'Reprint': 'reprint',
-            'publication': 'publication',
-            'reprint': 'reprint',
-        }
-
-        return MATERIAL_MAP.get(value.get('3'))
+        material = value.get('3', '').lower()
+        if material == 'article':
+            return 'publication'
+        return material
 
     return {
         'imposing': value.get('b'),
