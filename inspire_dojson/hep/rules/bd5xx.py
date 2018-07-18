@@ -55,7 +55,6 @@ def public_notes(self, key, value):
         ]
 
     public_notes = self.get('public_notes', [])
-    curated = self.get('curated')
     thesis_info = self.get('thesis_info', {})
 
     source = force_single_element(value.get('9', ''))
@@ -71,14 +70,13 @@ def public_notes(self, key, value):
                         'value': public_note,
                     })
             elif _means_not_curated(public_note):
-                curated = False
+                self['curated'] = False
             else:
                 public_notes.append({
                     'source': source,
                     'value': public_note,
                 })
 
-    self['curated'] = curated
     self['thesis_info'] = thesis_info
     return public_notes
 

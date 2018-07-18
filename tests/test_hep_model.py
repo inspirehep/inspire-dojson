@@ -41,3 +41,21 @@ def test_ensure_curated():
 
     assert validate(result['curated'], subschema) is None
     assert expected == result['curated']
+
+
+def test_ensure_curated_when_500_present():
+    schema = load_schema('hep')
+    subschema = schema['properties']['curated']
+
+    snippet = (
+        '<datafield tag="500" ind1=" " ind2=" ">'
+        '  <subfield code="9">arXiv</subfield>'
+        '  <subfield code="a">5 pages</subfield>'
+        '</datafield>'
+    )  # record/1450044
+
+    expected = True
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['curated'], subschema) is None
+    assert expected == result['curated']
