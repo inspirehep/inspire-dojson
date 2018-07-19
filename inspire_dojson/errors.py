@@ -33,7 +33,10 @@ class DoJsonError(Exception):
     def __str__(self):
         message = self.args[0]
         exc = u' '.join(text_type(arg) for arg in self.args[1])
-        subfields = [(k, v) for (k, v) in self.args[2].items() if k != '__order__']
+        try:
+            subfields = [(k, v) for (k, v) in self.args[2].items() if k != '__order__']
+        except AttributeError:  # when not dealing with MARC, the value doesn't have to be a dict
+            subfields = self.args[2]
         return u'{message}\n\n{exc}\n\nSubfields: {subfields}'.format(
             message=message, exc=exc, subfields=subfields
         )

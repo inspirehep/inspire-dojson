@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 from inspire_dojson.model import FilterOverdo, add_schema
-from inspire_dojson import DoJsonError, marcxml2record
+from inspire_dojson import DoJsonError, marcxml2record, record2marcxml
 
 
 def test_filteroverdo_works_without_filters():
@@ -52,6 +52,17 @@ def test_filteroverdo_wraps_exceptions():
     with pytest.raises(DoJsonError) as exc:
         marcxml2record(record)
     assert 'Error in rule "preprint_date" for field "269__"' in str(exc.value)
+
+
+def test_filteroverdo_handles_exceptions_in_non_dicts():
+    record = {
+        '$schema': 'hep.json',
+        'titles': None,
+    }  # synthetic data
+
+    with pytest.raises(DoJsonError) as exc:
+        record2marcxml(record)
+    assert 'Error in rule "246" for field "titles"' in str(exc.value)
 
 
 def test_add_schema():
