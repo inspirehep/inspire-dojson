@@ -162,6 +162,7 @@ def test_figures_from_FFT():
             'key': 'FIG10.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
+            'source': 'arxiv',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -218,16 +219,19 @@ def test_figures_order_from_FFT():
             'key': 'FIG10.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
+            'source': 'arxiv',
         },
         {
             'key': 'FIG11.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037400/content.png%3B1',
+            'source': 'arxiv',
         },
         {
             'key': 'FIG12.png',
             'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037401/content.png%3B1',
+            'source': 'arxiv',
         }
     ]
     result = hep.do(create_record(snippet))
@@ -411,7 +415,7 @@ def test_figures_to_FFT():
     assert expected == result['FFT']
 
 
-def test_figure_from_FFT_generates_valid_uri():
+def test_figures_from_FFT_generates_valid_uri():
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
 
@@ -434,6 +438,7 @@ def test_figure_from_FFT_generates_valid_uri():
             'key': 'FKLP new_VF.png',
             'caption': 'Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g83/1678426/FKLP%20new_VF.png%3B1',
+            'source': 'arxiv',
         }
     ]
     result = hep.do(create_record(snippet))
@@ -488,6 +493,7 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
         {
             'key': 'FIG10.png',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
+            'source': 'arxiv',
         },
     ]
 
