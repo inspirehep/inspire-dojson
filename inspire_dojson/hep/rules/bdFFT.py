@@ -69,6 +69,8 @@ def documents(self, key, value):
         source = value.get('t')
         if source in ('INSPIRE-PUBLIC', 'Main'):
             source = None
+        elif source.lower() == 'arxiv':
+            return 'arxiv'
 
         return source
 
@@ -84,7 +86,8 @@ def documents(self, key, value):
             'key': _get_key(value),
             'caption': caption,
             'url': afs_url(value.get('a')),
-            'order': index
+            'order': index,
+            'source': 'arxiv',  # XXX: we don't have any other figures on legacy
         })
         self['figures'] = figures
     else:
