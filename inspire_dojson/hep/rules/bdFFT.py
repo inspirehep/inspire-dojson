@@ -69,6 +69,8 @@ def documents(self, key, value):
         source = value.get('t')
         if source in ('INSPIRE-PUBLIC', 'Main'):
             source = None
+        elif source.lower() == 'arxiv':
+            return 'arxiv'
 
         return source
 

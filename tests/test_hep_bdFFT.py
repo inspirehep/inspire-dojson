@@ -59,6 +59,38 @@ def test_documents_from_FFT():
     assert 'figures' not in result
 
 
+def test_documents_from_FFT_special_cases_arxiv_properly():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = (
+        '<datafield tag="FFT" ind1=" " ind2=" ">'
+        '  <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037619/content.pdf;2</subfield>'
+        '  <subfield code="d"/>'
+        '  <subfield code="f">.pdf</subfield>'
+        '  <subfield code="n">arXiv:1710.01187</subfield>'
+        '  <subfield code="r"/>'
+        '  <subfield code="s">2017-12-06 03:34:26</subfield>'
+        '  <subfield code="t">arXiv</subfield>'
+        '  <subfield code="v">2</subfield>'
+        '  <subfield code="z"/>'
+        '</datafield>'
+    )  # record/1628455
+
+    expected = [
+        {
+            'key': 'arXiv:1710.01187.pdf',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B2',
+            'source': 'arxiv',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['documents'], subschema) is None
+    assert expected == result['documents']
+    assert 'figures' not in result
+
+
 def test_documents_are_unique_from_FFT():
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
