@@ -40,7 +40,7 @@ filters = [
     add_schema('conferences.json'),
     add_collection('Conferences'),
     remove_lone_series_number,
-    clean_record,
+    clean_record(),
 ]
 
 conferences = FilterOverdo(filters=filters)

@@ -30,7 +30,7 @@ from ..model import FilterOverdo, add_collection, add_schema, clean_record
 filters = [
     add_schema('journals.json'),
     add_collection('Journals'),
-    clean_record,
+    clean_record(),
 ]
 
 journals = FilterOverdo(filters=filters)

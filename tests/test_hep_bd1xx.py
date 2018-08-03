@@ -1704,6 +1704,74 @@ def test_authors_from_700__a_double_e_handles_multiple_roles():
     assert expected == result['authors']
 
 
+def test_authors_from_700__a_w_x_y_repeated_author():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Suzuki, K.</subfield>'
+        '    <subfield code="w">Ken.Suzuki.1</subfield>'
+        '    <subfield code="x">1458204</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Suzuki, K.</subfield>'
+        '    <subfield code="w">Ken.Suzuki.1</subfield>'
+        '    <subfield code="x">1458204</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1684644
+
+    expected = [
+        {
+            'full_name': 'Suzuki, K.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': 'Ken.Suzuki.1',
+                },
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1458204',
+            },
+        },
+        {
+            'full_name': 'Suzuki, K.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': 'Ken.Suzuki.1',
+                },
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1458204',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        '100': {
+            'a': 'Suzuki, K.',
+        },
+        '700': [
+            {
+                'a': 'Suzuki, K.',
+            },
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected['100'] == result['100']
+    assert expected['700'] == result['700']
+
+
 def test_corporate_author_from_110__a():
     schema = load_schema('hep')
     subschema = schema['properties']['corporate_author']
