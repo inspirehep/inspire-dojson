@@ -42,7 +42,7 @@ filters = [
     add_schema('institutions.json'),
     add_collection('Institutions'),
     combine_addresses_and_location,
-    clean_record,
+    clean_record(),
 ]
 
 institutions = FilterOverdo(filters=filters)

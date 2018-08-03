@@ -38,7 +38,7 @@ filters = [
     add_schema('experiments.json'),
     add_collection('Experiments'),
     add_project_type,
-    clean_record,
+    clean_record(),
 ]
 
 experiments = FilterOverdo(filters=filters)

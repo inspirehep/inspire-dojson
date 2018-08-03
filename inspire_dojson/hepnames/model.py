@@ -24,17 +24,17 @@
 
 from __future__ import absolute_import, division, print_function
 
-from ..model import FilterOverdo, add_schema, add_collection, clean_record
+from ..model import FilterOverdo, add_schema, add_collection, clean_marc, clean_record
 
 
 hepnames_filters = [
     add_schema('authors.json'),
     add_collection('Authors'),
-    clean_record,
+    clean_record(),
 ]
 
 hepnames2marc_filters = [
-    clean_record,
+    clean_marc,
 ]
 
 hepnames = FilterOverdo(filters=hepnames_filters)

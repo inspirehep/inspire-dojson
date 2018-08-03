@@ -76,7 +76,7 @@ filters = [
     add_control_number,
     add_collections,
     remove_english_language,
-    clean_record,
+    clean_record(),
 ]
 
 cds2hep_marc = FilterOverdo(filters=filters)

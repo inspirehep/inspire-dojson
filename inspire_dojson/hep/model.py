@@ -36,7 +36,7 @@ from inspire_schemas.builders.literature import is_citeable
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
-from ..model import FilterOverdo, add_schema, clean_record
+from ..model import FilterOverdo, add_schema, clean_marc, clean_record
 
 
 def add_arxiv_categories(record, blob):
@@ -193,13 +193,13 @@ hep_filters = [
     ensure_unique_documents_and_figures,
     ensure_ordered_figures,
     set_citeable,
-    clean_record,
+    clean_record(exclude_keys={'authors'}),
 ]
 
 hep2marc_filters = [
     write_ids,
     convert_curated,
-    clean_record,
+    clean_marc,
 ]
 
 hep = FilterOverdo(filters=hep_filters)

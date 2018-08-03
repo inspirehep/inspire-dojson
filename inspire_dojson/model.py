@@ -91,5 +91,11 @@ def add_collection(name):
     return _add_collection
 
 
-def clean_record(record, blob):
-    return dedupe_all_lists(strip_empty_values(record))
+def clean_marc(record, blob):
+    return strip_empty_values(record)
+
+
+def clean_record(exclude_keys=()):
+    def _clean_record(record, blob):
+        return dedupe_all_lists(strip_empty_values(record), exclude_keys=exclude_keys)
+    return _clean_record

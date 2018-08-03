@@ -164,13 +164,21 @@ def strip_empty_values(obj):
         return None
 
 
-def dedupe_all_lists(obj):
-    """Recursively remove duplucates from all lists."""
+def dedupe_all_lists(obj, exclude_keys=()):
+    """Recursively remove duplucates from all lists.
+
+    Args:
+        obj: collection to deduplicate
+        exclude_keys (Container[str]): key names to ignore for deduplication
+    """
     squared_dedupe_len = 10
     if isinstance(obj, dict):
         new_obj = {}
         for key, value in obj.items():
-            new_obj[key] = dedupe_all_lists(value)
+            if key in exclude_keys:
+                new_obj[key] = value
+            else:
+                new_obj[key] = dedupe_all_lists(value)
         return new_obj
     elif isinstance(obj, (list, tuple, set)):
         new_elements = [dedupe_all_lists(v) for v in obj]
