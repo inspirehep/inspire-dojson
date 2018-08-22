@@ -28,6 +28,7 @@ import re
 
 from dojson import utils
 
+from inspire_utils.dedupers import dedupe_list
 from inspire_utils.helpers import force_list, maybe_int
 
 from ..model import hep, hep2marc
@@ -59,7 +60,7 @@ def _authors(key, value):
             for u_value in u_values:
                 result.append({'value': u_value})
 
-        return result
+        return dedupe_list(result)
 
     def _get_curated_relation(value):
         return value.get('y') == '1' or None

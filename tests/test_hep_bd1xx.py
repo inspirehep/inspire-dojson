@@ -1796,3 +1796,67 @@ def test_corporate_author_from_110__a():
     result = hep2marc.do(result)
 
     assert expected == result['110']
+
+
+def test_authors_from_100__a_with_q_w_y_z_duplicated_u():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Dineykhan, M.</subfield>'
+        '  <subfield code="q">Dineĭkhan, M.</subfield>'
+        '  <subfield code="q">Dineikhan, M.</subfield>'
+        '  <subfield code="q">Динейхан, М.</subfield>'
+        '  <subfield code="u">Dubna, JINR</subfield>'
+        '  <subfield code="u">Dubna, JINR</subfield>'
+        '  <subfield code="w">M.Dineykhan.1</subfield>'
+        '  <subfield code="y">0</subfield>'
+        '  <subfield code="z">902780</subfield>'
+        '  <subfield code="z">902780</subfield>'
+        '</datafield>'
+    )  # record/144579
+
+    expected = [
+        {
+            'affiliations': [
+                {
+                    'record': {
+                        '$ref': 'http://localhost:5000/api/institutions/902780',
+                    },
+                    'value': 'Dubna, JINR',
+                },
+            ],
+            'alternative_names': [
+                u'Dineĭkhan, M.',
+                u'Dineikhan, M.',
+                u'Динейхан, М.',
+            ],
+            'full_name': 'Dineykhan, M.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': 'M.Dineykhan.1',
+                },
+            ],
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Dineykhan, M.',
+        'q': [
+            u'Dineĭkhan, M.',
+            u'Dineikhan, M.',
+            u'Динейхан, М.',
+        ],
+        'u': [
+            'Dubna, JINR',
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
