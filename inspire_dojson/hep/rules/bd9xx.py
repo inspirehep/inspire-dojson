@@ -54,6 +54,7 @@ COLLECTIONS_MAP = {
     'h1-preliminary-note': 'H1 Preliminary Notes',
     'halhidden': 'HAL Hidden',
     'hep': 'Literature',
+    'slac': 'Literature',
     'hephidden': 'HEP Hidden',
     'hermes-internal-note': 'HERMES Internal Notes',
     'larsoft-internal-note': 'LArSoft Internal Notes',

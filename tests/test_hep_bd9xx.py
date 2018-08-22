@@ -41,7 +41,7 @@ def test_collections_map_contains_all_valid_collections():
     expected = subschema['items']['enum']
     result = COLLECTIONS_MAP.values()
 
-    assert sorted(expected) == sorted(result)
+    assert sorted(expected) == sorted(set(result))
 
 
 def test_collections_reverse_map_contains_all_valid_collections():
@@ -318,6 +318,31 @@ def test_collections_from_980__a_babar_analysis_document():
 
     expected = [
         {'a': 'BABAR-AnalysisDocument'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['980']
+
+
+def test_collections_from_980__a_slac():
+    schema = load_schema('hep')
+    subschema = schema['properties']['_collections']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">SLAC</subfield>'
+        '</datafield>'
+    )  # record/657789
+
+    expected = ['Literature']
+    result = hep.do(create_record(snippet))
+
+    assert '_collections' in result
+    assert validate(result['_collections'], subschema) is None
+    assert expected == result['_collections']
+
+    expected = [
+        {'a': 'HEP'},
     ]
     result = hep2marc.do(result)
 
