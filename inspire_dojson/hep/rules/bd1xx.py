@@ -138,7 +138,7 @@ def _authors(key, value):
         return result
 
     def _get_raw_affiliations(value):
-        return [{'value': el} for el in force_list(value.get('v'))]
+        return dedupe_list([{'value': el} for el in force_list(value.get('v'))])
 
     def _get_record(value):
         return get_record_ref(maybe_int(force_single_element(value.get('x'))), 'authors')

@@ -1860,3 +1860,149 @@ def test_authors_from_100__a_with_q_w_y_z_duplicated_u():
     result = hep2marc.do(result)
 
     assert expected == result['100']
+
+
+def test_authors_from_100__a_with_q_v_w_y_z_duplicated_v():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Dineykhan, M.</subfield>'
+        '  <subfield code="q">Dineĭkhan, M.</subfield>'
+        '  <subfield code="q">Dineikhan, M.</subfield>'
+        '  <subfield code="q">Динейхан, М.</subfield>'
+        '  <subfield code="u">Dubna, JINR</subfield>'
+        '  <subfield code="v">Joint Institute for Nuclear Research</subfield>'
+        '  <subfield code="v">Joint Institute for Nuclear Research</subfield>'
+        '  <subfield code="w">M.Dineykhan.1</subfield>'
+        '  <subfield code="y">0</subfield>'
+        '  <subfield code="z">902780</subfield>'
+        '</datafield>'
+    )  # record/144579
+
+    expected = [
+        {
+            'affiliations': [
+                {
+                    'record': {
+                        '$ref': 'http://localhost:5000/api/institutions/902780',
+                    },
+                    'value': 'Dubna, JINR',
+                },
+            ],
+            'alternative_names': [
+                u'Dineĭkhan, M.',
+                u'Dineikhan, M.',
+                u'Динейхан, М.',
+            ],
+            'full_name': 'Dineykhan, M.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': 'M.Dineykhan.1',
+                },
+            ],
+            'raw_affiliations': [
+                {
+                    'value': 'Joint Institute for Nuclear Research',
+                }
+            ]
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Dineykhan, M.',
+        'q': [
+            u'Dineĭkhan, M.',
+            u'Dineikhan, M.',
+            u'Динейхан, М.',
+        ],
+        'u': [
+            'Dubna, JINR',
+        ],
+        'v': [
+            'Joint Institute for Nuclear Research',
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
+def test_authors_from_700__a_v_x_y_repeated_author_duplicated_v():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Suzuki, K.</subfield>'
+        '    <subfield code="v">Joint Institute for Nuclear Research</subfield>'
+        '    <subfield code="v">Joint Institute for Nuclear Research</subfield>'
+        '    <subfield code="x">1458204</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Suzuki, K.</subfield>'
+        '    <subfield code="v">Joint Institute for Nuclear Research</subfield>'
+        '    <subfield code="v">Joint Institute for Nuclear Research</subfield>'
+        '    <subfield code="x">1458204</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1684644
+
+    expected = [
+        {
+            'full_name': 'Suzuki, K.',
+            'raw_affiliations': [
+                {
+                    'value': 'Joint Institute for Nuclear Research',
+                }
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1458204',
+            },
+        },
+        {
+            'full_name': 'Suzuki, K.',
+            'raw_affiliations': [
+                {
+                    'value': 'Joint Institute for Nuclear Research',
+                }
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1458204',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        '100': {
+            'a': 'Suzuki, K.',
+            'v': [
+                'Joint Institute for Nuclear Research',
+            ],
+        },
+        '700': [
+            {
+                'a': 'Suzuki, K.',
+                'v': [
+                    'Joint Institute for Nuclear Research',
+                ],
+            },
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected['100'] == result['100']
+    assert expected['700'] == result['700']
