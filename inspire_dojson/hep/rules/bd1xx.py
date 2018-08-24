@@ -123,7 +123,7 @@ def _authors(key, value):
                 'value': w_value,
             })
 
-        return result
+        return dedupe_list(result)
 
     def _get_inspire_roles(value):
         result = []

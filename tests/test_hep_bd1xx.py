@@ -2006,3 +2006,133 @@ def test_authors_from_700__a_v_x_y_repeated_author_duplicated_v():
 
     assert expected['100'] == result['100']
     assert expected['700'] == result['700']
+
+
+def test_authors_from_100__a_i_u_x_y_duplicated_i():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Glashow, S.L.</subfield>'
+        '  <subfield code="i">INSPIRE-00085173</subfield>'
+        '  <subfield code="i">INSPIRE-00085173</subfield>'
+        '  <subfield code="u">Copenhagen U.</subfield>'
+        '  <subfield code="x">1008235</subfield>'
+        '  <subfield code="y">1</subfield>'
+        '</datafield>'
+    )  # record/4328
+
+    expected = [
+        {
+            'affiliations': [
+                {
+                    'value': 'Copenhagen U.',
+                },
+            ],
+            'curated_relation': True,
+            'full_name': 'Glashow, S.L.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE ID',
+                    'value': 'INSPIRE-00085173',
+                },
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1008235',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Glashow, S.L.',
+        'i': [
+            'INSPIRE-00085173',
+        ],
+        'u': [
+            'Copenhagen U.',
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
+def test_authors_from_700__a_i_x_y_repeated_author_duplicated_i():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Suzuki, K.</subfield>'
+        '    <subfield code="i">INSPIRE-00085173</subfield>'
+        '    <subfield code="i">INSPIRE-00085173</subfield>'
+        '    <subfield code="x">1458204</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Suzuki, K.</subfield>'
+        '    <subfield code="i">INSPIRE-00085173</subfield>'
+        '    <subfield code="i">INSPIRE-00085173</subfield>'
+        '    <subfield code="x">1458204</subfield>'
+        '    <subfield code="y">0</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1684644
+
+    expected = [
+        {
+            'full_name': 'Suzuki, K.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE ID',
+                    'value': 'INSPIRE-00085173',
+                },
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1458204',
+            },
+        },
+        {
+            'full_name': 'Suzuki, K.',
+            'ids': [
+                {
+                    'schema': 'INSPIRE ID',
+                    'value': 'INSPIRE-00085173',
+                },
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/1458204',
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        '100': {
+            'a': 'Suzuki, K.',
+            'i': [
+                'INSPIRE-00085173',
+            ],
+        },
+        '700': [
+            {
+                'a': 'Suzuki, K.',
+                'i': [
+                    'INSPIRE-00085173',
+                ],
+            },
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected['100'] == result['100']
+    assert expected['700'] == result['700']
