@@ -34,6 +34,7 @@ from inspire_schemas.utils import (
     build_pubnote,
     convert_new_publication_info_to_old,
 )
+from inspire_utils.dedupers import dedupe_list
 from inspire_utils.helpers import force_list, maybe_int
 from inspire_utils.record import get_value
 
@@ -279,7 +280,6 @@ def references(self, key, value):
         ('r', rb.add_report_number),
         ('s', rb.set_pubnote),
         ('t', rb.add_title),
-        ('u', rb.add_url),
         ('x', rb.add_raw_reference),
         ('y', rb.set_year),
     ]
@@ -288,6 +288,10 @@ def references(self, key, value):
         for el in force_list(value.get(field)):
             if el:
                 method(el)
+
+    for el in dedupe_list(force_list(value.get('u'))):
+        if el:
+            rb.add_url(el)
 
     if _is_curated(value):
         rb.curate()
