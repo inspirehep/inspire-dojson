@@ -1705,3 +1705,75 @@ def test_references_from_999C5u_as_ads_system_identifiers():
     result = hep2marc.do(result)
 
     assert expected == result['999C5']
+
+
+def test_references_from_999C5u_duplicated_u():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="o">25</subfield>'
+        '  <subfield code="m">Kragh, Helge Bibcode:PhP...17..107K</subfield>'
+        '  <subfield code="t">Pascual Jordan, Varying Gravity, and the Expanding Earth</subfield>'
+        '  <subfield code="s">Phys.Perspect.,17,107</subfield>'
+        '  <subfield code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield>'
+        '  <subfield code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield>'
+        '  <subfield code="a">doi:10.1007/s00016-015-0157-9</subfield>'
+        '  <subfield code="y">2015</subfield>'
+        '</datafield>'
+    )  # record/1663135
+
+    expected = [
+        {
+            'reference': {
+                'title': {
+                    'title': 'Pascual Jordan, Varying Gravity, and the Expanding Earth',
+                },
+                'misc': [
+                    'Kragh, Helge Bibcode:PhP...17..107K',
+                ],
+                'label': '25',
+                'publication_info': {
+                    'artid': '107',
+                    'journal_volume': '17',
+                    'page_start': '107',
+                    'journal_title': 'Phys.Perspect.',
+                    'year': 2015,
+                },
+                'external_system_identifiers': [
+                    {
+                        'value': '2015PhP...17..107K',
+                        'schema': 'ADS',
+                    },
+                ],
+                'dois': [
+                    '10.1007/s00016-015-0157-9',
+                ]
+            },
+        }
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            'a': [
+                'doi:10.1007/s00016-015-0157-9',
+            ],
+            'm': 'Kragh, Helge Bibcode:PhP...17..107K',
+            'o': '25',
+            's': 'Phys.Perspect.,17,107',
+            'u': [
+                'http://adsabs.harvard.edu/abs/2015PhP...17..107K',
+            ],
+            't': 'Pascual Jordan, Varying Gravity, and the Expanding Earth',
+            'y': 2015,
+            'z': 0,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
