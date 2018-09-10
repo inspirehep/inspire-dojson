@@ -42,13 +42,19 @@ from ..utils import (
     force_single_element,
     get_record_ref,
     get_recid_from_ref,
-    normalize_rank
+    normalize_rank,
+    quote_url,
+    unquote_url
 )
 
 
+AWARD_YEAR = re.compile(r'\(?(?P<year>\d{4})\)?')
 INSPIRE_BAI = re.compile('(\w+\.)+\d+')
 LOOKS_LIKE_CERN = re.compile('^\d+$|^CER[MN]?-|^CNER-|^CVERN-', re.I)
 NON_DIGIT = re.compile('[^\d]+')
+LINKEDIN_URL = re.compile(r'https?://(\w+\.)?linkedin\.com/in/(?P<page>[\w%-]+)', re.UNICODE)
+TWITTER_URL = re.compile(r'https?://(www\.)?twitter\.com/(?P<handle>\w+)')
+WIKIPEDIA_URL = re.compile(r'https?://(?P<lang>\w+)\.wikipedia\.org/wiki/(?P<page>.*)')
 
 
 @hepnames.over('ids', '^035..')
@@ -68,6 +74,7 @@ def ids(self, key, value):
             'RESEARCHERID': 'RESEARCHERID',
             'SLAC': 'SLAC',
             'SCOPUS': 'SCOPUS',
+            'TWITTER': 'TWITTER',
             'VIAF': 'VIAF',
             'WIKIPEDIA': 'WIKIPEDIA',
         }
@@ -76,7 +83,7 @@ def ids(self, key, value):
 
     def _guess_schema_from_value(a_value):
         if a_value is None:
-            return
+            return None
 
         if INSPIRE_BAI.match(a_value):
             return 'INSPIRE BAI'
@@ -112,7 +119,7 @@ def ids(self, key, value):
 def ids2marc(self, key, value):
     """Populate the ``035`` MARC field.
 
-    Also populates the ``970`` MARC field through side effects.
+    Also populates the ``8564`` and ``970`` MARC field through side effects.
     """
     def _is_schema_inspire_bai(id_, schema):
         return schema == 'INSPIRE BAI'
@@ -123,11 +130,31 @@ def ids2marc(self, key, value):
     def _is_schema_spires(id_, schema):
         return schema == 'SPIRES'
 
+    def _is_schema_linkedin(id, schema):
+        return schema == 'LINKEDIN'
+
+    def _is_schema_twitter(id, schema):
+        return schema == 'TWITTER'
+
     id_ = value.get('value')
     schema = value.get('schema')
 
     if _is_schema_spires(id_, schema):
         self.setdefault('970', []).append({'a': id_})
+    elif _is_schema_linkedin(id_, schema):
+        self.setdefault('8564', []).append(
+            {
+                'u': u'https://www.linkedin.com/in/{id}'.format(id=quote_url(id_)),
+                'y': 'LINKEDIN',
+            }
+        )
+    elif _is_schema_twitter(id_, schema):
+        self.setdefault('8564', []).append(
+            {
+                'u': u'https://twitter.com/{id}'.format(id=id_),
+                'y': 'TWITTER',
+            }
+        )
     elif _is_schema_inspire_id(id_, schema):
         return {
             'a': id_,
@@ -149,7 +176,7 @@ def ids2marc(self, key, value):
 def name(self, key, value):
     """Populate the ``name`` key.
 
-    Also populates the ``status`` key through side effects.
+    Also populates the ``status``, ``birth_date`` and ``death_date`` keys through side effects.
     """
     def _get_title(value):
         c_value = force_single_element(value.get('c', ''))
@@ -160,6 +187,17 @@ def name(self, key, value):
         a_value = force_single_element(value.get('a', ''))
         q_value = force_single_element(value.get('q', ''))
         return a_value or normalize_name(q_value)
+
+    if value.get('d'):
+        dates = value['d']
+        try:
+            self['death_date'] = normalize_date(dates)
+        except ValueError:
+            dates = dates.split(' - ')
+            if len(dates) == 1:
+                dates = dates[0].split('-')
+            self['birth_date'] = normalize_date(dates[0])
+            self['death_date'] = normalize_date(dates[1])
 
     self['status'] = force_single_element(value.get('g', '')).lower()
 
@@ -173,12 +211,21 @@ def name(self, key, value):
 
 @hepnames2marc.over('100', '^name$')
 def name2marc(self, key, value):
+    """Populates the ``100`` field.
+
+    Also populates the ``400`` and ``880`` fields through side effects.
+    """
     result = self.get('100', {})
 
     result['a'] = value.get('value')
     result['b'] = value.get('numeration')
     result['c'] = value.get('title')
     result['q'] = value.get('preferred_name')
+
+    if 'name_variants' in value:
+        self['400'] = [{'a': el} for el in value['name_variants']]
+    if 'native_names' in value:
+        self['880'] = [{'a': el} for el in value['native_names']]
 
     return result
 
@@ -195,33 +242,43 @@ def status2marc(self, key, value):
 @hepnames.over('positions', '^371..')
 @utils.for_each_value
 def positions(self, key, value):
+    """Populate the positions field.
+
+    Also populates the email_addresses field by side effect.
+    """
+    email_addresses = self.get("email_addresses", [])
     current = False
     record = None
 
     recid_or_status = force_list(value.get('z'))
     for el in recid_or_status:
         if el.lower() == 'current':
-            current = True
+            current = True if value.get('a') else None
         else:
             record = get_record_ref(maybe_int(el), 'institutions')
 
-    institution = {
-        'name': value.get('a'),
-        'record': record,
-        'curated_relation': record is not None,
-    }
+    rank = normalize_rank(value.get('r'))
 
-    emails = [el for el in force_list(value.get('m'))]
-    old_emails = [el for el in force_list(value.get('o'))]
+    current_email_address = value.get('m')
+    non_current_email_address = value.get('o')
 
-    _rank = value.get('r')
-    rank = normalize_rank(_rank)
+    if current_email_address:
+        email_addresses.append({
+            'value': current_email_address,
+            'current': True,
+        })
+    if non_current_email_address:
+        email_addresses.append({
+            'value': non_current_email_address,
+            'current': False,
+        })
+
+    self['email_addresses'] = email_addresses
 
     return {
-        'institution': institution if institution['name'] else None,
-        'emails': emails,
-        'old_emails': old_emails,
-        '_rank': _rank,
+        'institution': value.get('a'),
+        'record': record,
+        'curated_relation': True if record is not None else None,
         'rank': rank,
         'start_date': normalize_date(value.get('s')),
         'end_date': normalize_date(value.get('t')),
@@ -249,27 +306,78 @@ def positions2marc(self, key, value):
             return RANK_MAP.get(rank)
 
     return {
-        'a': value.get('institution', {}).get('name'),
+        'a': value.get('institution'),
         'r': _get_r_value(value),
         's': value.get('start_date'),
         't': value.get('end_date'),
-        'm': value.get('emails'),
-        'o': value.get('old_emails'),
         'z': 'Current' if value.get('current') else None,
     }
 
 
-@hepnames.over('other_names', '^400..')
-@utils.flatten
+@hepnames2marc.over('595', '^email_addresses$')
 @utils.for_each_value
-def other_names(self, key, value):
-    return force_list(value.get('a'))
+def email_addresses2marc(self, key, value):
+    """Populate the 595 MARCXML field.
+
+    Also populates the 371 field as a side effect.
+    """
+    m_or_o = 'm' if value.get('current') else 'o'
+    element = {
+        m_or_o: value.get('value')
+    }
+
+    if value.get('hidden'):
+        return element
+    else:
+        self.setdefault('371', []).append(element)
+        return None
 
 
-@hepnames2marc.over('400', '^other_names$')
-@utils.for_each_value
-def other_names2marc(self, key, value):
-    return {'a': value}
+@hepnames.over('email_addresses', '^595..')
+def email_addresses595(self, key, value):
+    """Populates the ``email_addresses`` field using the 595 MARCXML field.
+
+    Also populates ``_private_notes`` as a side effect.
+    """
+    emails = self.get('email_addresses', [])
+
+    if value.get('o'):
+        emails.append({
+            'value': value.get('o'),
+            'current': False,
+            'hidden': True,
+        })
+
+    if value.get('m'):
+        emails.append({
+            'value': value.get('m'),
+            'current': True,
+            'hidden': True,
+        })
+
+    notes = self.get('_private_notes', [])
+    new_note = (
+        {
+            'source': value.get('9'),
+            'value': _private_note,
+        } for _private_note in force_list(value.get('a'))
+    )
+    notes.extend(new_note)
+    self['_private_notes'] = notes
+
+    return emails
+
+
+@hepnames.over('name', '^400..')
+def name_variants(self, key, value):
+
+    name_item = self.get('name', {})
+    name_variants_list = name_item.get('name_variants', [])
+
+    name_variants_list.extend(force_list(value.get('a')))
+    name_item['name_variants'] = name_variants_list
+
+    return name_item
 
 
 @hepnames.over('arxiv_categories', '^65017')
@@ -370,42 +478,59 @@ def _public_notes2marc(self, key, value):
     }
 
 
-@hepnames.over('source', '^670..')
+@hepnames2marc.over('100', '^(birth_date|death_date)$')
+def birth_and_death_date2marc(self, key, value):
+    """Populate the ``100__d`` MARC field, which includes the birth and the death date.
+
+    By not using the decorator ```for_each_value```, the values of the fields
+    ```birth_date``` and ```death_date``` are both added to ```values``` as a list.
+    """
+    name_field = self.get('100', {})
+
+    if 'd' in name_field:
+        if int(name_field['d'].split('-')[0]) > int(value.split('-')[0]):
+            dates_field = ' - '.join([value, name_field['d']])
+        else:
+            dates_field = ' - '.join([name_field['d'], value])
+    else:
+        dates_field = value
+
+    name_field['d'] = dates_field
+
+    return name_field
+
+
+@hepnames.over('awards', '^678..')
 @utils.for_each_value
-def source(self, key, value):
-    """Populate the ``source`` key."""
+def awards(self, key, value):
+    award = AWARD_YEAR.sub('', value.get('a')).strip()
+    year_match = AWARD_YEAR.search(value.get('a'))
+    if year_match:
+        year = int(year_match.group('year'))
+    else:
+        year = None
+
     return {
-        'date_verified': normalize_date(value.get('d')),
-        'name': value.get('a'),
+        'name': award,
+        'url': value.get('u'),
+        'year': year,
     }
 
 
-@hepnames2marc.over('670', '^source$')
+@hepnames2marc.over('678', '^awards$')
 @utils.for_each_value
-def source2marc(self, key, value):
+def awards2marc(self, key, value):
     return {
-        'a': value.get('name'),
-        'd': value.get('date_verified'),
+        'a': ' '.join([value.get('name', ''), str(value.get('year', ''))]).strip(),
+        'u': value.get('url')
     }
 
 
-@hepnames.over('prizes', '^678..')
-@utils.for_each_value
-def prizes(self, key, value):
-    return value.get('a')
-
-
-@hepnames2marc.over('678', '^prizes$')
-@utils.for_each_value
-def prizes2marc(self, key, value):
-    return {'a': value}
-
-
-@hepnames.over('experiments', '^693..')
-def experiments(self, key, values):
+@hepnames.over('project_membership', '^693..')
+def project_membership(self, key, values):
     def _get_json_experiments(marc_dict):
-        start_year = maybe_int(marc_dict.get('s'))
-        end_year = maybe_int(marc_dict.get('d'))
+        start_year = marc_dict.get('s')
+        end_year = marc_dict.get('d')
 
         names = force_list(marc_dict.get('e'))
         recids = force_list(marc_dict.get('0'))
@@ -419,14 +544,14 @@ def experiments(self, key, values):
                     True if marc_dict.get('z', '').lower() == 'current'
                     else False
                 ),
-                'end_year': end_year,
+                'end_date': end_year,
                 'name': name,
                 'record': record,
-                'start_year': start_year,
+                'start_date': start_year,
             }
 
     values = force_list(values)
-    json_experiments = self.get('experiments', [])
+    json_experiments = self.get('project_membership', [])
     for experiment in values:
         if experiment:
             json_experiments.extend(_get_json_experiments(experiment))
@@ -434,13 +559,13 @@ def experiments(self, key, values):
     return json_experiments
 
 
-@hepnames2marc.over('693', '^experiments$')
-def experiments2marc(self, key, values):
+@hepnames2marc.over('693', '^project_membership$')
+def project_membership2marc(self, key, values):
     def _get_marc_experiment(json_dict):
         marc = {
             'e': json_dict.get('name'),
-            's': json_dict.get('start_year'),
-            'd': json_dict.get('end_year'),
+            's': json_dict.get('start_date'),
+            'd': json_dict.get('end_date'),
         }
         status = 'current' if json_dict.get('current') else None
         if status:
@@ -478,9 +603,15 @@ def advisors(self, key, value):
     recid = force_single_element(value.get('x'))
     record = get_record_ref(recid, 'authors')
 
+    ids = [{
+        'schema': 'INSPIRE ID',
+        'value': value['i'],
+    }] if 'i' in value else None
+
     return {
         'name': value.get('a'),
         'degree_type': degree_type,
+        'ids': ids,
         'record': record,
         'curated_relation': value.get('y') == '1'
     }
@@ -489,23 +620,64 @@ def advisors(self, key, value):
 @hepnames2marc.over('701', '^advisors$')
 @utils.for_each_value
 def advisors2marc(self, key, value):
+    inspire_ids = [id_['value'] for id_ in value.get('ids', []) if id_['schema'] == 'INSPIRE ID']
     return {
         'a': value.get('name'),
         'g': value.get('degree_type'),
-        'x': get_recid_from_ref(value.get('record')),
+        'i': inspire_ids
     }
 
 
-@hepnames.over('native_name', '^880..')
+@hepnames.over('urls', '^8564.')
 @utils.for_each_value
+def urls(self, key, value):
+    """Populate the ``url`` key.
+
+    Also populates the ``ids`` key through side effects.
+    """
+    description = force_single_element(value.get('y'))
+    url = value.get('u')
+
+    linkedin_match = LINKEDIN_URL.match(url)
+    twitter_match = TWITTER_URL.match(url)
+    wikipedia_match = WIKIPEDIA_URL.match(url)
+    if linkedin_match:
+        self.setdefault('ids', []).append(
+            {
+                'schema': 'LINKEDIN',
+                'value': unquote_url(linkedin_match.group('page')),
+            }
+        )
+    elif twitter_match:
+        self.setdefault('ids', []).append(
+            {
+                'schema': 'TWITTER',
+                'value': twitter_match.group('handle'),
+            }
+        )
+    elif wikipedia_match:
+        lang = wikipedia_match.group('lang')
+        page = unquote_url(wikipedia_match.group('page'))
+        if lang != 'en':
+            page = ':'.join([lang, page])
+        self.setdefault('ids', []).append(
+            {
+                'schema': 'WIKIPEDIA',
+                'value': page,
+            }
+        )
+    else:
+        return {
+            'description': description,
+            'value': url,
+        }
+
+
+@hepnames.over('name', '^880..')
 def native_name(self, key, value):
-    return value.get('a')
-
-
-@hepnames2marc.over('880', '^native_name$')
-@utils.for_each_value
-def native_name2marc(self, key, value):
-    return {'a': value}
+    name = self.get('name', {})
+    name.setdefault('native_names', []).append(value.get('a'))
+    return name
 
 
 @hepnames.over('new_record', '^970..')

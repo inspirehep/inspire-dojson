@@ -29,7 +29,7 @@ import re
 
 from flask import current_app
 from isbn import ISBN
-from six import iteritems
+from six import binary_type, iteritems, text_type
 from six.moves import urllib
 
 from dojson.utils import GroupableOrderedDict
@@ -213,3 +213,16 @@ def normalize_date_aggressively(date):
 def create_record_from_dict(dictionary):
     """Create an input record for dojson from a dict."""
     return GroupableOrderedDict(iteritems(dictionary))
+
+
+def quote_url(unquoted):
+    if isinstance(unquoted, text_type):
+        unquoted = unquoted.encode('utf-8')
+    return urllib.parse.quote(unquoted)
+
+
+def unquote_url(quoted):
+    unquoted = urllib.parse.unquote(quoted)
+    if isinstance(unquoted, binary_type):
+        unquoted = unquoted.decode('utf-8')
+    return unquoted

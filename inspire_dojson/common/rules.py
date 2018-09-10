@@ -822,7 +822,6 @@ def public_notes_680(self, key, value):
 @conferences.over('urls', '^8564.')
 @experiments.over('urls', '^8564.')
 @hep.over('urls', '^8564.')
-@hepnames.over('urls', '^8564.')
 @institutions.over('urls', '^8564.')
 @jobs.over('urls', '^8564.')
 @journals.over('urls', '^8564.')
