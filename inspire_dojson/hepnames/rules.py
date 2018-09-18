@@ -597,6 +597,12 @@ def advisors(self, key, value):
         'PHD': 'phd',
     }
 
+    def _get_id_schema(id_):
+        if id_.lower().startswith('inspire-'):
+            return 'INSPIRE ID'
+        else:  # assuming ORCID
+            return 'ORCID'
+
     _degree_type = force_single_element(value.get('g'))
     degree_type = DEGREE_TYPES_MAP.get(_degree_type, 'other')
 
@@ -604,27 +610,29 @@ def advisors(self, key, value):
     record = get_record_ref(recid, 'authors')
 
     ids = [{
-        'schema': 'INSPIRE ID',
-        'value': value['i'],
-    }] if 'i' in value else None
+        'schema': _get_id_schema(id_),
+        'value': id_,
+    } for id_ in force_list(value.get('i'))]
 
     return {
         'name': value.get('a'),
         'degree_type': degree_type,
         'ids': ids,
         'record': record,
-        'curated_relation': value.get('y') == '1'
+        'curated_relation': value.get('y') == '1' if record else None
     }
 
 
 @hepnames2marc.over('701', '^advisors$')
 @utils.for_each_value
 def advisors2marc(self, key, value):
-    inspire_ids = [id_['value'] for id_ in value.get('ids', []) if id_['schema'] == 'INSPIRE ID']
+    allowed_ids = ('INSPIRE ID', 'ORCID')
+    ids = [id_['value'] for id_ in value.get('ids', []) if id_['schema'] in allowed_ids]
+
     return {
         'a': value.get('name'),
         'g': value.get('degree_type'),
-        'i': inspire_ids
+        'i': ids,
     }
 
 
