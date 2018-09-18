@@ -1052,6 +1052,47 @@ def test_advisors_from_701__a_g_i():
     assert expected == result['701']
 
 
+def test_advisors_from_701__a_g_i_orcid():
+    schema = load_schema('authors')
+    subschema = schema['properties']['advisors']
+
+    snippet = (
+        '<datafield tag="701" ind1=" " ind2=" ">'
+        '  <subfield code="a">Riccioni, Fabio</subfield>'
+        '  <subfield code="g">PhD</subfield>'
+        '  <subfield code="i">0000-0003-4702-3632</subfield>'
+        '</datafield>'
+    )  # record/1413663
+
+    expected = [
+        {
+            'name': 'Riccioni, Fabio',
+            'degree_type': 'phd',
+            'ids': [
+                {
+                    'schema': 'ORCID',
+                    'value': '0000-0003-4702-3632'
+                }
+            ],
+        },
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['advisors'], subschema) is None
+    assert expected == result['advisors']
+
+    expected = [
+        {
+            'a': 'Riccioni, Fabio',
+            'g': 'phd',
+            'i': ['0000-0003-4702-3632'],
+        },
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['701']
+
+
 def test_email_addresses_from_371__a_m_z():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
