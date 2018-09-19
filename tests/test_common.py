@@ -770,3 +770,23 @@ def test_private_notes_from_595__9():
     )  # record/1005469
 
     assert '_private_notes' not in hepnames.do(create_record(snippet))
+
+
+def test_legacy_version_from_005():
+    schema = load_schema('hep')
+    subschema = schema['properties']['legacy_version']
+
+    snippet = (
+        '<controlfield tag="005">20180919130452.0</controlfield>'
+    )  # record/1694560
+
+    expected = '20180919130452.0'
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['legacy_version'], subschema) is None
+    assert expected == result['legacy_version']
+
+    expected = '20180919130452.0'
+    result = hep2marc.do(result)
+
+    assert expected == result['005']

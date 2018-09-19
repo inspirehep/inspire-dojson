@@ -611,6 +611,24 @@ def control_number2marc(self, key, value):
     return value
 
 
+@conferences.over('legacy_version', '^005')
+@data.over('legacy_version', '^005')
+@experiments.over('legacy_version', '^005')
+@hep.over('legacy_version', '^005')
+@hepnames.over('legacy_version', '^005')
+@institutions.over('legacy_version', '^005')
+@jobs.over('legacy_version', '^005')
+@journals.over('legacy_version', '^005')
+def legacy_version(self, key, value):
+    return value
+
+
+@hep2marc.over('005', '^legacy_version$')
+@hepnames2marc.over('005', '^legacy_version$')
+def legacy_version2marc(self, key, value):
+    return value
+
+
 @hep.over('acquisition_source', '^541..')
 @hepnames.over('acquisition_source', '^541..')
 def acquisition_source(self, key, value):
