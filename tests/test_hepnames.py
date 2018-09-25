@@ -1251,7 +1251,6 @@ def test_positions_from_371__a():
 
     expected = [
         {
-            'current': False,
             'institution': 'Aachen, Tech. Hochsch.',
         },
     ]
@@ -1353,7 +1352,6 @@ def test_positions_from_371__a_r_t_z():
 
     expected = [
         {
-            'current': False,
             'end_date': '2007',
             'institution': 'San Luis Potosi U.',
             'rank': 'MASTER',
@@ -1394,7 +1392,6 @@ def test_positions_from_371__a_r_t():
 
     expected = [
         {
-            'current': False,
             'end_date': '2011',
             'institution': 'Case Western Reserve U.',
             'rank': 'UNDERGRADUATE',

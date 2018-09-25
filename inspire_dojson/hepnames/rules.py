@@ -247,7 +247,7 @@ def positions(self, key, value):
     Also populates the email_addresses field by side effect.
     """
     email_addresses = self.get("email_addresses", [])
-    current = False
+    current = None
     record = None
 
     recid_or_status = force_list(value.get('z'))
