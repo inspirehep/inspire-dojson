@@ -256,7 +256,7 @@ def references(self, key, value):
         return 'CURATOR' in normalized_nine_values
 
     def _is_curated(value):
-        return value.get('z') == '1' and _has_curator_flag(value)
+        return force_single_element(value.get('z')) == '1' and _has_curator_flag(value)
 
     def _set_record(el):
         recid = maybe_int(el)
