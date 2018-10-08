@@ -619,7 +619,7 @@ def test_references_from_999C5r_s_0():
     assert expected == result['999C5']
 
 
-def test_references_from_999C5h_m_o_yz_0_9():
+def test_references_from_999C5h_m_o_y_z_0_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
@@ -671,6 +671,70 @@ def test_references_from_999C5h_m_o_yz_0_9():
             'm': 'Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)',
             'o': '7',
             'y': 2010,
+            'z': 1,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
+
+
+def test_references_from_999C5h_m_o_t_y_repeated_z_0_9():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="0">794379</subfield>'
+        '  <subfield code="h">S. Weinberg</subfield>'
+        '  <subfield code="m">Oxford University Press, Oxford U.K</subfield>'
+        '  <subfield code="o">24</subfield>'
+        '  <subfield code="t">Cosmology</subfield>'
+        '  <subfield code="y">2008</subfield>'
+        '  <subfield code="z">1</subfield>'
+        '  <subfield code="9">CURATOR</subfield>'
+        '  <subfield code="z">1</subfield>'
+        '</datafield>'
+    )  # record/1095388
+
+    expected = [
+        {
+            'curated_relation': True,
+            'legacy_curated': True,
+            'record': {
+                '$ref': 'http://localhost:5000/api/literature/794379',
+            },
+            'reference': {
+                'authors': [
+                    {'full_name': 'Weinberg, S.'},
+                ],
+                'label': '24',
+                'title': {'title': 'Cosmology'},
+                'misc': [
+                    'Oxford University Press, Oxford U.K',
+                ],
+                'publication_info': {
+                    'year': 2008,
+                },
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            '0': 794379,
+            '9': 'CURATOR',
+            'h': [
+                'Weinberg, S.',
+            ],
+            'm': 'Oxford University Press, Oxford U.K',
+            'o': '24',
+            't': 'Cosmology',
+            'y': 2008,
             'z': 1,
         },
     ]
