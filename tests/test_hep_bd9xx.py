@@ -248,6 +248,30 @@ def test_deleted_from_980__c():
     assert expected == result['980']
 
 
+def test_deleted_from_980__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['deleted']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">DELETED</subfield>'
+        '</datafield>'
+    )  # record/931344
+
+    expected = True
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['deleted'], subschema) is None
+    assert expected == result['deleted']
+
+    expected = [
+        {'c': 'DELETED'},
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['980']
+
+
 def test_collections_from_980__a():
     schema = load_schema('hep')
     subschema = schema['properties']['_collections']
