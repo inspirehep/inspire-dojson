@@ -165,6 +165,8 @@ def document_type(self, key, value):
             self['refereed'] = True
         elif normalized_a_value == 'withdrawn':
             self['withdrawn'] = True
+        elif normalized_a_value == 'deleted':
+            self['deleted'] = True
         elif normalized_a_value in COLLECTIONS_MAP:
             self.setdefault('_collections', []).append(COLLECTIONS_MAP[normalized_a_value])
         elif normalized_a_value in DOCUMENT_TYPE_MAP:
