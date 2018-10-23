@@ -59,6 +59,7 @@ COLLECTIONS_MAP = {
     'hermes-internal-note': 'HERMES Internal Notes',
     'larsoft-internal-note': 'LArSoft Internal Notes',
     'larsoft-note': 'LArSoft Notes',
+    'slac': 'SLAC',
     'zeus-internal-note': 'ZEUS Internal Notes',
     'zeus-preliminary-note': 'ZEUS Preliminary Notes',
 }
@@ -81,6 +82,7 @@ COLLECTIONS_REVERSE_MAP = {
     'LArSoft Internal Notes': 'LARSOFT-INTERNAL-NOTE',
     'LArSoft Notes': 'LARSOFT-NOTE',
     'Literature': 'HEP',
+    'SLAC': 'SLAC',
     'ZEUS Internal Notes': 'ZEUS-INTERNAL-NOTE',
     'ZEUS Preliminary Notes': 'ZEUS-PRELIMINARY-NOTE',
 }
