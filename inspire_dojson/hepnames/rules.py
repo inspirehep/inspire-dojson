@@ -259,19 +259,17 @@ def positions(self, key, value):
 
     rank = normalize_rank(value.get('r'))
 
-    current_email_address = value.get('m')
-    non_current_email_address = value.get('o')
+    current_email_addresses = force_list(value.get('m'))
+    non_current_email_addresses = force_list(value.get('o'))
 
-    if current_email_address:
-        email_addresses.append({
-            'value': current_email_address,
-            'current': True,
-        })
-    if non_current_email_address:
-        email_addresses.append({
-            'value': non_current_email_address,
-            'current': False,
-        })
+    email_addresses.extend({
+        'value': address,
+        'current': True,
+    } for address in current_email_addresses)
+    email_addresses.extend({
+        'value': address,
+        'current': False,
+    } for address in non_current_email_addresses)
 
     self['email_addresses'] = email_addresses
 
