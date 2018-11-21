@@ -41,7 +41,7 @@ from ..utils import (
 )
 
 
-COMMA_OR_SLASH = re.compile('\s*[/,]\s*')
+COMMA_OR_SLASH = re.compile(r'\s*[/,]\s*')
 
 
 @jobs.over('closed_date', '^046..')

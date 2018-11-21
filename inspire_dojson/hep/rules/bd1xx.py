@@ -38,7 +38,7 @@ from ...utils import (
 )
 
 
-ORCID = re.compile('\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
+ORCID = re.compile(r'\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
 
 
 def _authors(key, value):

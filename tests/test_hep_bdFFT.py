@@ -146,7 +146,7 @@ def test_figures_from_FFT():
     snippet = (
         '<datafield tag="FFT" ind1=" " ind2=" ">'
         '  <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037399/content.png;1</subfield>'
-        '  <subfield code="d">00009 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '  <subfield code="d">00009 Co-simulation results, at $50~\\mathrm{ms}$...</subfield>'
         '  <subfield code="f">.png</subfield>'
         '  <subfield code="n">FIG10</subfield>'
         '  <subfield code="r"/>'
@@ -160,7 +160,7 @@ def test_figures_from_FFT():
     expected = [
         {
             'key': 'FIG10.png',
-            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
             'source': 'arxiv',
         },
@@ -180,7 +180,7 @@ def test_figures_order_from_FFT():
         '<record>'
         '  <datafield tag="FFT" ind1=" " ind2=" ">'
         '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037400/content.png;1</subfield>'
-        '    <subfield code="d">00010 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '    <subfield code="d">00010 Co-simulation results, at $50~\\mathrm{ms}$...</subfield>'
         '    <subfield code="f">.png</subfield>'
         '    <subfield code="n">FIG11</subfield>'
         '    <subfield code="r"/>'
@@ -191,7 +191,7 @@ def test_figures_order_from_FFT():
         '  </datafield>'
         '  <datafield tag="FFT" ind1=" " ind2=" ">'
         '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037399/content.png;1</subfield>'
-        '    <subfield code="d">00009 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '    <subfield code="d">00009 Co-simulation results, at $50~\\mathrm{ms}$...</subfield>'
         '    <subfield code="f">.png</subfield>'
         '    <subfield code="n">FIG10</subfield>'
         '    <subfield code="r"/>'
@@ -202,7 +202,7 @@ def test_figures_order_from_FFT():
         '  </datafield>'
         '  <datafield tag="FFT" ind1=" " ind2=" ">'
         '    <subfield code="a">/opt/cds-invenio/var/data/files/g151/3037401/content.png;1</subfield>'
-        '    <subfield code="d">00011 Co-simulation results, at $50~\mathrm{ms}$...</subfield>'
+        '    <subfield code="d">00011 Co-simulation results, at $50~\\mathrm{ms}$...</subfield>'
         '    <subfield code="f">.png</subfield>'
         '    <subfield code="n">FIG12</subfield>'
         '    <subfield code="r"/>'
@@ -217,19 +217,19 @@ def test_figures_order_from_FFT():
     expected = [
         {
             'key': 'FIG10.png',
-            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
             'source': 'arxiv',
         },
         {
             'key': 'FIG11.png',
-            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037400/content.png%3B1',
             'source': 'arxiv',
         },
         {
             'key': 'FIG12.png',
-            'caption': 'Co-simulation results, at $50~\mathrm{ms}$...',
+            'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037401/content.png%3B1',
             'source': 'arxiv',
         }

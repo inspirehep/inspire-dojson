@@ -49,9 +49,9 @@ from ..utils import (
 
 
 AWARD_YEAR = re.compile(r'\(?(?P<year>\d{4})\)?')
-INSPIRE_BAI = re.compile('(\w+\.)+\d+')
-LOOKS_LIKE_CERN = re.compile('^\d+$|^CER[MN]?-|^CNER-|^CVERN-', re.I)
-NON_DIGIT = re.compile('[^\d]+')
+INSPIRE_BAI = re.compile(r'(\w+\.)+\d+')
+LOOKS_LIKE_CERN = re.compile(r'^\d+$|^CER[MN]?-|^CNER-|^CVERN-', re.I)
+NON_DIGIT = re.compile(r'[^\d]+')
 LINKEDIN_URL = re.compile(r'https?://(\w+\.)?linkedin\.com/in/(?P<page>[\w%-]+)', re.UNICODE)
 TWITTER_URL = re.compile(r'https?://(www\.)?twitter\.com/(?P<handle>\w+)')
 WIKIPEDIA_URL = re.compile(r'https?://(?P<lang>\w+)\.wikipedia\.org/wiki/(?P<page>.*)')

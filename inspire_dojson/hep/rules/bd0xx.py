@@ -40,7 +40,7 @@ from ..model import hep, hep2marc
 from ...utils import force_single_element, normalize_isbn
 
 
-RE_LANGUAGE = re.compile('\/| or | and |,|=|\s+')
+RE_LANGUAGE = re.compile(r'\/| or | and |,|=|\s+')
 
 
 @hep.over('isbns', '^020..')
