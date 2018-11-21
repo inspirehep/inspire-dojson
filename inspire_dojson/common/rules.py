@@ -52,8 +52,8 @@ from ..utils import (
 )
 
 
-IS_INTERNAL_UID = re.compile('^(inspire:uid:)?\d{5}$')
-IS_ORCID = re.compile('^(orcid:)?\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$')
+IS_INTERNAL_UID = re.compile(r'^(inspire:uid:)?\d{5}$')
+IS_ORCID = re.compile(r'^(orcid:)?\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$')
 
 WEBLINKS = {
     '00070': 'International Journal of Mathematics Server',

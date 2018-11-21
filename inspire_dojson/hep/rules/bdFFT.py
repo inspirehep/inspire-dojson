@@ -53,7 +53,7 @@ def documents(self, key, value):
         return value.get('d', '').lower() == 'fulltext' or None
 
     def _get_index_and_caption(value):
-        match = re.compile('(^\d{5})?\s*(.*)').match(value)
+        match = re.compile(r'(^\d{5})?\s*(.*)').match(value)
         if match:
             return match.group(1), match.group(2)
 
