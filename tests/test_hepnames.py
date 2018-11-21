@@ -1131,6 +1131,52 @@ def test_email_addresses_from_371__a_m_z():
     assert sorted(expected, key=str) == sorted(result['371'], key=str)
 
 
+def test_email_addresses_from_371__a_repeated_m_z():
+    schema = load_schema('authors')
+    subschema = schema['properties']['email_addresses']
+
+    snippet = (
+        '<datafield tag="371" ind1=" " ind2=" ">'
+        '  <subfield code="a">Sao Paulo U.</subfield>'
+        '  <subfield code="m">test@usp.br</subfield>'
+        '  <subfield code="m">test@fma.if.usp.br</subfield>'
+        '  <subfield code="z">Current</subfield>'
+        '</datafield>'
+    )  # record/1019084
+
+    expected = [
+        {
+            'current': True,
+            'value': 'test@usp.br'
+        },
+        {
+            'current': True,
+            'value': 'test@fma.if.usp.br'
+        },
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['email_addresses'], subschema) is None
+    assert expected == result['email_addresses']
+
+    expected = [
+        {
+            "a": "Sao Paulo U.",
+            "z": "Current"
+        },
+        {
+            "m": "test@usp.br",
+        },
+        {
+            "m": "test@fma.if.usp.br",
+        }
+    ]
+
+    result = hepnames2marc.do(result)
+
+    assert sorted(expected, key=str) == sorted(result['371'], key=str)
+
+
 def test_email_addresses_from_371__a_o_r_s_t():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
