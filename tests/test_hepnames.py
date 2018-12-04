@@ -1424,6 +1424,19 @@ def test_positions_from_371__a_r_t_z():
     assert expected == result['371']
 
 
+def test_positions_from_371__r_t():
+    snippet = (
+        '<datafield tag="371" ind1=" " ind2=" ">'
+        '  <subfield code="r">UG</subfield>'
+        '  <subfield code="t">1970</subfield>'
+        '</datafield>'
+    )  # record/1038489
+
+    result = hepnames.do(create_record(snippet))
+
+    assert 'positions' not in result
+
+
 def test_positions_from_371__a_r_t():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
