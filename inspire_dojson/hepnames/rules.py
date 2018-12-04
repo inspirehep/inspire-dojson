@@ -273,8 +273,11 @@ def positions(self, key, value):
 
     self['email_addresses'] = email_addresses
 
+    if 'a' not in value:
+        return None
+
     return {
-        'institution': value.get('a'),
+        'institution': value['a'],
         'record': record,
         'curated_relation': True if record is not None else None,
         'rank': rank,
