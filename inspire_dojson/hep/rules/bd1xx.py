@@ -62,6 +62,11 @@ def _authors(key, value):
 
         return dedupe_list(result)
 
+    def _get_affiliations_identifiers(value):
+        t_values = (t_value.split(':') for t_value in force_list(value.get('t')))
+
+        return [{'schema': schema.upper(), 'value': identifier} for schema, identifier in t_values]
+
     def _get_curated_relation(value):
         return value.get('y') == '1' or None
 
@@ -148,6 +153,7 @@ def _authors(key, value):
         return [
             {
                 'affiliations': _get_affiliations(value),
+                'affiliations_identifiers': _get_affiliations_identifiers(value),
                 'alternative_names': force_list(value.get('q')),
                 'curated_relation': _get_curated_relation(value),
                 'emails': _get_emails(value),
@@ -162,6 +168,7 @@ def _authors(key, value):
         return [
             {
                 'affiliations': _get_affiliations(value),
+                'affiliations_identifiers': _get_affiliations_identifiers(value),
                 'full_name': full_name,
                 'inspire_roles': _get_inspire_roles(value),
                 'raw_affiliations': _get_raw_affiliations(value),
@@ -215,6 +222,11 @@ def authors2marc(self, key, value):
             aff.get('value') for aff in value.get('affiliations', [])
         ]
 
+    def _get_affiliations_identifiers(value):
+        return [
+            u'{}:{}'.format(aff.get('schema'), aff.get('value')) for aff in value.get('affiliations_identifiers', [])
+        ]
+
     def _get_inspire_roles(value):
         values = force_list(value.get('inspire_roles'))
         return ['ed.' for role in values if role == 'editor']
@@ -233,6 +245,7 @@ def authors2marc(self, key, value):
             'i': ids.get('i'),
             'j': ids.get('j'),
             'm': value.get('emails'),
+            't': _get_affiliations_identifiers(value),
             'u': _get_affiliations(value),
             'v': _get_raw_affiliations(value),
         }

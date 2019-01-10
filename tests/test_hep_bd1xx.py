@@ -2136,3 +2136,151 @@ def test_authors_from_700__a_i_x_y_repeated_author_duplicated_i():
 
     assert expected['100'] == result['100']
     assert expected['700'] == result['700']
+
+
+def test_authors_from_100__a_t_u_v():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Plumari, S.</subfield>'
+        '  <subfield code="v">Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy</subfield>'
+        '  <subfield code="u">Catania U.</subfield>'
+        '  <subfield code="t">GRID:grid.8158.4</subfield>'
+        '  <subfield code="v">Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy</subfield>'
+        '  <subfield code="u">INFN, LNS</subfield>'
+        '  <subfield code="t">GRID:grid.466880.4</subfield>'
+        '</datafield>'
+    )  # record/1712320
+
+    expected = [
+        {
+            'affiliations': [
+                {
+                    'value': 'Catania U.',
+                },
+                {
+                    'value': 'INFN, LNS'
+                }
+            ],
+            'affiliations_identifiers': [
+                {
+                    'schema': 'GRID',
+                    'value': 'grid.8158.4'
+                },
+                {
+                    'schema': 'GRID',
+                    'value': 'grid.466880.4'
+                },
+            ],
+            'full_name': 'Plumari, S.',
+            'raw_affiliations': [
+                {
+                    'value': u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
+                },
+                {
+                    'value': u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy',
+                }
+            ]
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Plumari, S.',
+        't': [
+            'GRID:grid.8158.4',
+            'GRID:grid.466880.4'
+        ],
+        'u': [
+            'Catania U.',
+            'INFN, LNS',
+        ],
+        'v': [
+            u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
+            u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy'
+        ]
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
+def test_authors_from_100__a_t_v_and_700_a_t_v():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="100" ind1=" " ind2=" ">'
+        '    <subfield code="a">Hosseini, M.</subfield>'
+        '    <subfield code="v">Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran</subfield>'
+        '    <subfield code="t">GRID:grid.440804.c</subfield>'
+        '  </datafield>'
+        '  <datafield tag="700" ind1=" " ind2=" ">'
+        '    <subfield code="a">Hassanabadi, H.</subfield>'
+        '    <subfield code="v">Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran</subfield>'
+        '    <subfield code="t">GRID:grid.440804.c</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1712798
+
+    expected = [
+        {
+            'affiliations_identifiers': [
+                {
+                    'schema': 'GRID',
+                    'value': 'grid.440804.c'
+                }
+            ],
+            'full_name': 'Hosseini, M.',
+            'raw_affiliations': [
+                {
+                    'value': 'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran'
+                }
+            ],
+        },
+        {
+            'affiliations_identifiers': [
+                {
+                    'schema': 'GRID',
+                    'value': 'grid.440804.c'
+                }
+            ],
+            'full_name': 'Hassanabadi, H.',
+            'raw_affiliations': [
+                {
+                    'value': 'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran'
+                }
+            ],
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected_100 = {
+        'a': 'Hosseini, M.',
+        't': ['GRID:grid.440804.c'],
+        'v': [
+            'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran',
+        ],
+    }
+    expected_700 = [
+        {
+            'a': 'Hassanabadi, H.',
+            't': ['GRID:grid.440804.c'],
+            'v': [
+                'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran',
+            ],
+        }
+    ]
+    result = hep2marc.do(result)
+
+    assert expected_100 == result['100']
+    assert expected_700 == result['700']
