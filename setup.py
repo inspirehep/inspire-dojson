@@ -39,7 +39,7 @@ install_requires = [
     'Flask~=0.0,>=0.12.3',
     'IDUtils~=1.0,>=1.0.1',
     'dojson~=1.0,>=1.3.1',
-    'inspire-schemas~=59.0,>=59.0.0',
+    'inspire-schemas~=59.0,>=59.0.5',
     'inspire-utils~=3.0,>=3.0.0',
     'isbnid_fork~=0.0,>=0.5.2',
     'langdetect~=1.0,>=1.0.7',
@@ -51,8 +51,8 @@ docs_require = []
 tests_require = [
     'flake8-future-import~=0.0,>=0.4.3',
     'mock~=2.0,>=2.0.0',
-    'pytest~=3.0,>=3.1.2',
-    'pytest-cov~=2.0,>=2.5.1',
+    'pytest~=3.0,>=3.6.0',
+    'pytest-cov~=2.0,>=2.6.1',
 ]
 
 extras_require = {
