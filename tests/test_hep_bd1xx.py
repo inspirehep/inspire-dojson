@@ -2138,6 +2138,67 @@ def test_authors_from_700__a_i_x_y_repeated_author_duplicated_i():
     assert expected['700'] == result['700']
 
 
+def test_authors_from_100__a_v_w_y_repeated_t():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Puertas-Centeno, David</subfield>'
+        '  <subfield code="t">GRID:grid.4489.1</subfield>'
+        '  <subfield code="t">GRID:grid.4489.1</subfield>'
+        '  <subfield code="v">Departamento de Física Atómica - Molecular y Nuclear - Universidad de Granada - Granada - 18071 - Spain</subfield>'
+        '  <subfield code="v">Instituto Carlos I de Física Teórica y Computacional - Universidad de Granada - Granada - 18071 - Spain</subfield>'
+        '  <subfield code="w">D.Puertas.Centeno.2</subfield>'
+        '  <subfield code="y">0</subfield>'
+        '</datafield>'
+    )  # record/1676659
+
+    expected = [
+        {
+            'affiliations_identifiers': [
+                {
+                    'schema': 'GRID',
+                    'value': 'grid.4489.1'
+                },
+            ],
+            'full_name': 'Puertas-Centeno, David',
+            'raw_affiliations': [
+                {
+                    'value': u'Departamento de Física Atómica - Molecular y Nuclear - Universidad de Granada - Granada - 18071 - Spain',
+                },
+                {
+                    'value': u'Instituto Carlos I de Física Teórica y Computacional - Universidad de Granada - Granada - 18071 - Spain',
+                }
+            ],
+            'ids': [
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': 'D.Puertas.Centeno.2',
+                },
+            ],
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Puertas-Centeno, David',
+        't': [
+            'GRID:grid.4489.1'
+        ],
+        'v': [
+            u'Departamento de Física Atómica - Molecular y Nuclear - Universidad de Granada - Granada - 18071 - Spain',
+            u'Instituto Carlos I de Física Teórica y Computacional - Universidad de Granada - Granada - 18071 - Spain',
+        ],
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
 def test_authors_from_100__a_t_u_v():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']

@@ -63,7 +63,7 @@ def _authors(key, value):
         return dedupe_list(result)
 
     def _get_affiliations_identifiers(value):
-        t_values = (t_value.split(':') for t_value in force_list(value.get('t')))
+        t_values = (t_value.split(':') for t_value in dedupe_list(force_list(value.get('t'))))
 
         return [{'schema': schema.upper(), 'value': identifier} for schema, identifier in t_values]
 
