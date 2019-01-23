@@ -81,9 +81,7 @@ def marcxml2record(marcxml):
     marcjson = create_record(marcxml, keep_singletons=False)
     collections = _get_collections(marcjson)
 
-    if _is_from_cds(marcjson):
-        return hep.do(create_record_from_dict(cds2hep_marc.do(marcjson)))
-    elif 'conferences' in collections:
+    if 'conferences' in collections:
         return conferences.do(marcjson)
     elif 'data' in collections:
         return data.do(marcjson)
@@ -144,6 +142,12 @@ def record2marcxml(record):
     return tostring(record, encoding='utf8', pretty_print=True)
 
 
+def cds_marcxml2record(marcxml):
+    marcjson = create_record(marcxml, keep_singletons=False)
+
+    return hep.do(create_record_from_dict(cds2hep_marc.do(marcjson)))
+
+
 def _get_collections(marcjson):
     collections = chain.from_iterable([force_list(el) for el in force_list(get_value(marcjson, '980__.a'))])
     normalized_collections = [el.lower() for el in collections]
@@ -158,10 +162,6 @@ def _get_schema_name(record):
     schema_name, _ = os.path.splitext(filename)
 
     return schema_name
-
-
-def _is_from_cds(marcjson):
-    return marcjson.get('003', '').lower() == 'szgecern'
 
 
 def _is_controlfield(tag, ind1, ind2):
