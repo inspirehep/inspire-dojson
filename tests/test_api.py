@@ -24,7 +24,7 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
-from inspire_dojson.api import marcxml2record, record2marcxml
+from inspire_dojson.api import marcxml2record, record2marcxml, cds_marcxml2record
 
 
 def test_marcxml2record_handles_conferences():
@@ -179,7 +179,7 @@ def test_marcxml2record_falls_back_to_hep():
     assert expected == result['$schema']
 
 
-def test_marcxml2record_handles_cds():
+def test_cds_marcxml2record_handles_cds():
     snippet = (
         '<record>'
         '  <controlfield tag="001">2270264</controlfield>'
@@ -193,7 +193,7 @@ def test_marcxml2record_handles_cds():
             'value': '2270264',
         },
     ]
-    result = marcxml2record(snippet)
+    result = cds_marcxml2record(snippet)
 
     assert expected == result['external_system_identifiers']
 
