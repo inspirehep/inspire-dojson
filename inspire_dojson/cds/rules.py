@@ -98,6 +98,10 @@ def vanilla_dict(god):
     return {k: v for (k, v) in six.iteritems(god) if k != '__order__'}
 
 
+def ignore_not_applicable(text):
+    return text if text.lower() != 'not applicable' else None
+
+
 @cds2hep_marc.over('0247_', '^0247.')
 @utils.for_each_value
 def persistent_identifiers(self, key, value):
@@ -338,8 +342,8 @@ def keywords(self, key, value):
 @cds2hep_marc.over('693__', '^693..')
 @utils.for_each_value
 def accelerator_experiments(self, key, value):
-    accelerator = value.get('a')
-    experiment = value.get('e')
+    accelerator = ignore_not_applicable(value.get('a'))
+    experiment = ignore_not_applicable(value.get('e'))
     experiment = EXPERIMENTS.get((accelerator, experiment), experiment)
     return {
         'a': accelerator,
