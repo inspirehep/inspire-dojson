@@ -1057,6 +1057,50 @@ def test_accelerator_experiments_from_693__a_e():
     assert expected == result['accelerator_experiments']
 
 
+def test_accelerator_experiments_from_693__a_e_ignores_not_applicable():
+    snippet = (
+        '<datafield tag="693" ind1=" " ind2=" ">'
+        '  <subfield code="a">Not applicable</subfield>'
+        '  <subfield code="e">Not applicable</subfield>'
+        '</datafield>'
+    )  # cds.cern.ch/record/329074
+
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert '693__' not in result
+
+
+def test_accelerator_experiments_from_693__a_e_ignores_not_applicable_if_only_one_field_has_it():
+    schema = load_schema('hep')
+    subschema = schema['properties']['accelerator_experiments']
+
+    snippet = (
+        '<datafield tag="693" ind1=" " ind2=" ">'
+        '  <subfield code="a">CERN SPS</subfield>'
+        '  <subfield code="e">Not applicable</subfield>'
+        '</datafield>'
+    )  # cds.cern.ch/record/2320495
+
+    expected = [
+        {
+            'a': 'CERN SPS',
+        },
+    ]
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert expected == result['693__']
+
+    expected = [
+        {
+            'accelerator': 'CERN SPS',
+        },
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
+
+
 def test_arxiv_eprints_from_037__a_b_9_and_695__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']
