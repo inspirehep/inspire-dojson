@@ -141,7 +141,7 @@ def secondary_report_numbers(self, key, value):
     result_980 = self.get('980__', [])
 
     report = force_single_element(value.get('a', ''))
-    hidden_report = force_single_element(value.get('9', ''))
+    hidden_report = force_single_element(value.get('9') or value.get('z', ''))
     source = 'CDS' if not is_arxiv(report) else 'arXiv'
 
     if any(report.upper().startswith(prefix) for prefix in note_prefixes):
