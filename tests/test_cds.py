@@ -260,6 +260,39 @@ def test_report_numbers_from_037__a():
     assert expected == result['report_numbers']
 
 
+def test_report_numbers_from_037__z():
+    schema = load_schema('hep')
+    subschema = schema['properties']['report_numbers']
+
+    snippet = (
+        '<datafield tag="037" ind1=" " ind2=" ">'
+        '  <subfield code="z">CERN-THESIS-2018-004</subfield>'
+        '</datafield> '
+    )  # cds.cern.ch/record/2299967
+
+    expected = [
+        {
+            '9': 'CDS',
+            'z': 'CERN-THESIS-2018-004',
+        },
+    ]
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert expected == result['037__']
+
+    expected = [
+        {
+            'source': 'CDS',
+            'value': 'CERN-THESIS-2018-004',
+            'hidden': True,
+        },
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['report_numbers'], subschema) is None
+    assert expected == result['report_numbers']
+
+
 def test_report_numbers_from_088__9():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
