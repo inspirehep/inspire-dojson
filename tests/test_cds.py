@@ -214,6 +214,20 @@ def test_external_sytem_identifiers_from_035__a_9_ignores_inspire():
     assert '035__' not in result
 
 
+def test_external_sytem_identifiers_from_035__a_ignores_cercer():
+    snippet = (
+        '<record>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="a">0148182CERCER</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # cds.cern.ch/record/2307509
+
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert '035__' not in result
+
+
 def test_report_numbers_from_037__a():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
