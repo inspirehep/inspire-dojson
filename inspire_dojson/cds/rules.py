@@ -118,8 +118,12 @@ def persistent_identifiers(self, key, value):
 @utils.for_each_value
 def external_sytem_identifiers(self, key, value):
     ignored = {'cercer', 'inspire', 'xx', 'cern annual report', 'cmscms', 'wai01', 'spires'}
-    if not any(val.lower() in ignored for val in chain(force_list(value.get('9')), force_list(value.get('a')))):
-        return vanilla_dict(value)
+    if any(val.lower() in ignored for val in chain(force_list(value.get('9')), force_list(value.get('a')))):
+        return
+    if any(val.lower().endswith('cercer') for val in force_list(value.get('a'))):
+        return
+
+    return vanilla_dict(value)
 
 
 @cds2hep_marc.over('037__', '^037..', '^088..')
