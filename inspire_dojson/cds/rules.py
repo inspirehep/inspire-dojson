@@ -102,6 +102,10 @@ def ignore_not_applicable(text):
     return text if text.lower() != 'not applicable' else None
 
 
+def escape_spacing_in_url(url):
+    return url.replace(' ', '%20')
+
+
 @cds2hep_marc.over('0247_', '^0247.')
 @utils.for_each_value
 def persistent_identifiers(self, key, value):
@@ -379,7 +383,7 @@ def publication_info(self, key, value):
 def urls(self, key, value):
     """Populate the ``8564`` MARC field.
 
-    Also popualte the ``FFT`` field through side effects.
+    Also populate the ``FFT`` field through side effects.
     """
     def _is_preprint(value):
         return value.get('y', '').lower() == 'preprint'
@@ -403,11 +407,13 @@ def urls(self, key, value):
     if 'u' not in value:
         return field_8564
 
+    url = escape_spacing_in_url(value['u'])
+
     if _is_fulltext(value) and not _is_preprint(value):
         if _is_local_copy(value):
             description = value.get('y', '').replace('local copy', 'on CERN Document Server')
             field_8564.append({
-                'u': value['u'],
+                'u': url,
                 'y': description,
             })
         else:
@@ -415,14 +421,14 @@ def urls(self, key, value):
             _, extension = os.path.splitext(file_name)
             field_FFT.append({
                 't': 'CDS',
-                'a': value['u'],
+                'a': url,
                 'd': value.get('y', ''),
                 'n': file_name,
                 'f': extension,
             })
     elif not _is_ignored_domain(value):
         field_8564.append({
-            'u': value['u'],
+            'u': url,
             'y': value.get('y'),
         })
 
