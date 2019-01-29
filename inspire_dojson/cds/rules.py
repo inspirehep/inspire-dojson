@@ -29,6 +29,7 @@ import re
 from itertools import chain
 
 import pycountry
+import rfc3987
 import six
 
 from idutils import is_arxiv
@@ -40,7 +41,7 @@ from inspire_utils.helpers import force_list
 from inspire_utils.name import normalize_name
 
 from .model import cds2hep_marc
-from ..utils import force_single_element
+from ..utils import force_single_element, quote_url
 
 CATEGORIES = {
     'General Relativity and Cosmology': 'Gravitation and Cosmology',
@@ -102,8 +103,20 @@ def ignore_not_applicable(text):
     return text if text.lower() != 'not applicable' else None
 
 
-def escape_spacing_in_url(url):
-    return url.replace(' ', '%20')
+def escape_url(url):
+    try:
+        rfc3987.parse(url, rule="URI")
+        return url
+    except ValueError:
+        if url.lower().startswith('https://'):
+            scheme = 'https://'
+        elif url.lower().startswith('http://'):
+            scheme = 'http://'
+        else:
+            scheme = ''
+
+        url = quote_url(url[len(scheme):])
+        return scheme + url
 
 
 @cds2hep_marc.over('0247_', '^0247.')
@@ -411,7 +424,7 @@ def urls(self, key, value):
     if 'u' not in value:
         return field_8564
 
-    url = escape_spacing_in_url(value['u'])
+    url = escape_url(value['u'])
 
     if _is_fulltext(value) and not _is_preprint(value):
         if _is_local_copy(value):

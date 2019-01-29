@@ -1351,6 +1351,43 @@ def test_documents_from_8564_s_u_y_8_escapes_spaces():
     assert expected == result['documents']
 
 
+def test_documents_from_8564_s_u_8_escapes_encoded_characters():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = (
+        '<datafield tag="856" ind1="4" ind2=" ">'
+        '  <subfield code="8">200773</subfield>'
+        '  <subfield code="s">5978977</subfield>'
+        '  <subfield code="u">http://cds.cern.ch/record/148555/files/Rückl.pdf</subfield>'
+        '</datafield>'
+    )  # cds.cern.ch/record/148555
+
+    expected = [
+        {
+            't': 'CDS',
+            'a': 'http://cds.cern.ch/record/148555/files/R%C3%BCckl.pdf',
+            'n': u'R\xfcckl.pdf',
+            'f': '.pdf',
+        },
+    ]
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert expected == result['FFT__']
+
+    expected = [
+        {
+            'key': u'R\xfcckl.pdf',
+            'source': 'CDS',
+            'url': 'http://cds.cern.ch/record/148555/files/R%C3%BCckl.pdf',
+        },
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['documents'], subschema) is None
+    assert expected == result['documents']
+
+
 def test_documents_from_8564_s_u_y_8_ignores_preprint():
     snippet = (
         '<datafield tag="856" ind1="4" ind2=" ">'
