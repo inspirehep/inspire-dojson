@@ -66,7 +66,7 @@ def documents(self, key, value):
         return fname + extension
 
     def _get_source(value):
-        source = value.get('t')
+        source = value.get('t', '')
         if source in ('INSPIRE-PUBLIC', 'Main'):
             source = None
         elif source.lower() == 'arxiv':

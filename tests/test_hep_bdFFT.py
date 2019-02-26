@@ -544,3 +544,28 @@ def test_figures2marc_handles_unicode():
     result = hep2marc.do(record)
 
     assert expected == result['FFT']
+
+
+def test_documents_from_FFT_without_t_subfield():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = (
+        "<datafield tag='FFT' ind1=' ' ind2=' '>"
+        "  <subfield code='a'>http://scoap3.iop.org/article/doi/10.1088/1674-1137/43/1/013104?format=pdf</subfield>"
+        "  <subfield code='f'>.pdf</subfield>"
+        "  <subfield code='n'>fulltext</subfield>"
+        "</datafield>"
+    )
+
+    expected = [
+        {
+            'url': 'http://scoap3.iop.org/article/doi/10.1088/1674-1137/43/1/013104?format=pdf',
+            'key': 'fulltext.pdf'
+        }
+
+    ]
+    result = hep.do(create_record(snippet))
+    assert validate(result['documents'], subschema) is None
+    assert expected == result['documents']
+    assert 'figures' not in result
