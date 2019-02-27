@@ -306,7 +306,7 @@ def arxiv_eprints(self, key, value):
         return id_.split(':')[-1]
 
     def _is_arxiv_eprint(id_, source):
-        return source == 'arXiv'
+        return source.lower() == 'arxiv'
 
     def _is_hidden_report_number(other_id, source):
         return other_id
