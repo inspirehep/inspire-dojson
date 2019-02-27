@@ -320,4 +320,4 @@ def test_normalize_date_aggressively_raises_on_wrong_format():
 
 
 def test_normalize_date_aggressively_ignores_fake_dates():
-        assert normalize_date_aggressively('0000') is None
+    assert normalize_date_aggressively('0000') is None
