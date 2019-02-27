@@ -1173,6 +1173,38 @@ def test_arxiv_eprints_from_037__a_c_9_and_multiple_65017_a_2():
     assert expected_65017 == result['65017']
 
 
+def test_arxiv_eprints_037__a_9_lowercase_arxiv():
+    schema = load_schema('hep')
+    subschema = schema['properties']['arxiv_eprints']
+
+    snippet = (
+        "<datafield tag='037' ind1=' ' ind2=' '>"
+        "  <subfield code='a'>1703.09086</subfield>"
+        "  <subfield code='9'>arxiv</subfield>"
+        "</datafield>"
+    )
+
+    expected = [
+        {
+            'value': '1703.09086'
+        }
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['arxiv_eprints'], subschema) is None
+    assert expected == result['arxiv_eprints']
+
+    expected = [
+        {
+            '9': 'arXiv',
+            'a': 'arXiv:1703.09086',
+        }
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['037']
+
+
 def test_languages_from_041__a():
     schema = load_schema('hep')
     subschema = schema['properties']['languages']
