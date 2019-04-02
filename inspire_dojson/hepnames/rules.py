@@ -213,7 +213,8 @@ def name(self, key, value):
 def name2marc(self, key, value):
     """Populates the ``100`` field.
 
-    Also populates the ``400`` and ``880`` fields through side effects.
+    Also populates the ``400``, ``880``, and ``667`` fields through side
+    effects.
     """
     result = self.get('100', {})
 
@@ -226,6 +227,12 @@ def name2marc(self, key, value):
         self['400'] = [{'a': el} for el in value['name_variants']]
     if 'native_names' in value:
         self['880'] = [{'a': el} for el in value['native_names']]
+    if 'previous_names' in value:
+        prev_names = [
+            {'a': u'Formerly {}'.format(prev_name)}
+            for prev_name in value['previous_names']
+        ]
+        self['667'] = prev_names
 
     return result
 
@@ -464,10 +471,17 @@ def inspire_categories2marc(self, key, value):
 @hepnames.over('public_notes', '^667..')
 @utils.for_each_value
 def _public_notes(self, key, value):
-    return {
-        'source': value.get('9'),
-        'value': value.get('a'),
-    }
+    if 'Formerly' in value.get('a'):
+        name_item = self.get('name', {})
+        previous_names_list = name_item.get('previous_names', [])
+        previous_name = value.get('a').replace('Formerly ', '')
+        previous_names_list.extend(force_list(previous_name))
+        self.setdefault('name', {})['previous_names'] = previous_names_list
+    else:
+        return {
+            'source': value.get('9'),
+            'value': value.get('a'),
+        }
 
 
 @hepnames2marc.over('667', '^public_notes$')
@@ -476,14 +490,6 @@ def _public_notes2marc(self, key, value):
     return {
         'a': value.get('value'),
         '9': value.get('source'),
-    }
-
-
-@hepnames2marc.over('667', '^previous_names$')
-@utils.for_each_value
-def _previous_names2marc(self, key, value):
-    return {
-        'a': ';'.join(value),
     }
 
 

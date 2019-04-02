@@ -1614,25 +1614,42 @@ def test_public_notes_from_667__a():
     expected = [
         {'a': 'Do not confuse with Acharya, Bannanje Sripath'},
     ]
+
     result = hepnames2marc.do(result)
 
     assert expected == result['667']
+
+
+def test_previous_names_from_667__a():
+    snippet = (
+        '<datafield tag="667" ind1=" " ind2=" ">'
+        '  <subfield code="a">Formerly Tomoko Furukawa</subfield>'
+        '</datafield>'
+    )  # record/1281982
+
+    expected = ['Tomoko Furukawa']
+
+    result = hepnames.do(create_record(snippet))
+
+    assert expected == result['name']['previous_names']
 
 
 def test_previous_names_to_667__a():
     schema = load_schema('authors')
     subschema = schema['properties']['name']
 
-    expected = (
-        '<datafield tag="667" ind1=" " ind2=" ">'
-        '  <subfield code="a">Do not confuse with Acharya, Bannanje Sripath</subfield>'
-        '</datafield>'
-    )  # record/1018999
+    expected = [
+        {'a': 'Formerly Tomoko Furukawa'},
+        {'a': 'Formerly Second previous name'}
+    ]
+    # record/1281982
 
     metadata = {
         'name': {
+            'value': 'Tomoko Ariga',
             'previous_names': [
-                'Do not confuse with Acharya, Bannanje Sripath',
+                'Tomoko Furukawa',
+                'Second previous name',
             ],
         }
     }
