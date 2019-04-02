@@ -1619,6 +1619,30 @@ def test_public_notes_from_667__a():
     assert expected == result['667']
 
 
+def test_previous_names_to_667__a():
+    schema = load_schema('authors')
+    subschema = schema['properties']['name']
+
+    expected = (
+        '<datafield tag="667" ind1=" " ind2=" ">'
+        '  <subfield code="a">Do not confuse with Acharya, Bannanje Sripath</subfield>'
+        '</datafield>'
+    )  # record/1018999
+
+    metadata = {
+        'name': {
+            'previous_names': [
+                'Do not confuse with Acharya, Bannanje Sripath',
+            ],
+        }
+    }
+    assert validate(metadata['name'], subschema) is None
+
+    result = hepnames2marc.do(metadata)
+
+    assert expected == result['667']
+
+
 def test_awards_from_678__a():
     schema = load_schema('authors')
     subschema = schema['properties']['awards']

@@ -479,6 +479,14 @@ def _public_notes2marc(self, key, value):
     }
 
 
+@hepnames2marc.over('667', '^previous_names$')
+@utils.for_each_value
+def _previous_names2marc(self, key, value):
+    return {
+        'a': ';'.join(value),
+    }
+
+
 @hepnames2marc.over('100', '^(birth_date|death_date)$')
 def birth_and_death_date2marc(self, key, value):
     """Populate the ``100__d`` MARC field, which includes the birth and the death date.
