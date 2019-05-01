@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014-2017 CERN.
+# Copyright (C) 2014-2019 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -102,7 +102,9 @@ def absolute_url(relative_url):
     falls back to ``http://inspirehep.net``.
     """
     default_server = 'http://inspirehep.net'
-    server = current_app.config.get('SERVER_NAME', default_server)
+    server = current_app.config.get('SERVER_NAME')
+    if server is None:
+        server = default_server
     if not re.match('^https?://', server):
         server = u'http://{}'.format(server)
     return urllib.parse.urljoin(server, relative_url)
