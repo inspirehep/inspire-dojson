@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014-2017 CERN.
+# Copyright (C) 2014-2019 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,6 +101,16 @@ def test_absolute_url_with_empty_server_name():
     config = {}
 
     with patch.dict(current_app.config, config, clear=True):
+        expected = 'http://inspirehep.net/foo'
+        result = absolute_url('foo')
+
+        assert expected == result
+
+
+def test_absolute_url_with_undef_server_name():
+    config = {'SERVER_NAME': None}
+
+    with patch.dict(current_app.config, config, clear=False):
         expected = 'http://inspirehep.net/foo'
         result = absolute_url('foo')
 
