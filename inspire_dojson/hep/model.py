@@ -192,8 +192,8 @@ hep_filters = [
     ensure_document_type,
     ensure_unique_documents_and_figures,
     ensure_ordered_figures,
-    set_citeable,
     clean_record(exclude_keys={'authors'}),
+    set_citeable,  # XXX has to happen after clean_record as is_citeable doesn't check if values are not-None
 ]
 
 hep2marc_filters = [
