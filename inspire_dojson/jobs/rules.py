@@ -26,11 +26,15 @@ from __future__ import absolute_import, division, print_function
 
 import re
 
-import six
-
 from dojson import utils
+from six.moves import zip_longest
 
 from inspire_utils.helpers import force_list
+from inspire_utils.name import normalize_name
+from inspire_schemas.utils import (
+    normalize_arxiv_category,
+    sanitize_html,
+)
 
 from .model import jobs
 from ..utils import (
@@ -42,51 +46,49 @@ from ..utils import (
 
 
 COMMA_OR_SLASH = re.compile(r'\s*[/,]\s*')
+EXTERNAL_ID = re.compile(r'\s*\((.*)\)\s*$')
 
 
-@jobs.over('closed_date', '^046..')
-def date_closed(self, key, value):
-    def _contains_email(val):
-        return '@' in val
-
-    def _contains_url(val):
-        return 'www' in val or 'http' in val
-
+@jobs.over('deadline_date', '^046..')
+def deadline_date(self, key, value):
     el = force_single_element(value)
 
     deadline_date = force_single_element(el.get('i'))
-    if deadline_date:
-        self['deadline_date'] = normalize_date_aggressively(deadline_date)
-
-    closing_date = None
-    closing_info = force_single_element(el.get('l'))
-    if closing_info:
-        if _contains_email(closing_info):
-            if 'reference_email' in self:
-                self['reference_email'].append(closing_info)
-            else:
-                self['reference_email'] = [closing_info]
-        elif _contains_url(closing_info):
-            if 'urls' in self:
-                self['urls'].append({'value': closing_info})
-            else:
-                self['urls'] = [{'value': closing_info}]
-        else:
-            closing_date = normalize_date_aggressively(closing_info)
-
-    return closing_date
+    if not deadline_date or deadline_date == '0000':
+        return '3000'
+    return normalize_date_aggressively(deadline_date)
 
 
 @jobs.over('contact_details', '^270..')
-@utils.for_each_value
 def contact_details(self, key, value):
-    name = value.get('p')
-    email = value.get('m')
+    """Populate the ``contact_details`` key.
 
-    return {
-        'name': name if isinstance(name, six.string_types) else None,
-        'email': email if isinstance(email, six.string_types) else None,
-    }
+    Also populates the ``reference_letters`` key through side effects.
+    """
+    contact_details = self.get('contact_details', [])
+    reference_letters = self.get('reference_letters', {})
+
+    emails = force_list(value.get('m'))
+    names = force_list(value.get('p'))
+    if len(names) == 1 and len(emails) > 1:
+        names = [names[0] for _ in emails]
+    values_o = force_list(value.get('o'))
+
+    contact_details.extend({
+        'name': normalize_name(name),
+        'email': email,
+    } for (name, email) in zip_longest(names, emails))
+
+    for value_o in values_o:
+        if '@' in value_o:
+            reference_letters.setdefault('emails', []).append(value_o)
+        else:
+            reference_letters.setdefault('urls', []).append({
+                'value': value_o,
+            })
+
+    self['reference_letters'] = reference_letters
+    return contact_details
 
 
 @jobs.over('regions', '^043..')
@@ -117,21 +119,18 @@ def regions(self, key, value):
     return result
 
 
-@jobs.over('experiments', '^693..')
-def experiments(self, key, value):
-    experiments = self.get('experiments', [])
-
-    name = value.get('e')
+@jobs.over('accelerator_experiments', '^693..')
+@utils.for_each_value
+def accelerator_experiments(self, key, value):
+    legacy_name = value.get('e')
     recid = value.get('0')
     record = get_record_ref(recid, 'experiments')
 
-    experiments.append({
+    return {
         'curated_relation': record is not None,
-        'name': name,
+        'legacy_name': legacy_name,
         'record': record
-    })
-
-    return experiments
+    }
 
 
 @jobs.over('institutions', '^110..')
@@ -148,14 +147,14 @@ def institutions(self, key, value):
             record = get_record_ref(z_value, 'institutions')
             institutions.append({
                 'curated_relation': record is not None,
-                'name': a_value,
+                'value': a_value,
                 'record': record,
             })
     else:
         for a_value in a_values:
             institutions.append({
                 'curated_relation': False,
-                'name': a_value,
+                'value': a_value,
             })
 
     return institutions
@@ -163,12 +162,24 @@ def institutions(self, key, value):
 
 @jobs.over('description', '^520..')
 def description(self, key, value):
-    return value.get('a')
+    return sanitize_html(value.get('a', '')).strip()
 
 
 @jobs.over('position', '^245..')
 def position(self, key, value):
-    return value.get('a')
+    """Populate the ``position`` key.
+
+    Also populates the ``external_job_identifier`` key through side-effects.
+    """
+    try:
+        external_id = EXTERNAL_ID.search(value.get('a', '')).group(1)
+    except AttributeError:
+        external_id = None
+
+    position = EXTERNAL_ID.sub('', value.get('a', ''))
+
+    self['external_job_identifier'] = external_id
+    return position
 
 
 @jobs.over('ranks', '^656..')
@@ -177,3 +188,26 @@ def position(self, key, value):
 def ranks(self, key, value):
     """Populate the ``ranks`` key."""
     return [normalize_rank(el) for el in force_list(value.get('a'))]
+
+
+@jobs.over('arxiv_categories', '^65017')
+@utils.for_each_value
+def arxiv_categories(self, key, value):
+    """Populate the ``ranks`` key."""
+    category = value.get('a', '')
+
+    if category.lower() == 'physics-other':
+        return None
+    elif category.lower() == 'physics.acc-phys':
+        return 'physics.acc-ph'
+
+    return normalize_arxiv_category(value.get('a'))
+
+
+@jobs.over('status', '^980..')
+def status(self, key, value):
+    status = value['a'].upper()
+    if status == 'JOB':
+        return 'open'
+    elif status == 'JOBHIDDEN':
+        return 'closed'
