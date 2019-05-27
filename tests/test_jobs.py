@@ -46,6 +46,9 @@ def test_deadline_date_from_046__i():
 
 
 def test_deadline_date_from_046__i__fake_date():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['deadline_date']
+
     snippet = (
         '<datafield tag="046" ind1=" " ind2=" ">'
         '  <subfield code="i">0000</subfield>'
@@ -54,7 +57,10 @@ def test_deadline_date_from_046__i__fake_date():
 
     result = jobs.do(create_record(snippet))
 
-    assert 'deadline_date' not in result
+    expected = '3000'
+
+    assert validate(result['deadline_date'], subschema) is None
+    assert expected == result['deadline_date']
 
 
 def test_deadline_date_from_046__i__wrong_date():
@@ -74,91 +80,6 @@ def test_deadline_date_from_046__i__wrong_date():
     assert expected == result['deadline_date']
 
 
-def test_closed_date_from_046__l():
-    schema = load_schema('jobs')
-    subschema = schema['properties']['closed_date']
-
-    snippet = (
-        '<datafield tag="046" ind1=" " ind2=" ">'
-        '  <subfield code="l">2008-02-11</subfield>'
-        '</datafield>'
-    )  # record/934304
-
-    expected = '2008-02-11'
-    result = jobs.do(create_record(snippet))
-
-    assert validate(result['closed_date'], subschema) is None
-    assert expected == result['closed_date']
-
-
-def test_closed_date_from_046__l_fake_date():
-    snippet = (
-        '<datafield tag="046" ind1=" " ind2=" ">'
-        '  <subfield code="l">0000</subfield>'
-        '</datafield>'
-    )  # record/958863
-
-    result = jobs.do(create_record(snippet))
-
-    assert 'closed_date' not in result
-
-
-def test_date_closed_from_046__i_and_046__l_an_url():
-    schema = load_schema('jobs')
-    subschema_deadline_date = schema['properties']['deadline_date']
-    subschema_urls = schema['properties']['urls']
-
-    snippet = (
-        '<record>'
-        '  <datafield tag="046" ind1=" " ind2=" ">'
-        '    <subfield code="i">2012-06-01</subfield>'
-        '  </datafield>'
-        '  <datafield tag="046" ind1=" " ind2=" ">'
-        '    <subfield code="l">http://www.pma.caltech.edu/physics-search</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/963314
-
-    expected_deadline_date = '2012-06-01'
-    expected_urls = [
-        {'value': 'http://www.pma.caltech.edu/physics-search'},
-    ]
-    result = jobs.do(create_record(snippet))
-
-    assert validate(result['deadline_date'], subschema_deadline_date) is None
-    assert expected_deadline_date == result['deadline_date']
-
-    assert validate(result['urls'], subschema_urls) is None
-    assert expected_urls == result['urls']
-
-
-def test_date_closed_from_046__i_and_046__l_an_email():
-    schema = load_schema('jobs')
-    subschema_deadline_date = schema['properties']['deadline_date']
-    subschema_reference_email = schema['properties']['reference_email']
-
-    snippet = (
-        '<record>'
-        '  <datafield tag="046" ind1=" " ind2=" ">'
-        '    <subfield code="l">yejb@smu.edu</subfield>'
-        '  </datafield>'
-        '  <datafield tag="046" ind1=" " ind2=" ">'
-        '    <subfield code="i">8888</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1089529
-
-    expected_deadline_date = '8888'
-    expected_reference_email = ['yejb@smu.edu']
-    result = jobs.do(create_record(snippet))
-
-    assert validate(result['deadline_date'], subschema_deadline_date) is None
-    assert expected_deadline_date == result['deadline_date']
-
-    assert validate(result['reference_email'], subschema_reference_email) is None
-    assert expected_reference_email == result['reference_email']
-
-
 def test_contact_details_from_marcxml_270_single_p_single_m():
     schema = load_schema('jobs')
     subschema = schema['properties']['contact_details']
@@ -172,7 +93,7 @@ def test_contact_details_from_marcxml_270_single_p_single_m():
 
     expected = [
         {
-            'name': 'Manfred Lindner',
+            'name': 'Lindner, Manfred',
             'email': 'lindner@mpi-hd.mpg.de',
         },
     ]
@@ -195,7 +116,13 @@ def test_contact_details_from_marcxml_270_double_p_single_m():
     )
 
     expected = [
-        {'email': 'lindner@mpi-hd.mpg.de'},
+        {
+            'name': 'Lindner, Manfred',
+            'email': 'lindner@mpi-hd.mpg.de',
+        },
+        {
+            'name': 'Boogeyman',
+        },
     ]
     result = jobs.do(create_record(snippet))
 
@@ -216,7 +143,14 @@ def test_contact_details_from_marcxml_270_single_p_double_m():
     )
 
     expected = [
-        {'name': 'Manfred Lindner'},
+        {
+            'name': 'Lindner, Manfred',
+            'email': 'lindner@mpi-hd.mpg.de',
+        },
+        {
+            'name': 'Lindner, Manfred',
+            'email': 'lindner@ecmrecords.com',
+        },
     ]
     result = jobs.do(create_record(snippet))
 
@@ -242,17 +176,120 @@ def test_contact_details_from_multiple_marcxml_270():
 
     expected = [
         {
-            'name': 'Manfred Lindner',
+            'name': 'Lindner, Manfred',
             'email': 'lindner@mpi-hd.mpg.de',
         },
         {
-            'name': 'Wynton Marsalis',
+            'name': 'Marsalis, Wynton',
         },
     ]
     result = jobs.do(create_record(snippet))
 
     assert validate(result['contact_details'], subschema) is None
     assert expected == result['contact_details']
+
+
+def test_contact_details_and_reference_letters_from_270__m_o_p():
+    schema = load_schema('jobs')
+    subschema_contact_details = schema['properties']['contact_details']
+    subschema_reference_letters = schema['properties']['reference_letters']
+
+    snippet = (
+        '<datafield tag="270" ind1=" " ind2=" ">'
+        '  <subfield code="m">mciver@phas.ubc.ca</subfield>'
+        '  <subfield code="o">jobs@physics.ubc.ca</subfield>'
+        '  <subfield code="p">Jess McIver</subfield>'
+        '</datafield>'
+    )  # record/1736228
+
+    expected = {
+        'contact_details': [
+            {
+                'name': 'McIver, Jess',
+                'email': 'mciver@phas.ubc.ca',
+            },
+        ],
+        'reference_letters': {
+            'emails': ['jobs@physics.ubc.ca'],
+        },
+    }
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['contact_details'], subschema_contact_details) is None
+    assert validate(result['reference_letters'], subschema_reference_letters) is None
+    assert expected['contact_details'] == result['contact_details']
+    assert expected['reference_letters'] == result['reference_letters']
+
+
+def test_contact_details_and_reference_letters_from_270__m_o_p_repeated():
+    schema = load_schema('jobs')
+    subschema_contact_details = schema['properties']['contact_details']
+    subschema_reference_letters = schema['properties']['reference_letters']
+
+    snippet = (
+        '<datafield tag="270" ind1=" " ind2=" ">'
+        '  <subfield code="m">mikhailzu@ariel.ac.il</subfield>'
+        '  <subfield code="m">lewkow@ariel.ac.il</subfield>'
+        '  <subfield code="o">mikhailzu@ariel.ac.il</subfield>'
+        '  <subfield code="o">lewkow@ariel.ac.il</subfield>'
+        '  <subfield code="p">Mikhail Zubkov</subfield>'
+        '  <subfield code="p">Meir Lewkowicz</subfield>'
+        '</datafield>'
+    )  # record/1717472
+
+    expected = {
+        'contact_details': [
+            {
+                'name': 'Zubkov, Mikhail',
+                'email': 'mikhailzu@ariel.ac.il',
+            },
+            {
+                'name': 'Lewkowicz, Meir',
+                'email': 'lewkow@ariel.ac.il',
+            },
+        ],
+        'reference_letters': {
+            'emails': ['mikhailzu@ariel.ac.il', 'lewkow@ariel.ac.il'],
+        },
+    }
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['contact_details'], subschema_contact_details) is None
+    assert validate(result['reference_letters'], subschema_reference_letters) is None
+    assert expected['contact_details'] == result['contact_details']
+    assert expected['reference_letters'] == result['reference_letters']
+
+
+def test_contact_details_and_reference_letters_from_270__m_o_p_url():
+    schema = load_schema('jobs')
+    subschema_contact_details = schema['properties']['contact_details']
+    subschema_reference_letters = schema['properties']['reference_letters']
+
+    snippet = (
+        '<datafield tag="270" ind1=" " ind2=" ">'
+        '  <subfield code="m">Kenichi_Hatakeyama@baylor.edu</subfield>'
+        '  <subfield code="o">https://academicjobsonline.org/ajo/jobs/12729</subfield>'
+        '  <subfield code="p">Kenichi Hatakeyama</subfield>'
+        '</datafield>'
+    )  # record/1711401
+
+    expected = {
+        'contact_details': [
+            {
+                'name': 'Hatakeyama, Kenichi',
+                'email': 'Kenichi_Hatakeyama@baylor.edu',
+            },
+        ],
+        'reference_letters': {
+            'urls': [{'value': 'https://academicjobsonline.org/ajo/jobs/12729'}],
+        },
+    }
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['contact_details'], subschema_contact_details) is None
+    assert validate(result['reference_letters'], subschema_reference_letters) is None
+    assert expected['contact_details'] == result['contact_details']
+    assert expected['reference_letters'] == result['reference_letters']
 
 
 def test_regions_from_043__a():
@@ -306,9 +343,9 @@ def test_regions_from_043__a_splits_on_commas():
     assert expected == result['regions']
 
 
-def test_experiments_from_693__e():
+def test_accelerator_experiments_from_693__e():
     schema = load_schema('jobs')
-    subschema = schema['properties']['experiments']
+    subschema = schema['properties']['accelerator_experiments']
 
     snippet = (
         '<datafield tag="693" ind1=" " ind2=" ">'
@@ -319,18 +356,18 @@ def test_experiments_from_693__e():
     expected = [
         {
             'curated_relation': False,
-            'name': 'ALIGO',
+            'legacy_name': 'ALIGO',
         },
     ]
     result = jobs.do(create_record(snippet))
 
-    assert validate(result['experiments'], subschema) is None
-    assert expected == result['experiments']
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
 
 
-def test_experiments_from_693__e__0():
+def test_accelerator_experiments_from_693__e__0():
     schema = load_schema('jobs')
-    subschema = schema['properties']['experiments']
+    subschema = schema['properties']['accelerator_experiments']
 
     snippet = (
         '<datafield tag="693" ind1=" " ind2=" ">'
@@ -342,7 +379,7 @@ def test_experiments_from_693__e__0():
     expected = [
         {
             'curated_relation': True,
-            'name': 'CERN-LHC-ATLAS',
+            'legacy_name': 'CERN-LHC-ATLAS',
             'record': {
                 '$ref': 'http://localhost:5000/api/experiments/1108541',
             },
@@ -350,13 +387,13 @@ def test_experiments_from_693__e__0():
     ]
     result = jobs.do(create_record(snippet))
 
-    assert validate(result['experiments'], subschema) is None
-    assert expected == result['experiments']
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
 
 
-def test_experiments_from_693__e__0_and_e():
+def test_accelerator_experiments_from_693__e__0_and_e():
     schema = load_schema('jobs')
-    subschema = schema['properties']['experiments']
+    subschema = schema['properties']['accelerator_experiments']
 
     snippet = (
         '<record>'
@@ -373,25 +410,25 @@ def test_experiments_from_693__e__0_and_e():
     expected = [
         {
             'curated_relation': True,
-            'name': 'CERN-LHC-ATLAS',
+            'legacy_name': 'CERN-LHC-ATLAS',
             'record': {
                 '$ref': 'http://localhost:5000/api/experiments/1108541',
             },
         },
         {
             'curated_relation': False,
-            'name': 'IHEP-CEPC'
+            'legacy_name': 'IHEP-CEPC'
         }
     ]
     result = jobs.do(create_record(snippet))
 
-    assert validate(result['experiments'], subschema) is None
-    assert expected == result['experiments']
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
 
 
-def test_experiments_from_triple_693__e__0():
+def test_accelerator_experiments_from_triple_693__e__0():
     schema = load_schema('jobs')
-    subschema = schema['properties']['experiments']
+    subschema = schema['properties']['accelerator_experiments']
 
     snippet = (
         '<record>'
@@ -413,21 +450,21 @@ def test_experiments_from_triple_693__e__0():
     expected = [
         {
             'curated_relation': True,
-            'name': 'CERN-NA-049',
+            'legacy_name': 'CERN-NA-049',
             'record': {
                 '$ref': 'http://localhost:5000/api/experiments/1110308',
             },
         },
         {
             'curated_relation': True,
-            'name': 'CERN-NA-061',
+            'legacy_name': 'CERN-NA-061',
             'record': {
                 '$ref': 'http://localhost:5000/api/experiments/1108234',
             },
         },
         {
             'curated_relation': True,
-            'name': 'CERN-LHC-ALICE',
+            'legacy_name': 'CERN-LHC-ALICE',
             'record': {
                 '$ref': 'http://localhost:5000/api/experiments/1110642',
             },
@@ -435,8 +472,8 @@ def test_experiments_from_triple_693__e__0():
     ]
     result = jobs.do(create_record(snippet))
 
-    assert validate(result['experiments'], subschema) is None
-    assert expected == result['experiments']
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
 
 
 def test_institutions_from_110__a():
@@ -452,7 +489,7 @@ def test_institutions_from_110__a():
     expected = [
         {
             'curated_relation': False,
-            'name': 'Coll. William and Mary',
+            'value': 'Coll. William and Mary',
         },
     ]
     result = jobs.do(create_record(snippet))
@@ -479,11 +516,11 @@ def test_institutions_from_double_110__a():
     expected = [
         {
             'curated_relation': False,
-            'name': 'Coll. William and Mary',
+            'value': 'Coll. William and Mary',
         },
         {
             'curated_relation': False,
-            'name': 'Jefferson Lab',
+            'value': 'Jefferson Lab',
         },
     ]
     result = jobs.do(create_record(snippet))
@@ -508,14 +545,14 @@ def test_institutions_from_110__double_a_z():
     expected = [
         {
             'curated_relation': True,
-            'name': 'Indiana U.',
+            'value': 'Indiana U.',
             'record': {
                 '$ref': 'http://localhost:5000/api/institutions/902874',
             },
         },
         {
             'curated_relation': True,
-            'name': 'NIST, Wash., D.C.',
+            'value': 'NIST, Wash., D.C.',
             'record': {
                 '$ref': 'http://localhost:5000/api/institutions/903056',
             },
@@ -537,7 +574,24 @@ def test_description_from_520__a():
         '</datafield>'
     )  # record/1239755
 
-    expected = '(1) Conduct independent research in string theory related theoretical sciences;<br /> <br /> (2) Advising graduate students in their research;<br /> <br /> (3) A very small amount of teaching of undergraduate courses.&nbsp;'
+    expected = '(1) Conduct independent research in string theory related theoretical sciences;<br> <br> (2) Advising graduate students in their research;<br> <br> (3) A very small amount of teaching of undergraduate courses.&nbsp;'
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['description'], subschema) is None
+    assert expected == result['description']
+
+
+def test_description_from_520__a_sanitizes_html():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['description']
+
+    snippet = (
+        '<datafield tag="520" ind1=" " ind2=" ">'
+        '    <subfield code="a">&lt;!--?xml version="1.0" encoding="UTF-8"?--&gt; &lt;div&gt; There is an opening for a software developer to contribute to CMS workflow management software development, including the evolution of the software in preparation for the HL LHC era. &amp;nbsp;The qualifications expected of a successful candidate for this position are listed in the posting linked below. &amp;nbsp;This position will be part of the Notre Dame Center for Research Computing scientific workflows and dynamic distributed applications team. This team collaborates with faculty and researchers within the Notre Dame community on challenges involving leveraging distributed computing resources to accelerate scientific discovery. The group focuses on topics like managing complex scientific workflows involving large amounts of data across one or more distributed systems, porting scientific workflows to new computational environments, such as some of the world&amp;rsquo;s largest HPC facilities or commercial cloud resources, and developing tools to enable the creation of dynamic scientific applications that scale from laptop to cluster to cloud.&lt;/div&gt; &lt;div&gt; &lt;br /&gt; Job posting (qualifications and link to apply):&amp;nbsp;&lt;a href="https://jobs.nd.edu/postings/15810"&gt;https://jobs.nd.edu/postings/15810&lt;/a&gt;&lt;br /&gt; &lt;br /&gt; Notre Dame scientific workflows and dynamic distributed applications team webpage: &amp;nbsp;&lt;a href="http://workflow-team.crc.nd.edu/"&gt;http://workflow-team.crc.nd.edu&lt;/a&gt;&lt;/div&gt; &lt;br /&gt;</subfield>'
+        '</datafield>'
+    )  # record/1239755
+
+    expected = 'There is an opening for a software developer to contribute to CMS workflow management software development, including the evolution of the software in preparation for the HL LHC era. &nbsp;The qualifications expected of a successful candidate for this position are listed in the posting linked below. &nbsp;This position will be part of the Notre Dame Center for Research Computing scientific workflows and dynamic distributed applications team. This team collaborates with faculty and researchers within the Notre Dame community on challenges involving leveraging distributed computing resources to accelerate scientific discovery. The group focuses on topics like managing complex scientific workflows involving large amounts of data across one or more distributed systems, porting scientific workflows to new computational environments, such as some of the world&rsquo;s largest HPC facilities or commercial cloud resources, and developing tools to enable the creation of dynamic scientific applications that scale from laptop to cluster to cloud.  <br> Job posting (qualifications and link to apply):&nbsp;<a href="https://jobs.nd.edu/postings/15810">https://jobs.nd.edu/postings/15810</a><br> <br> Notre Dame scientific workflows and dynamic distributed applications team webpage: &nbsp;<a href="http://workflow-team.crc.nd.edu/">http://workflow-team.crc.nd.edu</a> <br>'
     result = jobs.do(create_record(snippet))
 
     assert validate(result['description'], subschema) is None
@@ -559,6 +613,92 @@ def test_position_from_245__a():
 
     assert validate(result['position'], subschema) is None
     assert expected == result['position']
+    assert 'external_job_identifier' not in result
+
+
+def test_position_from_245__a_with_external_job_identifier():
+    schema = load_schema('jobs')
+    subschema_position = schema['properties']['position']
+    subschema_external_job_identifier = schema['properties']['external_job_identifier']
+
+    snippet = (
+        '<datafield tag="245" ind1=" " ind2=" ">'
+        '  <subfield code="a">Director of Accelerator Operations (12010)</subfield>'
+        '</datafield>'
+    )  # record/1467312
+
+    expected_position = 'Director of Accelerator Operations'
+    expected_external_job_identifier = '12010'
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['position'], subschema_position) is None
+    assert validate(result['external_job_identifier'], subschema_external_job_identifier) is None
+    assert expected_position == result['position']
+    assert expected_external_job_identifier == result['external_job_identifier']
+
+
+def test_arxiv_categories_from_65017__a():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['arxiv_categories']
+
+    snippet = (
+        '<datafield tag="650" ind1="1" ind2="7">'
+        '  <subfield code="a">hep-ex</subfield>'
+        '</datafield>'
+    )  # record/1736229
+
+    expected = [
+        'hep-ex',
+    ]
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['arxiv_categories'], subschema) is None
+    assert expected == result['arxiv_categories']
+
+
+def test_arxiv_categories_from_65017__a_physics_other():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['arxiv_categories']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="650" ind1="1" ind2="7">'
+        '    <subfield code="a">cs</subfield>'
+        '  </datafield>'
+        '  <datafield tag="650" ind1="1" ind2="7">'
+        '    <subfield code="a">physics-other</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1735201
+
+    expected = [
+        'cs',
+    ]
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['arxiv_categories'], subschema) is None
+    assert expected == result['arxiv_categories']
+
+
+def test_arxiv_categories_from_65017__a_physics_acc_phys():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['arxiv_categories']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="650" ind1="1" ind2="7">'
+        '    <subfield code="a">physics.acc-phys</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1731774
+
+    expected = [
+        'physics.acc-ph',
+    ]
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['arxiv_categories'], subschema) is None
+    assert expected == result['arxiv_categories']
 
 
 def test_ranks_from_marcxml_656_with_single_a():
@@ -621,3 +761,37 @@ def test_ranks_from_marcxml_double_656():
 
     assert validate(result['ranks'], subschema) is None
     assert expected == result['ranks']
+
+
+def test_status_from_marcxml_980_JOBHIDDEN():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['status']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">JOBHIDDEN</subfield>'
+        '</datafield>'
+    )  # /record/1792705
+
+    expected = 'closed'
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['status'], subschema) is None
+    assert expected == result['status']
+
+
+def test_status_from_marcxml_980_JOB():
+    schema = load_schema('jobs')
+    subschema = schema['properties']['status']
+
+    snippet = (
+        '<datafield tag="980" ind1=" " ind2=" ">'
+        '  <subfield code="a">JOB</subfield>'
+        '</datafield>'
+    )  # /record/1736229
+
+    expected = 'open'
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['status'], subschema) is None
+    assert expected == result['status']
