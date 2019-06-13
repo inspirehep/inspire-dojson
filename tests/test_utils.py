@@ -97,20 +97,10 @@ def test_force_single_element_returns_none_on_empty_list():
     assert force_single_element([]) is None
 
 
-def test_absolute_url_with_empty_server_name():
-    config = {}
-
-    with patch.dict(current_app.config, config, clear=True):
-        expected = 'http://inspirehep.net/foo'
-        result = absolute_url('foo')
-
-        assert expected == result
-
-
 def test_absolute_url_with_undef_server_name():
     config = {'SERVER_NAME': None}
 
-    with patch.dict(current_app.config, config, clear=False):
+    with patch.dict(current_app.config, config):
         expected = 'http://inspirehep.net/foo'
         result = absolute_url('foo')
 
@@ -142,6 +132,16 @@ def test_absolute_url_with_https_server_name():
 
     with patch.dict(current_app.config, config):
         expected = 'https://example.com/foo'
+        result = absolute_url('foo')
+
+        assert expected == result
+
+
+def test_absolute_url_with_https_preferred_scheme():
+    config = {'PREFERRED_URL_SCHEME': 'https'}
+
+    with patch.dict(current_app.config, config):
+        expected = 'https://localhost:5000/foo'
         result = absolute_url('foo')
 
         assert expected == result
@@ -193,9 +193,9 @@ def test_afs_url_handles_unicode():
 
 
 def test_get_record_ref_with_empty_server_name():
-    config = {}
+    config = {'SERVER_NAME': None}
 
-    with patch.dict(current_app.config, config, clear=True):
+    with patch.dict(current_app.config, config):
         expected = 'http://inspirehep.net/api/endpoint/123'
         result = get_record_ref(123, 'endpoint')
 
@@ -237,9 +237,9 @@ def test_get_record_ref_without_recid_returns_none():
 
 
 def test_get_record_ref_without_endpoint_defaults_to_record():
-    config = {}
+    config = {'SERVER_NAME': None}
 
-    with patch.dict(current_app.config, config, clear=True):
+    with patch.dict(current_app.config, config):
         expected = 'http://inspirehep.net/api/record/123'
         result = get_record_ref(123)
 
