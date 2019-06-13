@@ -102,11 +102,10 @@ def absolute_url(relative_url):
     falls back to ``http://inspirehep.net``.
     """
     default_server = 'http://inspirehep.net'
-    server = current_app.config.get('SERVER_NAME')
-    if server is None:
-        server = default_server
+    server = current_app.config['SERVER_NAME'] or default_server
+    scheme = current_app.config['PREFERRED_URL_SCHEME']
     if not re.match('^https?://', server):
-        server = u'http://{}'.format(server)
+        server = u'{scheme}://{server}'.format(scheme=scheme, server=server)
     return urllib.parse.urljoin(server, relative_url)
 
 
