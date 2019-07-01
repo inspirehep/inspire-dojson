@@ -795,3 +795,31 @@ def test_status_from_marcxml_980_JOB():
 
     assert validate(result['status'], subschema) is None
     assert expected == result['status']
+
+
+def test_deleted_and_status_from_marcxml_980_a_c():
+    schema = load_schema('jobs')
+    subschema_status = schema['properties']['status']
+    subschema_deleted = schema['properties']['deleted']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="a">JOB</subfield>'
+        '  </datafield>'
+        '  <datafield tag="980" ind1=" " ind2=" ">'
+        '    <subfield code="c">DELETED</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # /record/1253987
+
+    expected = {
+        'deleted': True,
+        'status': 'open',
+    }
+    result = jobs.do(create_record(snippet))
+
+    assert validate(result['status'], subschema_status) is None
+    assert validate(result['deleted'], subschema_deleted) is None
+    assert expected['status'] == result['status']
+    assert expected['deleted'] == result['deleted']
