@@ -193,7 +193,6 @@ def ranks(self, key, value):
 @jobs.over('arxiv_categories', '^65017')
 @utils.for_each_value
 def arxiv_categories(self, key, value):
-    """Populate the ``ranks`` key."""
     category = value.get('a', '')
 
     if category.lower() == 'physics-other':
@@ -206,8 +205,17 @@ def arxiv_categories(self, key, value):
 
 @jobs.over('status', '^980..')
 def status(self, key, value):
-    status = value['a'].upper()
-    if status == 'JOB':
-        return 'open'
-    elif status == 'JOBHIDDEN':
-        return 'closed'
+    """Populate the ``status`` key. Also populates the ``deleted`` key through
+    side-effects.
+    """
+    collection_to_status = {
+        'JOBHIDDEN': 'closed',
+        'JOB': 'open',
+    }
+
+    status = self.get('status')
+    if value.get('c', '').upper() == 'DELETED':
+        self['deleted'] = True
+
+    status = collection_to_status.get(value.get('a', '').upper(), status)
+    return status

@@ -936,7 +936,6 @@ def new_record2marc(self, key, value):
 
 @conferences.over('deleted', '^980..')
 @data.over('deleted', '^980..')
-@jobs.over('deleted', '^980..')
 def deleted(self, key, value):
     return value.get('c', '').upper() == 'DELETED'
 
