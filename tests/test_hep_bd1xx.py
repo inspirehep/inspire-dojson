@@ -2271,6 +2271,78 @@ def test_authors_from_100__a_t_u_v():
     assert expected == result['100']
 
 
+def test_authors_from_100__a_t_u_v_ROR():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">Plumari, S.</subfield>'
+        '  <subfield code="v">Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy</subfield>'
+        '  <subfield code="u">Catania U.</subfield>'
+        '  <subfield code="t">ROR:https://ror.org/03a64bh57</subfield>'
+        '  <subfield code="v">Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy</subfield>'
+        '  <subfield code="u">INFN, LNS</subfield>'
+        '  <subfield code="t">ROR:https://ror.org/02k1zhm92</subfield>'
+        '</datafield>'
+    )  # synthetic data
+
+    expected = [
+        {
+            'affiliations': [
+                {
+                    'value': 'Catania U.',
+                },
+                {
+                    'value': 'INFN, LNS'
+                }
+            ],
+            'affiliations_identifiers': [
+                {
+                    'schema': 'ROR',
+                    'value': 'https://ror.org/03a64bh57'
+                },
+                {
+                    'schema': 'ROR',
+                    'value': 'https://ror.org/02k1zhm92'
+                },
+            ],
+            'full_name': 'Plumari, S.',
+            'raw_affiliations': [
+                {
+                    'value': u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
+                },
+                {
+                    'value': u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy',
+                }
+            ]
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+    expected = {
+        'a': 'Plumari, S.',
+        't': [
+            'ROR:https://ror.org/03a64bh57',
+            'ROR:https://ror.org/02k1zhm92'
+        ],
+        'u': [
+            'Catania U.',
+            'INFN, LNS',
+        ],
+        'v': [
+            u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
+            u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy'
+        ]
+    }
+    result = hep2marc.do(result)
+
+    assert expected == result['100']
+
+
 def test_authors_from_100__a_t_v_and_700_a_t_v():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
