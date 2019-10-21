@@ -192,6 +192,38 @@ def test_afs_url_handles_unicode():
     assert expected == result
 
 
+def test_afs_url_with_afs_service_enabled_and_encodes_characters():
+    config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested'}
+
+    with patch.dict(current_app.config, config):
+        expected = 'http://jessicajones.com/nested/nested/var/file%20with%20spaces.txt'
+        result = afs_url('/opt/cds-invenio/var/file with spaces.txt')
+
+        assert expected == result
+
+
+def test_afs_url_with_afs_service_enabled_converts_afs_path():
+    config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested'}
+
+    with patch.dict(current_app.config, config):
+
+        expected = 'http://jessicajones.com/nested/nested/var/file.txt'
+        result = afs_url('/opt/cds-invenio/var/file.txt')
+
+        assert expected == result
+
+
+def test_afs_url_with_afs_service_enabled_with_trailing_slash_converts_afs_path():
+    config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested/'}
+
+    with patch.dict(current_app.config, config):
+
+        expected = 'http://jessicajones.com/nested/nested/var/file.txt'
+        result = afs_url('/opt/cds-invenio/var/file.txt')
+
+        assert expected == result
+
+
 def test_get_record_ref_with_empty_server_name():
     config = {'SERVER_NAME': None}
 
