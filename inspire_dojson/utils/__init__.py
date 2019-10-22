@@ -120,12 +120,15 @@ def afs_url(file_path):
     """
     default_afs_path = '/afs/cern.ch/project/inspire/PROD'
     afs_path = current_app.config.get('LEGACY_AFS_PATH', default_afs_path)
+    afs_service = current_app.config.get('LABS_AFS_HTTP_SERVICE')
 
     if file_path is None:
         return
 
     if file_path.startswith('/opt/cds-invenio/'):
         file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
+        if afs_service:
+            return os.path.join(afs_service, urllib.request.pathname2url(file_path.encode('utf-8')))
         file_path = os.path.join(afs_path, file_path)
         return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path.encode('utf-8')))
 
