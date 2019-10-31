@@ -26,7 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 
-from inspire_utils.helpers import force_list, maybe_int
+from inspire_utils.helpers import force_list, maybe_int, maybe_float
 
 from .model import conferences
 from ..utils import force_single_element
@@ -47,6 +47,18 @@ def _trim_date(date):
     elif year and month:
         return '%d-%02d' % (year, month)
     return '%d' % year
+
+
+@conferences.over('_location', '^034..')
+def _location(self, key, value):
+    latitude = maybe_float(value.get('f'))
+    longitude = maybe_float(value.get('d'))
+
+    if latitude and longitude:
+        return {
+            'latitude': latitude,
+            'longitude': longitude,
+        }
 
 
 @conferences.over('acronyms', '^111..')
@@ -72,11 +84,11 @@ def acronyms(self, key, value):
             self['titles'].append(title)
 
     if value.get('c'):
-        self.setdefault('address', [])
+        self.setdefault('addresses', [])
         raw_addresses = force_list(value.get('c'))
         for raw_address in raw_addresses:
             address = parse_conference_address(raw_address)
-            self['address'].append(address)
+            self['addresses'].append(address)
 
     return force_list(value.get('e'))
 
@@ -84,8 +96,8 @@ def acronyms(self, key, value):
 @conferences.over('contact_details', '^270..')
 def contact_details(self, key, value):
     if value.get('b'):
-        self.setdefault('address', [])
-        self['address'].append({'place_name': value.get('b')})
+        self.setdefault('addresses', [])
+        self['addresses'].append({'place_name': value.get('b')})
 
     result = []
 
@@ -161,3 +173,46 @@ def alternative_titles(self, key, value):
         result.append({'title': b_value})
 
     return result
+
+
+@conferences.over('core', '^980..')
+def core(self, key, value):
+    """Populate the ``core`` key.
+
+    Also populates the ``deleted`` key through side
+    effects.
+    """
+    core = self.get('core')
+    deleted = self.get('deleted')
+
+    if not core:
+        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
+        if 'CORE' in normalized_a_values:
+            core = True
+
+    if not deleted:
+        normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
+        if 'DELETED' in normalized_c_values:
+            deleted = True
+
+    self['deleted'] = deleted
+    return core
+
+
+@conferences.over('keywords', '^6531.')
+def keywords(self, key, values):
+    """Populate the ``keywords`` key.
+    """
+    keywords = self.get('keywords', [])
+
+    for value in force_list(values):
+        if value.get('a'):
+            sources = force_list(value.get('9'))
+            a_values = force_list(value.get('a'))
+
+            for a_value in a_values:
+                keywords.append({
+                    'source': force_single_element(sources),
+                    'value': a_value,
+                })
+    return keywords

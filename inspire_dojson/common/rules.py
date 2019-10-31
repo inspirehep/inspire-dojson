@@ -934,7 +934,6 @@ def new_record2marc(self, key, value):
     return {'d': get_recid_from_ref(value)}
 
 
-@conferences.over('deleted', '^980..')
 @data.over('deleted', '^980..')
 def deleted(self, key, value):
     return value.get('c', '').upper() == 'DELETED'
