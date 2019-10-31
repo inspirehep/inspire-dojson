@@ -201,8 +201,6 @@ def core(self, key, value):
 
 @conferences.over('keywords', '^6531.')
 def keywords(self, key, values):
-    """Populate the ``keywords`` key.
-    """
     keywords = self.get('keywords', [])
 
     for value in force_list(values):

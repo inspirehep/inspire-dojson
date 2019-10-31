@@ -46,7 +46,6 @@ from .experiments import experiments
 from .hep import hep, hep2marc
 from .hepnames import hepnames, hepnames2marc
 from .institutions import institutions
-from .jobs import jobs
 from .journals import journals
 
 try:
@@ -91,10 +90,10 @@ def marcxml2record(marcxml):
         return hepnames.do(marcjson)
     elif 'institution' in collections:
         return institutions.do(marcjson)
-    elif 'job' in collections or 'jobhidden' in collections:
-        return jobs.do(marcjson)
     elif 'journals' in collections or 'journalsnew' in collections:
         return journals.do(marcjson)
+    elif 'job' in collections or 'jobhidden' in collections:
+        raise NotImplementedError("Jobs are not supported any more")
     return hep.do(marcjson)
 
 

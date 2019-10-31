@@ -43,7 +43,6 @@ from ..experiments.model import experiments
 from ..hep.model import hep, hep2marc
 from ..hepnames.model import hepnames, hepnames2marc
 from ..institutions.model import institutions
-from ..jobs.model import jobs
 from ..journals.model import journals
 from ..utils import (
     force_single_element,
@@ -601,7 +600,6 @@ experiments.over('control_number', '^001')(control_number('experiments'))
 hep.over('control_number', '^001')(control_number('literature'))
 hepnames.over('control_number', '^001')(control_number('authors'))
 institutions.over('control_number', '^001')(control_number('institutions'))
-jobs.over('control_number', '^001')(control_number('jobs'))
 journals.over('control_number', '^001')(control_number('journals'))
 
 
@@ -617,7 +615,6 @@ def control_number2marc(self, key, value):
 @hep.over('legacy_version', '^005')
 @hepnames.over('legacy_version', '^005')
 @institutions.over('legacy_version', '^005')
-@jobs.over('legacy_version', '^005')
 @journals.over('legacy_version', '^005')
 def legacy_version(self, key, value):
     return value
@@ -712,7 +709,6 @@ def acquisition_source2marc(self, key, value):
 @experiments.over('public_notes', '^500..')
 @hepnames.over('public_notes', '^500..')
 @institutions.over('public_notes', '^500..')
-@jobs.over('public_notes', '^500..')
 @journals.over('public_notes', '^500..')
 @utils.flatten
 @utils.for_each_value
@@ -740,7 +736,6 @@ def public_notes2marc(self, key, value):
 @experiments.over('_private_notes', '^595..')
 @hepnames.over('_private_notes', '^595..')
 @institutions.over('_private_notes', '^595..')
-@jobs.over('_private_notes', '^595..')
 @journals.over('_private_notes', '^595..')
 @utils.flatten
 @utils.for_each_value
@@ -768,7 +763,6 @@ def _private_notes2marc(self, key, value):
 @experiments.over('inspire_categories', '^65017')
 @hep.over('inspire_categories', '^65017')
 @institutions.over('inspire_categories', '^65017')
-@jobs.over('inspire_categories', '^65017')
 @journals.over('inspire_categories', '^65017')
 def inspire_categories(self, key, value):
     schema = load_schema('elements/inspire_field')
@@ -815,7 +809,6 @@ def inspire_categories2marc(self, key, value):
 @experiments.over('_private_notes', '^667..')
 @hep.over('_private_notes', '^667..')
 @institutions.over('_private_notes', '^667..')
-@jobs.over('_private_notes', '^667..')
 @utils.for_each_value
 def _private_notes_667(self, key, value):
     return {
@@ -827,7 +820,6 @@ def _private_notes_667(self, key, value):
 @conferences.over('public_notes', '^680..')
 @experiments.over('public_notes', '^680..')
 @institutions.over('public_notes', '^680..')
-@jobs.over('public_notes', '^680..')
 @journals.over('public_notes', '^680..')
 @utils.for_each_value
 def public_notes_680(self, key, value):
@@ -841,7 +833,6 @@ def public_notes_680(self, key, value):
 @experiments.over('urls', '^8564.')
 @hep.over('urls', '^8564.')
 @institutions.over('urls', '^8564.')
-@jobs.over('urls', '^8564.')
 @journals.over('urls', '^8564.')
 def urls(self, key, value):
     def _is_internal_url(url):
@@ -881,7 +872,6 @@ def urls2marc(self, key, value):
 @hep.over('legacy_creation_date', '^961..')
 @hepnames.over('legacy_creation_date', '^961..')
 @institutions.over('legacy_creation_date', '^961..')
-@jobs.over('legacy_creation_date', '^961..')
 @journals.over('legacy_creation_date', '^961..')
 def legacy_creation_date(self, key, value):
     if 'legacy_creation_date' in self and self['legacy_creation_date']:
@@ -924,7 +914,6 @@ conferences.over('external_system_identifiers', '^970..')(external_system_identi
 experiments.over('external_system_identifiers', '^970..')(external_system_identifiers('experiments'))
 hep.over('external_system_identifiers', '^970..')(external_system_identifiers('literature'))
 institutions.over('external_system_identifiers', '^970..')(external_system_identifiers('institutions'))
-jobs.over('external_system_identifiers', '^970..')(external_system_identifiers('jobs'))
 journals.over('external_system_identifiers', '^970..')(external_system_identifiers('journals'))
 
 
@@ -956,7 +945,6 @@ experiments.over('deleted_records', '^981..')(deleted_records('experiments'))
 hep.over('deleted_records', '^981..')(deleted_records('literature'))
 hepnames.over('deleted_records', '^981..')(deleted_records('authors'))
 institutions.over('deleted_records', '^981..')(deleted_records('institutions'))
-jobs.over('deleted_records', '^981..')(deleted_records('jobs'))
 journals.over('deleted_records', '^981..')(deleted_records('journals'))
 
 
