@@ -92,30 +92,26 @@ def test_marcxml2record_handles_institutions():
     assert expected == result['$schema']
 
 
-def test_marcxml2record_handles_jobs():
+def test_marcxml2record_raises_on_jobs():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">JOB</subfield>'
         '</datafield>'
     )
 
-    expected = 'jobs.json'
-    result = marcxml2record(snippet)
-
-    assert expected == result['$schema']
+    with pytest.raises(NotImplementedError):
+        marcxml2record(snippet)
 
 
-def test_marcxml2record_handles_jobhidden():
+def test_marcxml2record_raises_on_jobhidden():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">JOBHIDDEN</subfield>'
         '</datafield>'
     )
 
-    expected = 'jobs.json'
-    result = marcxml2record(snippet)
-
-    assert expected == result['$schema']
+    with pytest.raises(NotImplementedError):
+        marcxml2record(snippet)
 
 
 def test_marcxml2record_handles_journals():
