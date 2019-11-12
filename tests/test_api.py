@@ -25,6 +25,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 from inspire_dojson.api import marcxml2record, record2marcxml, cds_marcxml2record
+from inspire_dojson.errors import NotSupportedError
 
 
 def test_marcxml2record_handles_conferences():
@@ -99,7 +100,7 @@ def test_marcxml2record_raises_on_jobs():
         '</datafield>'
     )
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(NotSupportedError):
         marcxml2record(snippet)
 
 
@@ -110,7 +111,7 @@ def test_marcxml2record_raises_on_jobhidden():
         '</datafield>'
     )
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(NotSupportedError):
         marcxml2record(snippet)
 
 

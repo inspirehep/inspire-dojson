@@ -206,7 +206,7 @@ def normalize_date_aggressively(date):
         return None
     try:
         return normalize_date(date)
-    except ValueError:
+    except (IndexError, TypeError, ValueError):
         if '-' not in date:
             raise
         else:
