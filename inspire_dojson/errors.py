@@ -40,3 +40,7 @@ class DoJsonError(Exception):
         return u'{message}\n\n{exc}\n\nSubfields: {subfields}'.format(
             message=message, exc=exc, subfields=subfields
         )
+
+
+class NotSupportedError(NotImplementedError):
+    pass

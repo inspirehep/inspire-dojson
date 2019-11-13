@@ -42,6 +42,7 @@ from inspire_utils.record import get_value
 from .cds import cds2hep_marc
 from .conferences import conferences
 from .data import data
+from .errors import NotSupportedError
 from .experiments import experiments
 from .hep import hep, hep2marc
 from .hepnames import hepnames, hepnames2marc
@@ -93,7 +94,7 @@ def marcxml2record(marcxml):
     elif 'journals' in collections or 'journalsnew' in collections:
         return journals.do(marcjson)
     elif 'job' in collections or 'jobhidden' in collections:
-        raise NotImplementedError("Jobs are not supported any more")
+        raise NotSupportedError("Jobs are not supported any more")
     return hep.do(marcjson)
 
 
@@ -117,7 +118,7 @@ def record2marcxml(record):
     elif schema_name == 'authors':
         marcjson = hepnames2marc.do(record)
     else:
-        raise NotImplementedError(u'JSON -> MARC rules missing for "{}"'.format(schema_name))
+        raise NotSupportedError(u'JSON -> MARC rules missing for "{}"'.format(schema_name))
 
     record = RECORD()
 
