@@ -1569,6 +1569,173 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
     assert expected == result['999C5']
 
 
+def test_references_from_999C5h_m_o_s_x_y_z_additional_pubnotes():
+    schema = load_schema('hep')
+    subschema = schema['properties']['references']
+
+    snippet = (
+        '<datafield tag="999" ind1="C" ind2="5">'
+        '  <subfield code="0">109011</subfield>'
+        '  <subfield code="h">Petcov, S.T.</subfield>'
+        '  <subfield code="m">Additional pubnote: Yad.Fiz.,25,641 / Additional pubnote: Sov.J.Nucl.Phys.,25,698 / Additional pubnote: Yad.Fiz.,25,1336 / Erratum: / Erratum:</subfield>'
+        '  <subfield code="o">1</subfield>'
+        '  <subfield code="s">Sov.J.Nucl.Phys.,25,340</subfield>'
+        '  <subfield code="x">[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 (1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: [Yad. Fiz. 25 (1977) 1336].</subfield>'
+        '  <subfield code="y">1977</subfield>'
+        '  <subfield code="z">0</subfield>'
+        '  <subfield code="z">1</subfield>'
+        '</datafield>'
+    )  # record/1780095
+
+    expected = [
+        {
+            'curated_relation': False,
+            'record': {
+                '$ref': 'http://localhost:5000/api/literature/109011',
+            },
+            'raw_refs': [
+                {
+                    'schema': 'text',
+                    'value': '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 (1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: [Yad. Fiz. 25 (1977) 1336].',
+                },
+            ],
+            'reference': {
+                'authors': [
+                    {'full_name': 'Petcov, S.T.'}
+                ],
+                'label': '1',
+                'misc': [
+                    'Erratum: / Erratum:',
+                ],
+                'publication_info': {
+                    'journal_title': 'Sov.J.Nucl.Phys.',
+                    'journal_volume': '25',
+                    'page_start': '340',
+                    'artid': '340',
+                    'year': 1977,
+                },
+            },
+        },
+        {
+            'raw_refs': [
+                {
+                    'schema': 'text',
+                    'value': '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 (1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: [Yad. Fiz. 25 (1977) 1336].',
+                },
+            ],
+            'reference': {
+                'publication_info': {
+                    'journal_title': 'Yad.Fiz.',
+                    'journal_volume': '25',
+                    'page_start': '641',
+                    'artid': '641',
+                },
+                'label': '1',
+                'misc': [
+                    'Additional pubnote split from previous reference'
+                ],
+            },
+        },
+        {
+            'raw_refs': [
+                {
+                    'schema': 'text',
+                    'value': '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 (1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: [Yad. Fiz. 25 (1977) 1336].',
+                },
+            ],
+            'reference': {
+                'publication_info': {
+                    'journal_title': 'Sov.J.Nucl.Phys.',
+                    'journal_volume': '25',
+                    'page_start': '698',
+                    'artid': '698',
+                },
+                'label': '1',
+                'misc': [
+                    'Additional pubnote split from previous reference'
+                ],
+            },
+        },
+        {
+            'raw_refs': [
+                {
+                    'schema': 'text',
+                    'value': '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 (1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: [Yad. Fiz. 25 (1977) 1336].',
+                },
+            ],
+            'reference': {
+                'publication_info': {
+                    'journal_title': 'Yad.Fiz.',
+                    'journal_volume': '25',
+                    'page_start': '1336',
+                    'artid': '1336',
+                },
+                'label': '1',
+                'misc': [
+                    'Additional pubnote split from previous reference'
+                ],
+            },
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['references'], subschema) is None
+    assert expected == result['references']
+
+    expected = [
+        {
+            '0': 109011,
+            'h': ['Petcov, S.T.'],
+            'm': 'Erratum: / Erratum:',
+            'o': '1',
+            's': 'Sov.J.Nucl.Phys.,25,340',
+            'x': [
+                '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 '
+                '(1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: '
+                '[Yad. Fiz. 25 (1977) 1336].',
+            ],
+            'y': 1977,
+            'z': 0,
+        },
+        {
+            'm': 'Additional pubnote split from previous reference',
+            'o': '1',
+            's': 'Yad.Fiz.,25,641',
+            'x': [
+                '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 '
+                '(1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: '
+                '[Yad. Fiz. 25 (1977) 1336].',
+            ],
+            'z': 0,
+        },
+        {
+            'm': 'Additional pubnote split from previous reference',
+            'o': '1',
+            's': 'Sov.J.Nucl.Phys.,25,698',
+            'x': [
+                '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 '
+                '(1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: '
+                '[Yad. Fiz. 25 (1977) 1336].',
+            ],
+            'z': 0,
+        },
+        {
+            'm': 'Additional pubnote split from previous reference',
+            'o': '1',
+            's': 'Yad.Fiz.,25,1336',
+            'x': [
+                '[1] S. T. Petcov, Sov. J. Nucl. Phys. 25 (1977) 340 [Yad. Fiz. 25 '
+                '(1977) 641] Erratum: [Sov. J. Nucl. Phys. 25 (1977) 698] Erratum: '
+                '[Yad. Fiz. 25 (1977) 1336].',
+            ],
+            'z': 0,
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['999C5']
+
+
 def test_references_from_999C5_0_h_m_o_r_t_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']

@@ -252,7 +252,6 @@ def publication_type2marc(self, key, value):
 
 
 @hep.over('references', '^999C5')
-@utils.for_each_value
 def references(self, key, value):
     """Populate the ``references`` key."""
     def _has_curator_flag(value):
@@ -267,6 +266,7 @@ def references(self, key, value):
         record = get_record_ref(recid, 'literature')
         rb.set_record(record)
 
+    references = self.get('references', [])
     rb = ReferenceBuilder()
     mapping = [
         ('0', _set_record),
@@ -303,7 +303,10 @@ def references(self, key, value):
     if _has_curator_flag(value):
         rb.obj['legacy_curated'] = True
 
-    return rb.obj
+    references.append(rb.obj)
+    references.extend(rb.pop_additional_pubnotes())
+
+    return references
 
 
 @hep2marc.over('999C5', '^references$')
