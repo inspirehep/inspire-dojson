@@ -74,7 +74,7 @@ def _authors(key, value):
         return [el[6:] if el.startswith('email:') else el for el in force_list(value.get('m'))]
 
     def _get_full_names(value):
-        return force_list(value.get('a'))
+        return [full_name.strip(', ') for full_name in force_list(value.get('a'))]
 
     def _get_ids(value):
         def _is_jacow(j_value):

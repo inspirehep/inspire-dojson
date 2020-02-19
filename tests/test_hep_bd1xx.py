@@ -1704,6 +1704,48 @@ def test_authors_from_700__a_double_e_handles_multiple_roles():
     assert expected == result['authors']
 
 
+def test_authors_from_700__a_removes_trailing_comma():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="700" ind1=" " ind2=" ">'
+        '  <subfield code="a">Lenske,</subfield>'
+        '</datafield>'
+    )  # record/1683590
+
+    expected = [
+        {
+            'full_name': 'Lenske',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+
+def test_authors_from_100__a_removes_starting_comma_and_space():
+    schema = load_schema('hep')
+    subschema = schema['properties']['authors']
+
+    snippet = (
+        '<datafield tag="100" ind1=" " ind2=" ">'
+        '  <subfield code="a">, M.A.Valuyan</subfield>'
+        '</datafield>'
+    )  # record/1697210
+
+    expected = [
+        {
+            'full_name': 'M.A.Valuyan',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['authors'], subschema) is None
+    assert expected == result['authors']
+
+
 def test_authors_from_700__a_w_x_y_repeated_author():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
