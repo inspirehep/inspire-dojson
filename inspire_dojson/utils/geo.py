@@ -335,6 +335,7 @@ countries_alternative_spellings = {
     'US': ['UNITED STATES OF AMERICA', 'UNITED STATES', 'US', 'USA'],
     'ZA': ['SAFRICA']
 }
+countries_from_alternative_spellings = {spelling: code for (code, spellings) in countries_alternative_spellings.items() for spelling in spellings}
 
 
 us_state_to_iso_code = {
@@ -444,6 +445,7 @@ us_states_alternative_spellings = {
     'WI': ['WI', 'WIS', 'WISC'],
     'WY': ['WY'],
 }
+us_states_from_alternative_spellings = {spelling: state for (state, spellings) in us_states_alternative_spellings.items() for spelling in spellings}
 
 south_korean_cities = ['SEOUL', 'DAEJON', 'DAEJEON', 'MT SORAK', 'POHANG',
                        'JEJU ISLAND', 'CHEJU ISLAND', 'GYEONGJU', 'BUSAN',
@@ -471,35 +473,30 @@ def match_country_name_to_its_code(country_name, city=''):
 
     Name of the city helps when country_name is "Korea".
     """
-    if country_name:
-        country_name = country_name.upper().replace('.', '').strip()
+    if not country_name:
+        return None
 
-        if country_to_iso_code.get(country_name):
-            return country_to_iso_code.get(country_name)
-        elif country_name == 'KOREA':
-            if city.upper() in south_korean_cities:
-                return 'KR'
-        else:
-            for c_code, spellings in countries_alternative_spellings.items():
-                for spelling in spellings:
-                    if country_name == spelling:
-                        return c_code
+    country_name = country_name.upper().replace('.', '').strip()
 
-    return None
+    iso_code = country_to_iso_code.get(country_name)
+    if not iso_code:
+        if country_name == 'KOREA' and city.upper() in south_korean_cities:
+            return 'KR'
+        return countries_from_alternative_spellings.get(country_name)
+    return iso_code
 
 
 def match_us_state(state_string):
     """Try to match a string with one of the states in the US."""
-    if state_string:
-        state_string = state_string.upper().replace('.', '').strip()
-        if us_state_to_iso_code.get(state_string):
-            return us_state_to_iso_code.get(state_string)
-        else:
-            for code, state_spellings in us_states_alternative_spellings.items():
-                for spelling in state_spellings:
-                    if state_string == spelling:
-                        return code
-    return None
+    if not state_string:
+        return None
+
+    state_string = state_string.upper().replace('.', '').strip()
+
+    iso_code = us_state_to_iso_code.get(state_string)
+    if not iso_code:
+        return us_states_from_alternative_spellings.get(state_string)
+    return iso_code
 
 
 def parse_conference_address(address_string):
@@ -510,35 +507,37 @@ def parse_conference_address(address_string):
     like Google Geocoding.
     """
 
-    geo_elements = address_string.split(',')
-    city = geo_elements[0]
-    country_name = geo_elements[-1].upper().replace('.', '').strip()
-    us_state = None
-    state = None
-    country_code = None
+    if not address_string:
+        return {}
 
-    # Try to match the country
+    geo_elements = [element.strip() for element in address_string.split(',')]
+    city = geo_elements[0] if len(geo_elements) > 1 else ''
+    place_name = geo_elements[1:-2]
+    country_name = geo_elements[-1]
     country_code = match_country_name_to_its_code(country_name, city)
-
-    if country_code == 'US' and len(geo_elements) > 1:
-        us_state = match_us_state(geo_elements[-2].upper().strip()
-                                  .replace('.', ''))
+    state = None
 
     if not country_code:
-        # Sometimes the country name stores info about U.S. state
+        # Sometimes the last element is the US state, not country
         us_state = match_us_state(country_name)
+        if us_state:
+            country_code = 'US'
+            state = us_state
+        else:
+            place_name.append(country_name)
 
-    if us_state:
-        state = us_state
-        country_code = 'US'
+    if len(geo_elements) >= 3:
+        state = geo_elements[-2]
+        if country_code == 'US':
+            state = match_us_state(state)
 
     return {
         'cities': [
             city,
         ],
         'country_code': country_code,
-        'postal_code': None,
         'state': state,
+        'place_name': u','.join(place_name),
     }
 
 
