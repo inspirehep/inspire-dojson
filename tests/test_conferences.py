@@ -222,14 +222,72 @@ def test_addresses_from_111__a_double_c_d_e_g_x_y():
 
     expected = [
         {
-            'cities': [
-                'QCD 12',
-            ],
+            'place_name': 'QCD 12',
         },  # XXX: Wrong, but the best we can do.
         {
             'cities': [
                 'Montpellier',
             ],
+            'country_code': 'FR',
+        },
+    ]
+    result = conferences.do(create_record(snippet))
+
+    assert validate(result['addresses'], subschema) is None
+    assert expected == result['addresses']
+
+
+def test_addresses_from_111__a_c_d_e_g_x_y_three_address_parts():
+    schema = load_schema('conferences')
+    subschema = schema['properties']['addresses']
+
+    snippet = (
+        '<datafield tag="111" ind1=" " ind2=" ">'
+        '   <subfield code="a">10th Int. Conf. DICE2020: Spacetime - Matter - Quantum Mechanics</subfield>'
+        '   <subfield code="e">DICE2020</subfield>'
+        '   <subfield code="x">2020-09-14</subfield>'
+        '   <subfield code="y">2020-09-18</subfield>'
+        '   <subfield code="c">Castiglioncello , Tuscany, Italy</subfield>'
+        '   <subfield code="g">C20-09-14.1</subfield>'
+        '</datafield>'
+    )  # record/1781388
+
+    expected = [
+        {
+            'cities': [
+                'Castiglioncello',
+            ],
+            'state': 'Tuscany',
+            'country_code': 'IT',
+        },
+    ]
+    result = conferences.do(create_record(snippet))
+
+    assert validate(result['addresses'], subschema) is None
+    assert expected == result['addresses']
+
+
+def test_addresses_from_111__a_c_d_e_g_x_y_many_address_parts():
+    schema = load_schema('conferences')
+    subschema = schema['properties']['addresses']
+
+    snippet = (
+        '<datafield tag="111" ind1=" " ind2=" ">'
+        '  <subfield code="a">Higher structures in Holomorphic and Topological Field Theory</subfield>'
+        '  <subfield code="x">2019-01-14</subfield>'
+        '  <subfield code="y">2019-01-18</subfield>'
+        '  <subfield code="c">IHES, Bures-sur-Yvette, Paris area, France</subfield>'
+        '  <subfield code="g">C19-01-14.1</subfield>'
+        '</datafield>'
+    )  # record/1699363
+
+    expected = [
+        {
+            'cities': [
+                'IHES',
+            ],  # XXX: Wrong, but better than dropping data
+            'place_name': 'Bures-sur-Yvette',
+            'state': 'Paris area',
             'country_code': 'FR',
         },
     ]

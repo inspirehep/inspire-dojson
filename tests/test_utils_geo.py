@@ -73,7 +73,7 @@ def test_parse_conference_address_recognizes_state_and_country_of_us_city():
             'Waltham',
         ],
         'country_code': 'US',
-        'postal_code': None,
+        'place_name': '',
         'state': 'MA',
     }
     result = parse_conference_address('Waltham, Mass.')
@@ -87,7 +87,7 @@ def test_parse_conference_address_recognizes_country_of_non_us_city():
             'Dubna',
         ],
         'country_code': 'SU',
-        'postal_code': None,
+        'place_name': '',
         'state': None,
     }
     result = parse_conference_address('Dubna, USSR')
@@ -96,14 +96,7 @@ def test_parse_conference_address_recognizes_country_of_non_us_city():
 
 
 def test_parse_conference_address_handles_empty_string():
-    expected = {
-        'cities': [
-            '',
-        ],
-        'country_code': None,
-        'postal_code': None,
-        'state': None,
-    }
+    expected = {}
     result = parse_conference_address('')
 
     assert expected == result
