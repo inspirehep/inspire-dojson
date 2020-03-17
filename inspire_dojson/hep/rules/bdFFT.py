@@ -43,7 +43,7 @@ def documents(self, key, value):
     Also populates the ``figures`` key through side effects.
     """
     def _is_hidden(value):
-        return 'HIDDEN' in [val.upper() for val in value] or None
+        return 'HIDDEN' in [val.upper() for val in force_list(value.get('o'))] or _get_source(value) == 'arxiv' or None
 
     def _is_figure(value):
         figures_extensions = ['.png']
@@ -95,7 +95,7 @@ def documents(self, key, value):
             'description': value.get('d') if not _is_fulltext(value) else None,
             'key': _get_key(value),
             'fulltext': _is_fulltext(value),
-            'hidden': _is_hidden(force_list(value.get('o'))),
+            'hidden': _is_hidden(value),
             'url': afs_url(value.get('a')),
             'source': _get_source(value),
         }
