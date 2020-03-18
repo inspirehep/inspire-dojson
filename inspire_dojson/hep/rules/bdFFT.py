@@ -46,8 +46,7 @@ def documents(self, key, value):
         return 'HIDDEN' in [val.upper() for val in force_list(value.get('o'))] or _get_source(value) == 'arxiv' or None
 
     def _is_figure(value):
-        figures_extensions = ['.png']
-        return value.get('f') in figures_extensions
+        return value.get('f', "").endswith(".png")
 
     def _is_fulltext(value):
         return value.get('d', '').lower() == 'fulltext' or None
