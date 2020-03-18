@@ -516,6 +516,39 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
     assert expected_documents == result['documents']
 
 
+def test_figures_from_FFT_with_composite_file_extension():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
+    snippet = (
+        '<datafield tag="FFT" ind1=" " ind2=" ">'
+        '  <subfield code="a">/opt/cds-invenio/var/data/files/g22/457549/266.stripe82.jpg.png;1</subfield>'
+        '  <subfield code="d">00011 Examples of relaxed early-types (top three rows) and galaxies classified as late-type (bottom three rows). We show both the multi-colour standard-depth image (left-hand column) and itsdeeper Stripe82 counterpart (right-hand column).</subfield>'
+        '  <subfield code="f">.jpg.png</subfield>'
+        '  <subfield code="n">266.stripe82</subfield>'
+        '  <subfield code="r"></subfield>'
+        '  <subfield code="s">2010-10-09 23:23:31</subfield>'
+        '  <subfield code="t">Plot</subfield>'
+        '  <subfield code="v">1</subfield>'
+        '  <subfield code="z"></subfield>'
+        '</datafield>'
+    )  # record/852500
+
+    expected = [
+        {
+            'caption': 'Examples of relaxed early-types (top three rows) and galaxies classified as late-type (bottom three rows). We show both the multi-colour standard-depth image (left-hand column) and itsdeeper Stripe82 counterpart (right-hand column).',
+            'key': '266.stripe82.jpg.png',
+            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g22/457549/266.stripe82.jpg.png%3B1',
+            'source': 'arxiv',
+        },
+    ]
+
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['figures'], subschema) is None
+    assert expected == result['figures']
+
+
 def test_figures2marc_handles_unicode():
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
