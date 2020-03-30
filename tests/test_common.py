@@ -619,6 +619,19 @@ def test_urls_from_8564_ignores_internal_links():
     assert 'urls' not in result
 
 
+def test_urls_from_8564_ignores_internal_links_with_subdomain():
+    snippet = (
+        '<datafield tag="856" ind1="4" ind2=" ">'
+        '  <subfield code="s">1506142</subfield>'
+        '  <subfield code="u">http://old.inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
+        '</datafield>'
+    )  # record/1610503
+
+    result = hep.do(create_record(snippet))
+
+    assert 'urls' not in result
+
+
 def test_urls_from_8564_ignores_internal_links_https():
     snippet = (
         '<datafield tag="856" ind1="4" ind2=" ">'

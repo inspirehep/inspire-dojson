@@ -838,10 +838,11 @@ def urls(self, key, value):
     def _is_internal_url(url):
         base = urllib.parse.urlparse(current_app.config['LEGACY_BASE_URL'])
         base_netloc = base.netloc or base.path
+        base_domain = '.'.join(base_netloc.split('.')[-2:])
         parsed_url = urllib.parse.urlparse(url)
         url_netloc = parsed_url.netloc or parsed_url.path
 
-        return base_netloc == url_netloc
+        return base_domain in url_netloc
 
     urls = self.get('urls', [])
 
