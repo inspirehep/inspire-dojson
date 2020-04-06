@@ -24,6 +24,9 @@ from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
 
+from flask import current_app
+from mock import patch
+
 from inspire_dojson.hep import hep, hep2marc
 from inspire_schemas.api import load_schema, validate
 
@@ -350,6 +353,44 @@ def test_documents_to_FFT():
     assert expected == result['FFT']
 
 
+def test_documents_to_FFT_converts_afs_urls_to_path():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = {
+        'documents': [
+            {
+                'key': 'some_document.pdf',
+                'description': 'Thesis fulltext',
+                'hidden': True,
+                'fulltext': True,
+                'url': 'http://legacy-afs-web/var/files/some_document.pdf%3B1',
+                'original_url': 'http://example.com/some_document.pdf',
+            }
+        ]
+    }  # synthetic data
+
+    expected = [
+        {
+            'a': 'file:///afs/cern.ch/project/inspire/PROD/var/files/some_document.pdf%3B1',
+            'd': 'Thesis fulltext',
+            't': 'INSPIRE-PUBLIC',
+            'o': 'HIDDEN',
+            'n': 'some_document',
+        }
+    ]
+
+    assert validate(snippet['documents'], subschema) is None
+
+    config = {
+        'LABS_AFS_HTTP_SERVICE': 'http://legacy-afs-web'
+    }
+    with patch.dict(current_app.config, config):
+        result = hep2marc.do(snippet)
+
+    assert expected == result['FFT']
+
+
 def test_documents_to_FFT_special_cases_arxiv_properly():
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
@@ -412,6 +453,41 @@ def test_figures_to_FFT():
     assert validate(snippet['figures'], subschema) is None
 
     result = hep2marc.do(snippet)
+
+    assert expected == result['FFT']
+
+
+def test_figures_to_FFT_converts_afs_urls_to_paths():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
+    snippet = {
+        'figures': [
+            {
+                'key': 'some_figure.png',
+                'caption': 'This figure illustrates something',
+                'url': 'http://legacy-afs-web/var/files/some_figure.png%3B1',
+                'original_url': 'http://example.com/some_figure.png%3B1',
+            }
+        ]
+    }  # synthetic data
+
+    expected = [
+        {
+            'a': 'file:///afs/cern.ch/project/inspire/PROD/var/files/some_figure.png%3B1',
+            'd': '00000 This figure illustrates something',
+            't': 'Plot',
+            'n': 'some_figure',
+        }
+    ]
+
+    assert validate(snippet['figures'], subschema) is None
+
+    config = {
+        'LABS_AFS_HTTP_SERVICE': 'http://legacy-afs-web'
+    }
+    with patch.dict(current_app.config, config):
+        result = hep2marc.do(snippet)
 
     assert expected == result['FFT']
 
