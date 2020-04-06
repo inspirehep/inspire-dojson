@@ -32,7 +32,7 @@ from dojson import utils
 from inspire_utils.helpers import force_list
 
 from ..model import hep, hep2marc
-from ...utils import absolute_url, afs_url
+from ...utils import absolute_url, afs_url, afs_url_to_path
 
 
 @hep.over('documents', '^FFT[^%][^%]')
@@ -128,7 +128,7 @@ def documents2marc(self, key, value):
 
     return {
         'd': _get_description(value),
-        'a': absolute_url(value.get('url')),
+        'a': afs_url_to_path(absolute_url(value.get('url'))),
         't': _get_type(value),
         'o': _get_hidden(value),
         'n': _get_key(value),
@@ -142,7 +142,7 @@ def figures2marc(self, key, values):
         file_name, _ = os.path.splitext(value['key'])
         fft.append({
             'd': u'{:05d} {}'.format(index, value.get('caption')),
-            'a': absolute_url(value.get('url')),
+            'a': afs_url_to_path(absolute_url(value.get('url'))),
             't': 'Plot',
             'n': file_name,
         })

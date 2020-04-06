@@ -30,6 +30,7 @@ from mock import patch
 from inspire_dojson.utils import (
     absolute_url,
     afs_url,
+    afs_url_to_path,
     normalize_rank,
     force_single_element,
     get_recid_from_ref,
@@ -222,6 +223,45 @@ def test_afs_url_with_afs_service_enabled_with_trailing_slash_converts_afs_path(
         result = afs_url('/opt/cds-invenio/var/file.txt')
 
         assert expected == result
+
+
+def test_afs_url_to_path_handles_none():
+    expected = None
+    result = afs_url_to_path(None)
+
+    assert expected == result
+
+
+def test_afs_url_returns_non_afs_urls_unchanged():
+    expected = "http://example.com"
+    result = afs_url_to_path("http://example.com")
+
+    assert expected == result
+
+
+def test_afs_url_converts_afs_url_to_path():
+    config = {
+        'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested',
+    }
+
+    expected = "file:///afs/cern.ch/project/inspire/PROD/var/file.txt"
+    with patch.dict(current_app.config, config):
+        result = afs_url_to_path("http://jessicajones.com/nested/nested/var/file.txt")
+
+    assert expected == result
+
+
+def test_afs_url_handles_custom_afs_path():
+    config = {
+        'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested',
+        'LEGACY_AFS_PATH': '/foo/bar'
+    }
+
+    expected = "file:///foo/bar/var/file.txt"
+    with patch.dict(current_app.config, config):
+        result = afs_url_to_path("http://jessicajones.com/nested/nested/var/file.txt")
+
+    assert expected == result
 
 
 def test_get_record_ref_with_empty_server_name():

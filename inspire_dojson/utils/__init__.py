@@ -38,6 +38,8 @@ from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
 
+DEFAULT_AFS_PATH = '/afs/cern.ch/project/inspire/PROD'
+
 
 def normalize_isbn(isbn):
     """Normalize an ISBN in order to be schema-compliant."""
@@ -118,12 +120,11 @@ def afs_url(file_path):
     The base AFS path is taken from the Flask app config if present, otherwise
     it falls back to ``/afs/cern.ch/project/inspire/PROD``.
     """
-    default_afs_path = '/afs/cern.ch/project/inspire/PROD'
-    afs_path = current_app.config.get('LEGACY_AFS_PATH', default_afs_path)
+    afs_path = current_app.config.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
     afs_service = current_app.config.get('LABS_AFS_HTTP_SERVICE')
 
     if file_path is None:
-        return
+        return None
 
     if file_path.startswith('/opt/cds-invenio/'):
         file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
@@ -133,6 +134,28 @@ def afs_url(file_path):
         return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path.encode('utf-8')))
 
     return file_path
+
+
+def afs_url_to_path(url):
+    """Convert a AFS URL to its corresponding path on AFS.
+
+    If ``url`` doesn't start with the AFS HTTP service and hence is not on
+    AFS, it returns it unchanged.
+
+    The base AFS path is taken from the Flask app config if present, otherwise
+    it falls back to ``/afs/cern.ch/project/inspire/PROD``.
+    """
+    afs_path = current_app.config.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
+    afs_service = current_app.config.get('LABS_AFS_HTTP_SERVICE')
+
+    if url is None:
+        return None
+
+    if not afs_service or not url.startswith(afs_service):
+        return url
+
+    path = url[len(afs_service):].lstrip('/')
+    return urllib.parse.urljoin('file://', os.path.join(afs_path, path))
 
 
 def get_record_ref(recid, endpoint='record'):
