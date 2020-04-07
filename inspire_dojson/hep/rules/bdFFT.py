@@ -122,16 +122,18 @@ def documents2marc(self, key, value):
             return 'HIDDEN'
         return None
 
-    def _get_key(value):
-        file_name, _ = os.path.splitext(value['key'])
-        return file_name
+    def _get_filename_and_extension(value):
+        return os.path.splitext(value.get('filename', value['key']))
+
+    file_name, extension = _get_filename_and_extension(value)
 
     return {
         'd': _get_description(value),
         'a': afs_url_to_path(absolute_url(value.get('url'))),
         't': _get_type(value),
         'o': _get_hidden(value),
-        'n': _get_key(value),
+        'n': file_name,
+        'f': extension,
     }
 
 
@@ -139,12 +141,13 @@ def documents2marc(self, key, value):
 def figures2marc(self, key, values):
     fft = self.setdefault('FFT', [])
     for index, value in enumerate(values):
-        file_name, _ = os.path.splitext(value['key'])
+        file_name, extension = os.path.splitext(value.get('filename', value['key']))
         fft.append({
             'd': u'{:05d} {}'.format(index, value.get('caption')),
             'a': afs_url_to_path(absolute_url(value.get('url'))),
             't': 'Plot',
             'n': file_name,
+            'f': extension,
         })
 
     return fft

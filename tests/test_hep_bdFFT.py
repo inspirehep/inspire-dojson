@@ -340,6 +340,7 @@ def test_documents_to_FFT():
         {
             'a': 'http://localhost:5000/files/1234-1234-1234-1234/some_document.pdf',
             'd': 'Thesis fulltext',
+            'f': '.pdf',
             't': 'INSPIRE-PUBLIC',
             'o': 'HIDDEN',
             'n': 'some_document',
@@ -375,6 +376,7 @@ def test_documents_to_FFT_converts_afs_urls_to_path():
             'a': 'file:///afs/cern.ch/project/inspire/PROD/var/files/some_document.pdf%3B1',
             'd': 'Thesis fulltext',
             't': 'INSPIRE-PUBLIC',
+            'f': '.pdf',
             'o': 'HIDDEN',
             'n': 'some_document',
         }
@@ -414,7 +416,42 @@ def test_documents_to_FFT_special_cases_arxiv_properly():
             'a': 'http://localhost:5000/api/files/d82dc015-83ea-4d83-820b-adb7ce1e42d0/1712.04934.pdf',
             'd': 'Fulltext',
             't': 'arXiv',
+            'f': '.pdf',
             'n': '1712.04934',
+        }
+    ]
+
+    assert validate(snippet['documents'], subschema) is None
+
+    result = hep2marc.do(snippet)
+
+    assert expected == result['FFT']
+
+
+def test_documents_to_FFT_uses_filename():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = {
+        'documents': [
+            {
+                "description": "Article from SCOAP3",
+                "filename": "scoap3-fulltext.pdf",
+                "key": "136472d8763496230daa8b6b72fb219a",
+                "original_url": "http://legacy-afs-web/var/data/files/g206/4135590/content.pdf%3B1",
+                "source": "SCOAP3",
+                "url": "https://s3.cern.ch/inspire-prod-files-1/136472d8763496230daa8b6b72fb219a"
+            }
+        ]
+    }  # literature/1789709
+
+    expected = [
+        {
+            'a': 'https://s3.cern.ch/inspire-prod-files-1/136472d8763496230daa8b6b72fb219a',
+            'd': 'Article from SCOAP3',
+            't': 'SCOAP3',
+            'n': 'scoap3-fulltext',
+            'f': '.pdf'
         }
     ]
 
@@ -447,6 +484,7 @@ def test_figures_to_FFT():
             'd': '00000 This figure illustrates something',
             't': 'Plot',
             'n': 'some_figure',
+            'f': '.png',
         }
     ]
 
@@ -478,6 +516,7 @@ def test_figures_to_FFT_converts_afs_urls_to_paths():
             'd': '00000 This figure illustrates something',
             't': 'Plot',
             'n': 'some_figure',
+            'f': '.png'
         }
     ]
 
@@ -488,6 +527,39 @@ def test_figures_to_FFT_converts_afs_urls_to_paths():
     }
     with patch.dict(current_app.config, config):
         result = hep2marc.do(snippet)
+
+    assert expected == result['FFT']
+
+
+def test_figures_to_FFT_uses_filename():
+    schema = load_schema('hep')
+    subschema = schema['properties']['figures']
+
+    snippet = {
+        'figures': [
+            {
+                "caption": "(Color online) (a) Comparison between the function $f_\\Gamma(Q\\xi)$ (\\ref{eq:fgamma}) and the Kawasaki function defined in footnote \\ref{footnote:kawasaki}. Large-$Q$ modes relax faster with $f_\\Gamma$ than with $K$. (b) Illustration of the contribution $\\Delta s_Q$ to the entropy density by a single slow mode with wave number $Q$ ($x{\\,\\equiv\\,}\\phi_Q/\\bar\\phi_Q$). $\\Delta s_Q$ is negative whether $\\phi_Q$ is below or above its equilibrium value ({\\it cf.} Eq.~(\\ref{eq:deltas}) below).",
+                "filename": "plot_functions.png",
+                "key": "b43cbd4ccd7cceb3a30d2b80894101d1",
+                "source": "arxiv",
+                "url": "https://s3.cern.ch/inspire-prod-files-b/b43cbd4ccd7cceb3a30d2b80894101d1",
+            }
+        ]
+    }  # literature/1789762
+
+    expected = [
+        {
+            'a': 'https://s3.cern.ch/inspire-prod-files-b/b43cbd4ccd7cceb3a30d2b80894101d1',
+            'd': '00000 (Color online) (a) Comparison between the function $f_\\Gamma(Q\\xi)$ (\\ref{eq:fgamma}) and the Kawasaki function defined in footnote \\ref{footnote:kawasaki}. Large-$Q$ modes relax faster with $f_\\Gamma$ than with $K$. (b) Illustration of the contribution $\\Delta s_Q$ to the entropy density by a single slow mode with wave number $Q$ ($x{\\,\\equiv\\,}\\phi_Q/\\bar\\phi_Q$). $\\Delta s_Q$ is negative whether $\\phi_Q$ is below or above its equilibrium value ({\\it cf.} Eq.~(\\ref{eq:deltas}) below).',
+            't': 'Plot',
+            'n': 'plot_functions',
+            'f': '.png',
+        }
+    ]
+
+    assert validate(snippet['figures'], subschema) is None
+
+    result = hep2marc.do(snippet)
 
     assert expected == result['FFT']
 
@@ -529,6 +601,7 @@ def test_figures_from_FFT_generates_valid_uri():
             'd': '00000 Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.',
             't': 'Plot',
             'n': 'FKLP new_VF',
+            'f': '.png',
         }
     ]
     result = hep2marc.do(result)
@@ -649,6 +722,7 @@ def test_figures2marc_handles_unicode():
             'd': u'00000 Hard gaps. (a) Differential conductance $G_S$ of an epitaxial nanowire device as a function of backgate voltage $V_{BG}$ and source\xd0drain voltage $V_{SD}$. Increasing $V_{BG}$, the conductance increases from the tunneling to the Andreev regime (orange and blue plots in the bottom). Adapted from Ref. \\cite{Chang2015}. (b) Subgap conductance $G_s$ as a function of the normal (above-gap) conductance $G_n$. Red curve is the theory prediction for a single channel NS contact, Eq. (\\ref{NS-Andreev}). Inset shows different $dI/dV$ taken at different values of $G_n$. Adapted from Ref. \\cite{Zhang2016}.',
             't': 'Plot',
             'n': 'Fig21',
+            'f': '.png',
         },
     ]
     result = hep2marc.do(record)
