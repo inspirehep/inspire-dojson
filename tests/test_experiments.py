@@ -361,7 +361,7 @@ def test_inspire_classification_from_372__a_9():
     )  # record/1110577
 
     expected = [
-        '5.3',
+        'Cosmic ray/Gamma ray experiments|Satellite',
     ]
     result = experiments.do(create_record(snippet))
 
