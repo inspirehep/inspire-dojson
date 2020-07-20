@@ -43,7 +43,7 @@ def documents(self, key, value):
     Also populates the ``figures`` key through side effects.
     """
     def _is_hidden(value):
-        return 'HIDDEN' in [val.upper() for val in force_list(value.get('o'))] or _get_source(value) == 'arxiv' or None
+        return 'HIDDEN' in [val.upper() for val in force_list(value.get('o'))] or None
 
     def _is_figure(value):
         return value.get('f', "").endswith(".png")
