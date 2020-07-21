@@ -84,7 +84,8 @@ def test_documents_from_FFT_special_cases_arxiv_properly():
         {
             'key': 'arXiv:1710.01187.pdf',
             'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B2',
-            'source': 'arxiv'
+            'source': 'arxiv',
+            'hidden': True,
         },
     ]
     result = hep.do(create_record(snippet))
