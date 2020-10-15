@@ -1072,6 +1072,37 @@ def test_keywords_from_6531_a_9():
     assert expected == result['keywords']
 
 
+def test_accelerator_experiments_from_693__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['accelerator_experiments']
+
+    snippet = (
+        '<datafield tag="693" ind1=" " ind2=" ">'
+        '  <subfield code="a">CERN LHC</subfield>'
+        '</datafield>'
+    )  # regression test, unknown record
+
+    expected = [
+        {
+            'a': 'CERN LHC',
+            'e': 'CERN-LHC',
+        },
+    ]
+    result = cds2hep_marc.do(create_record(snippet))
+
+    assert expected == result['693__']
+
+    expected = [
+        {
+            'legacy_name': 'CERN-LHC',
+        },
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
+
+
 def test_accelerator_experiments_from_693__a_e():
     schema = load_schema('hep')
     subschema = schema['properties']['accelerator_experiments']
@@ -1131,6 +1162,7 @@ def test_accelerator_experiments_from_693__a_e_ignores_not_applicable_if_only_on
     expected = [
         {
             'a': 'CERN SPS',
+            'e': 'CERN-SPS',
         },
     ]
     result = cds2hep_marc.do(create_record(snippet))
@@ -1139,7 +1171,7 @@ def test_accelerator_experiments_from_693__a_e_ignores_not_applicable_if_only_on
 
     expected = [
         {
-            'accelerator': 'CERN SPS',
+            'legacy_name': 'CERN-SPS',
         },
     ]
     result = hep.do(create_record_from_dict(result))

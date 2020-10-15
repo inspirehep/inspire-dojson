@@ -71,8 +71,10 @@ CATEGORIES = {
 
 
 EXPERIMENTS = {
+    ('CERN LEP', None): 'CERN-LEP',
     ('CERN LEP', 'L3'): 'CERN-LEP-L3',
     ('CERN LEP', 'OPAL'): 'CERN-LEP-OPAL',
+    ('CERN LHC', None): 'CERN-LHC',
     ('CERN LHC', 'ALICE'): 'CERN-LHC-ALICE',
     ('CERN LHC', 'ATLAS'): 'CERN-LHC-ATLAS',
     ('CERN LHC', 'CMS'): 'CERN-LHC-CMS',
@@ -80,7 +82,9 @@ EXPERIMENTS = {
     ('CERN LHC', 'LHCf'): 'CERN-LHC-LHCf',
     ('CERN LHC', 'MoEDAL'): 'CERN-LHC-MoEDAL',
     ('CERN LHC', 'TOTEM'): 'CERN-LHC-TOTEM',
+    ('CERN PS', None): 'CERN-PS',
     ('CERN PS', 'nTOF'): 'CERN-nTOF',
+    ('CERN SPS', None): 'CERN-SPS',
     ('CERN SPS', 'ICARUS CNGS2'): 'ICARUS',
     ('CERN SPS', 'OPERA CNGS1'): 'OPERA',
     ('DESY HERA', 'ZEUS'): 'DESY-HERA-ZEUS',
@@ -100,6 +104,9 @@ def vanilla_dict(god):
 
 
 def ignore_not_applicable(text):
+    if not text:
+        return None
+
     return text if text.lower() != 'not applicable' else None
 
 
