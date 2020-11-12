@@ -22,6 +22,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import pytest
+
 from dojson.contrib.marc21.utils import create_record
 
 from flask import current_app
@@ -31,7 +33,16 @@ from inspire_dojson.hep import hep, hep2marc
 from inspire_schemas.api import load_schema, validate
 
 
-def test_documents_from_FFT():
+@pytest.fixture
+def legacy_afs_service_config():
+    config = {
+        'LABS_AFS_HTTP_SERVICE': 'http://legacy-afs-web'
+    }
+    with patch.dict(current_app.config, config):
+        yield
+
+
+def test_documents_from_FFT(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
 
@@ -52,7 +63,7 @@ def test_documents_from_FFT():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037619/content.pdf%3B1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -62,7 +73,7 @@ def test_documents_from_FFT():
     assert 'figures' not in result
 
 
-def test_documents_from_FFT_special_cases_arxiv_properly():
+def test_documents_from_FFT_special_cases_arxiv_properly(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
 
@@ -83,7 +94,7 @@ def test_documents_from_FFT_special_cases_arxiv_properly():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B2',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037619/content.pdf%3B2',
             'source': 'arxiv',
             'hidden': True,
         },
@@ -95,7 +106,7 @@ def test_documents_from_FFT_special_cases_arxiv_properly():
     assert 'figures' not in result
 
 
-def test_documents_are_unique_from_FFT():
+def test_documents_are_unique_from_FFT(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
 
@@ -129,11 +140,11 @@ def test_documents_are_unique_from_FFT():
     expected = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037619/content.pdf%3B1',
         },
         {
             'key': '1_arXiv:1710.01187.pdf',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037619/content.pdf%3B1',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -143,7 +154,7 @@ def test_documents_are_unique_from_FFT():
     assert 'figures' not in result
 
 
-def test_figures_from_FFT():
+def test_figures_from_FFT(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
 
@@ -165,7 +176,7 @@ def test_figures_from_FFT():
         {
             'key': 'FIG10.png',
             'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037399/content.png%3B1',
             'source': 'arxiv',
         },
     ]
@@ -176,7 +187,7 @@ def test_figures_from_FFT():
     assert 'documents' not in result
 
 
-def test_figures_order_from_FFT():
+def test_figures_order_from_FFT(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
 
@@ -222,19 +233,19 @@ def test_figures_order_from_FFT():
         {
             'key': 'FIG10.png',
             'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037399/content.png%3B1',
             'source': 'arxiv',
         },
         {
             'key': 'FIG11.png',
             'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037400/content.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037400/content.png%3B1',
             'source': 'arxiv',
         },
         {
             'key': 'FIG12.png',
             'caption': 'Co-simulation results, at $50~\\mathrm{ms}$...',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037401/content.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037401/content.png%3B1',
             'source': 'arxiv',
         }
     ]
@@ -329,7 +340,7 @@ def test_documents_to_FFT():
                 'hidden': True,
                 'fulltext': True,
                 'material': 'publication',
-                'url': '/files/1234-1234-1234-1234/some_document.pdf',
+                'url': '/api/files/1234-1234-1234-1234/some_document.pdf',
                 'original_url': 'http://example.com/some_document.pdf',
                 'source': 'submitter',
             }
@@ -338,7 +349,7 @@ def test_documents_to_FFT():
 
     expected = [
         {
-            'a': 'http://localhost:5000/files/1234-1234-1234-1234/some_document.pdf',
+            'a': 'http://localhost:5000/api/files/1234-1234-1234-1234/some_document.pdf',
             'd': 'Thesis fulltext',
             'f': '.pdf',
             't': 'INSPIRE-PUBLIC',
@@ -354,7 +365,7 @@ def test_documents_to_FFT():
     assert expected == result['FFT']
 
 
-def test_documents_to_FFT_converts_afs_urls_to_path():
+def test_documents_to_FFT_converts_afs_urls_to_path(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['documents']
 
@@ -384,12 +395,7 @@ def test_documents_to_FFT_converts_afs_urls_to_path():
 
     assert validate(snippet['documents'], subschema) is None
 
-    config = {
-        'LABS_AFS_HTTP_SERVICE': 'http://legacy-afs-web'
-    }
-    with patch.dict(current_app.config, config):
-        result = hep2marc.do(snippet)
-
+    result = hep2marc.do(snippet)
     assert expected == result['FFT']
 
 
@@ -472,7 +478,7 @@ def test_figures_to_FFT():
                 'key': 'some_figure.png',
                 'caption': 'This figure illustrates something',
                 'material': 'preprint',
-                'url': '/files/1234-1234-1234-1234/some_figure.png',
+                'url': '/api/files/1234-1234-1234-1234/some_figure.png',
                 'source': 'arxiv',
             }
         ]
@@ -480,7 +486,7 @@ def test_figures_to_FFT():
 
     expected = [
         {
-            'a': 'http://localhost:5000/files/1234-1234-1234-1234/some_figure.png',
+            'a': 'http://localhost:5000/api/files/1234-1234-1234-1234/some_figure.png',
             'd': '00000 This figure illustrates something',
             't': 'Plot',
             'n': 'some_figure',
@@ -495,7 +501,7 @@ def test_figures_to_FFT():
     assert expected == result['FFT']
 
 
-def test_figures_to_FFT_converts_afs_urls_to_paths():
+def test_figures_to_FFT_converts_afs_urls_to_paths(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
 
@@ -522,12 +528,7 @@ def test_figures_to_FFT_converts_afs_urls_to_paths():
 
     assert validate(snippet['figures'], subschema) is None
 
-    config = {
-        'LABS_AFS_HTTP_SERVICE': 'http://legacy-afs-web'
-    }
-    with patch.dict(current_app.config, config):
-        result = hep2marc.do(snippet)
-
+    result = hep2marc.do(snippet)
     assert expected == result['FFT']
 
 
@@ -564,7 +565,7 @@ def test_figures_to_FFT_uses_filename():
     assert expected == result['FFT']
 
 
-def test_figures_from_FFT_generates_valid_uri():
+def test_figures_from_FFT_generates_valid_uri(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
 
@@ -586,7 +587,7 @@ def test_figures_from_FFT_generates_valid_uri():
         {
             'key': 'FKLP new_VF.png',
             'caption': 'Inflationary potential ${g^{2}\\vp^{2}\\over 2} (1-a\\vp+b\\vp^{2})^2$  (\\ref{three}), for $a = 0.1$, $b = 0.0035$. The field is shown in Planck units, the potential $V$ is shown in units $g^{2}$. In realistic models of that type, $g \\sim 10^{-5} - 10^{-6}$ in Planck units, depending on details of the theory, so the height of the potential in this figure is about $10^{-10}$ in Planck units.',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g83/1678426/FKLP%20new_VF.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g83/1678426/FKLP%20new_VF.png%3B1',
             'source': 'arxiv',
         }
     ]
@@ -609,7 +610,7 @@ def test_figures_from_FFT_generates_valid_uri():
     assert expected == result['FFT']
 
 
-def test_figures_and_documents_from_FFT_without_d_subfield():
+def test_figures_and_documents_from_FFT_without_d_subfield(legacy_afs_service_config):
     schema = load_schema('hep')
     figures_subschema = schema['properties']['figures']
     documents_subschema = schema['properties']['documents']
@@ -642,7 +643,7 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
     expected_figures = [
         {
             'key': 'FIG10.png',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037399/content.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037399/content.png%3B1',
             'source': 'arxiv',
         },
     ]
@@ -650,7 +651,7 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
     expected_documents = [
         {
             'key': 'arXiv:1710.01187.pdf',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g151/3037619/content.pdf%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g151/3037619/content.pdf%3B1',
         },
     ]
 
@@ -665,7 +666,7 @@ def test_figures_and_documents_from_FFT_without_d_subfield():
     assert expected_documents == result['documents']
 
 
-def test_figures_from_FFT_with_composite_file_extension():
+def test_figures_from_FFT_with_composite_file_extension(legacy_afs_service_config):
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
 
@@ -687,7 +688,7 @@ def test_figures_from_FFT_with_composite_file_extension():
         {
             'caption': 'Examples of relaxed early-types (top three rows) and galaxies classified as late-type (bottom three rows). We show both the multi-colour standard-depth image (left-hand column) and itsdeeper Stripe82 counterpart (right-hand column).',
             'key': '266.stripe82.jpg.png',
-            'url': 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g22/457549/266.stripe82.jpg.png%3B1',
+            'url': 'http://legacy-afs-web/var/data/files/g22/457549/266.stripe82.jpg.png%3B1',
             'source': 'arxiv',
         },
     ]
