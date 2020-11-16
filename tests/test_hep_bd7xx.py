@@ -586,6 +586,19 @@ def test_publication_info_from_773__p_1_populates_public_notes():
     assert 'publication_info' not in result
 
 
+def test_publication_info_from_773__t_doesnt_populate_public_notes():
+    snippet = (
+        '<datafield tag="773" ind1=" " ind2=" ">'
+        '  <subfield code="t">Indian Particle Accelerator Conference (InPAC)</subfield>'
+        '</datafield>'
+    )  # record/1763998
+
+    result = hep.do(create_record(snippet))
+
+    assert 'public_notes' not in result
+    assert 'publication_info' not in result
+
+
 def test_publication_info_from_773__p_and_773__c_p_v_y_1_also_populates_public_notes():
     schema = load_schema('hep')
     publication_info_schema = schema['properties']['publication_info']
