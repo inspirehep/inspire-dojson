@@ -260,7 +260,11 @@ def references(self, key, value):
         return 'CURATOR' in normalized_nine_values
 
     def _is_curated(value):
-        return force_single_element(value.get('z')) == '1' and _has_curator_flag(value)
+        is_explicitly_curated = (
+            force_single_element(value.get('z')) == '1' and _has_curator_flag(value)
+        )
+        has_only_0_and_z = set(value.keys()) == {'0', 'z'}
+        return is_explicitly_curated or has_only_0_and_z
 
     def _set_record(el):
         recid = maybe_int(el)
