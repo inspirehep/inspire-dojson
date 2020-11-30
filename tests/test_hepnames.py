@@ -61,6 +61,38 @@ EXPERIMENTS_DATA = [
         }],
     ],
     [
+        'current_curated_hidden',
+        '''
+        <datafield tag="693" ind1=" " ind2=" ">
+            <subfield code="d">2020</subfield>
+            <subfield code="e">CERN-ALPHA</subfield>
+            <subfield code="0">1</subfield>
+            <subfield code="s">2014</subfield>
+            <subfield code="z">current</subfield>
+            <subfield code="h">HIDDEN</subfield>
+        </datafield>
+        ''',
+        [{
+            'curated_relation': True,
+            'current': True,
+            'end_date': '2020',
+            'name': 'CERN-ALPHA',
+            'record': {
+                '$ref': 'http://localhost:5000/api/experiments/1',
+            },
+            'start_date': '2014',
+            'hidden': True
+        }],
+        [{
+            '0': 1,
+            'd': '2020',
+            'e': 'CERN-ALPHA',
+            's': '2014',
+            'z': 'current',
+            'h': 'HIDDEN',
+        }],
+    ],
+    [
         'notcurrent_curated',
         '''
         <datafield tag="693" ind1=" " ind2=" ">
@@ -1052,6 +1084,56 @@ def test_advisors_from_701__a_g_i():
     assert expected == result['701']
 
 
+def test_advisors_from_701__a_g_i_h():
+    schema = load_schema('authors')
+    subschema = schema['properties']['advisors']
+
+    snippet = (
+        '<datafield tag="701" ind1=" " ind2=" ">'
+        '  <subfield code="a">Rivelles, Victor O.</subfield>'
+        '  <subfield code="g">PhD</subfield>'
+        '  <subfield code="i">INSPIRE-00120420</subfield>'
+        '  <subfield code="x">991627</subfield>'
+        '  <subfield code="y">1</subfield>'
+        '  <subfield code="h">HIDDEN</subfield>'
+        '</datafield>'
+    )  # synthetic data
+
+    expected = [
+        {
+            'name': 'Rivelles, Victor O.',
+            'degree_type': 'phd',
+            'ids': [
+                {
+                    'schema': 'INSPIRE ID',
+                    'value': 'INSPIRE-00120420'
+                }
+            ],
+            'record': {
+                '$ref': 'http://localhost:5000/api/authors/991627',
+            },
+            'curated_relation': True,
+            'hidden': True
+        },
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['advisors'], subschema) is None
+    assert expected == result['advisors']
+
+    expected = [
+        {
+            'a': 'Rivelles, Victor O.',
+            'g': 'phd',
+            'i': ['INSPIRE-00120420'],
+            'h': 'HIDDEN',
+        },
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['701']
+
+
 def test_advisors_from_701__a_g_i_orcid():
     schema = load_schema('authors')
     subschema = schema['properties']['advisors']
@@ -1376,6 +1458,45 @@ def test_positions_from_371__a_r_z():
             'a': 'Antwerp U.',
             'r': 'SENIOR',
             'z': 'Current'
+        }
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['371']
+
+
+def test_positions_from_371__a_r_z_h():
+    schema = load_schema('authors')
+    subschema = schema['properties']['positions']
+
+    snippet = (
+        '<datafield tag="371" ind1=" " ind2=" ">'
+        '  <subfield code="a">Antwerp U.</subfield>'
+        '  <subfield code="r">SENIOR</subfield>'
+        '  <subfield code="z">Current</subfield>'
+        '  <subfield code="h">HIDDEN</subfield>'
+        '</datafield>'
+    )  # synthetic data
+
+    expected = [
+        {
+            'current': True,
+            'institution': 'Antwerp U.',
+            'rank': 'SENIOR',
+            'hidden': True
+        },
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['positions'], subschema) is None
+    assert expected == result['positions']
+
+    expected = [
+        {
+            'a': 'Antwerp U.',
+            'r': 'SENIOR',
+            'z': 'Current',
+            'h': 'HIDDEN',
         }
     ]
     result = hepnames2marc.do(result)
