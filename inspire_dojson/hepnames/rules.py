@@ -283,11 +283,14 @@ def positions(self, key, value):
     if 'a' not in value:
         return None
 
+    hidden = value.get('h') == 'HIDDEN' or None
+
     return {
         'institution': value['a'],
         'record': record,
         'curated_relation': True if record is not None else None,
         'rank': rank,
+        'hidden': hidden,
         'start_date': normalize_date(value.get('s')),
         'end_date': normalize_date(value.get('t')),
         'current': current,
@@ -319,6 +322,7 @@ def positions2marc(self, key, value):
         's': value.get('start_date'),
         't': value.get('end_date'),
         'z': 'Current' if value.get('current') else None,
+        'h': 'HIDDEN' if value.get('hidden') else None,
     }
 
 
@@ -550,6 +554,7 @@ def project_membership(self, key, values):
         names = force_list(marc_dict.get('e'))
         recids = force_list(marc_dict.get('0'))
         name_recs = zip(names, recids or [None] * len(names))
+        hidden = marc_dict.get('h') == 'HIDDEN' or None
 
         for name, recid in name_recs:
             record = get_record_ref(recid, 'experiments')
@@ -562,6 +567,7 @@ def project_membership(self, key, values):
                 'end_date': end_year,
                 'name': name,
                 'record': record,
+                'hidden': hidden,
                 'start_date': start_year,
             }
 
@@ -588,6 +594,8 @@ def project_membership2marc(self, key, values):
         recid = get_recid_from_ref(json_dict.get('record', None))
         if recid:
             marc['0'] = recid
+        if json_dict.get('hidden'):
+            marc['h'] = 'HIDDEN'
         return marc
 
     marc_experiments = self.get('693', [])
@@ -629,11 +637,14 @@ def advisors(self, key, value):
         'value': id_,
     } for id_ in force_list(value.get('i'))]
 
+    hidden = value.get('h') == 'HIDDEN' or None
+
     return {
         'name': value.get('a'),
         'degree_type': degree_type,
         'ids': ids,
         'record': record,
+        'hidden': hidden,
         'curated_relation': value.get('y') == '1' if record else None
     }
 
@@ -648,6 +659,7 @@ def advisors2marc(self, key, value):
         'a': value.get('name'),
         'g': value.get('degree_type'),
         'i': ids,
+        'h': 'HIDDEN' if value.get('hidden') else None
     }
 
 
