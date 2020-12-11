@@ -125,9 +125,16 @@ def afs_url(file_path):
 
     if file_path is None:
         return None
+    process_path = False
 
     if file_path.startswith('/opt/cds-invenio/'):
+        process_path = True
         file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
+    elif file_path.startswith('/opt/venvs/inspire-legacy/'):
+        process_path = True
+        file_path = os.path.relpath(file_path, '/opt/venvs/inspire-legacy/')
+
+    if process_path:
         if afs_service:
             return os.path.join(afs_service, urllib.request.pathname2url(file_path.encode('utf-8')))
         file_path = os.path.join(afs_path, file_path)

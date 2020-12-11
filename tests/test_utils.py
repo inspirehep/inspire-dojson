@@ -162,6 +162,13 @@ def test_afs_url_converts_afs_path():
     assert expected == result
 
 
+def test_afs_url_converts_new_afs_path():
+    expected = 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g220/4413039/content.xml'
+    result = afs_url('/opt/venvs/inspire-legacy/var/data/files/g220/4413039/content.xml')
+
+    assert expected == result
+
+
 def test_afs_url_encodes_characters():
     expected = 'file:///afs/cern.ch/project/inspire/PROD/var/file%20with%20spaces.txt'
     result = afs_url('/opt/cds-invenio/var/file with spaces.txt')
