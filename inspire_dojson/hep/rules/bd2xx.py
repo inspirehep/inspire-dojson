@@ -37,7 +37,15 @@ from ...utils import normalize_date_aggressively
 @hep.over('titles', '^(210|245|246|247)..')
 @utils.for_each_value
 def titles(self, key, value):
-    """Populate the ``titles`` key."""
+    """Populate the ``titles`` key.
+
+    Also populates the ``rpp`` key through side-effects.
+    """
+    is_rpp = key.startswith('210') and value.get('a', '').split()[0].lower() == 'rpp'
+    if is_rpp:
+        self['rpp'] = True
+        return None
+
     if not key.startswith('245'):
         return {
             'source': value.get('9'),
@@ -62,6 +70,14 @@ def title_translations(self, key, value):
         'subtitle': value.get('b'),
         'title': value.get('a'),
     }
+
+
+@hep2marc.over('210', '^rpp$')
+def rpp2marc(self, key, value):
+    if value is True:
+        return {
+            'a': 'RPP',
+        }
 
 
 @hep2marc.over('246', '^titles$')
