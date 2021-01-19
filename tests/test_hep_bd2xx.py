@@ -28,6 +28,50 @@ from inspire_dojson.hep import hep, hep2marc
 from inspire_schemas.api import load_schema, validate
 
 
+def test_rpp_from_210__a():
+    schema = load_schema('hep')
+    subschema = schema['properties']['rpp']
+
+    snippet = (
+        '<datafield tag="210" ind1=" " ind2=" ">'
+        '  <subfield code="a">RPP</subfield>'
+        '</datafield>'
+    )  # record/875948
+
+    expected = True
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['rpp'], subschema) is None
+    assert expected == result['rpp']
+
+    expected = {'a': 'RPP'}
+    result = hep2marc.do(result)
+
+    assert expected == result['210']
+
+
+def test_rpp_from_210__a__RPP_section():
+    schema = load_schema('hep')
+    subschema = schema['properties']['rpp']
+
+    snippet = (
+        '<datafield tag="210" ind1=" " ind2=" ">'
+        '  <subfield code="a">RPP section</subfield>'
+        '</datafield>'
+    )  # record/806134
+
+    expected = True
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['rpp'], subschema) is None
+    assert expected == result['rpp']
+
+    expected = {'a': 'RPP'}
+    result = hep2marc.do(result)
+
+    assert expected == result['210']
+
+
 def test_titles_from_245__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['titles']
