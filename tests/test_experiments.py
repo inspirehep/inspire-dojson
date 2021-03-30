@@ -572,6 +572,46 @@ def test_collaboration_from_710__g_0():
     assert expected == result['collaboration']
 
 
+def test_collaboration_from_710__g_q():
+    schema = load_schema('experiments')
+    subschema = schema['properties']['collaboration']
+
+    snippet = (
+        '<datafield tag="710" ind1=" " ind2=" ">'
+        '  <subfield code="g">CMS</subfield>'
+        '  <subfield code="q">ECAL</subfield>'
+        '  <subfield code="q">GEM</subfield>'
+        '  <subfield code="q">HCAL</subfield>'
+        '  <subfield code="q">Muon</subfield>'
+        '  <subfield code="q">Pixel</subfield>'
+        '  <subfield code="q">RPC</subfield>'
+        '  <subfield code="q">Silicon Strip Tracker</subfield>'
+        '  <subfield code="q">Silicon Tracker</subfield>'
+        '  <subfield code="q">Tracker</subfield>'
+        '</datafield>'
+    )  # record/1108642
+
+    expected = {
+        'value': 'CMS',
+        'subgroup_names': [
+            'ECAL',
+            'GEM',
+            'HCAL',
+            'Muon',
+            'Pixel',
+            'RPC',
+            'Silicon Strip Tracker',
+            'Silicon Tracker',
+            'Tracker',
+        ],
+        'curated_relation': False,
+    }
+    result = experiments.do(create_record(snippet))
+
+    assert validate(result['collaboration'], subschema) is None
+    assert expected == result['collaboration']
+
+
 def test_core_from_multiple_980__a():
     schema = load_schema('experiments')
     subschema = schema['properties']['core']
