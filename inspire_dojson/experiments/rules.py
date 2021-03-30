@@ -224,6 +224,7 @@ def collaboration(self, key, value):
         'curated_relation': record is not None,
         'record': record,
         'value': force_single_element(value.get('g')),
+        'subgroup_names': force_list(value.get('q')),
     }
 
 
