@@ -58,7 +58,6 @@ WIKIPEDIA_URL = re.compile(r'https?://(?P<lang>\w+)\.wikipedia\.org/wiki/(?P<pag
 
 
 @hepnames.over('ids', '^035..')
-@utils.for_each_value
 def ids(self, key, value):
     def _get_schema(value):
         IDS_MAP = {
@@ -88,44 +87,55 @@ def ids(self, key, value):
         if INSPIRE_BAI.match(a_value):
             return 'INSPIRE BAI'
 
-    def _try_to_correct_value(schema, a_value):
-        if a_value is None:
-            return a_value
+    def _try_to_correct_value(schema, value):
+        if value is None:
+            return value
 
-        if schema == 'CERN' and LOOKS_LIKE_CERN.match(a_value):
-            return 'CERN-' + NON_DIGIT.sub('', a_value)
+        if schema == 'CERN' and LOOKS_LIKE_CERN.match(value):
+            return 'CERN-' + NON_DIGIT.sub('', value)
         elif schema == 'KAKEN':
-            return 'KAKEN-' + a_value
+            return 'KAKEN-' + value
         else:
-            return a_value
+            return value
+
+    ids = self.get("ids", [])
 
     a_value = force_single_element(value.get('a'))
+    z_value = force_single_element(value.get('z'))
 
     schema = _get_schema(value)
     if schema is None:
         schema = _guess_schema_from_value(a_value)
 
     a_value = _try_to_correct_value(schema, a_value)
+    z_value = _try_to_correct_value(schema, z_value)
 
     if schema and a_value:
-        return {
+        ids.insert(0, {
             'schema': schema,
             'value': a_value,
-        }
+        })
+    if schema and z_value:
+        ids.append({
+            'schema': schema,
+            'value': z_value,
+        })
+
+    return ids
 
 
 @hepnames2marc.over('035', '^ids$')
-@utils.for_each_value
-def ids2marc(self, key, value):
+def ids2marc(self, key, values):
     """Populate the ``035`` MARC field.
 
     Also populates the ``8564`` and ``970`` MARC field through side effects.
     """
-    def _is_schema_inspire_bai(id_, schema):
-        return schema == 'INSPIRE BAI'
-
-    def _is_schema_inspire_id(id_, schema):
-        return schema == 'INSPIRE ID'
+    def _convert_schema(schema):
+        conversion = {
+            'INSPIRE BAI': 'BAI',
+            'INSPIRE ID': 'INSPIRE'
+        }
+        return conversion.get(schema, schema)
 
     def _is_schema_spires(id_, schema):
         return schema == 'SPIRES'
@@ -136,40 +146,41 @@ def ids2marc(self, key, value):
     def _is_schema_twitter(id, schema):
         return schema == 'TWITTER'
 
-    id_ = value.get('value')
-    schema = value.get('schema')
+    seen_schemas = set()
+    result = []
 
-    if _is_schema_spires(id_, schema):
-        self.setdefault('970', []).append({'a': id_})
-    elif _is_schema_linkedin(id_, schema):
-        self.setdefault('8564', []).append(
-            {
-                'u': u'https://www.linkedin.com/in/{id}'.format(id=quote_url(id_)),
-                'y': 'LINKEDIN',
-            }
-        )
-    elif _is_schema_twitter(id_, schema):
-        self.setdefault('8564', []).append(
-            {
-                'u': u'https://twitter.com/{id}'.format(id=id_),
-                'y': 'TWITTER',
-            }
-        )
-    elif _is_schema_inspire_id(id_, schema):
-        return {
-            'a': id_,
-            '9': 'INSPIRE',
-        }
-    elif _is_schema_inspire_bai(id_, schema):
-        return {
-            'a': id_,
-            '9': 'BAI',
-        }
-    else:
-        return {
-            'a': id_,
-            '9': schema,
-        }
+    for value in values:
+        id_ = value.get('value')
+        schema = value.get('schema')
+
+        if _is_schema_spires(id_, schema):
+            self.setdefault('970', []).append({'a': id_})
+        elif _is_schema_linkedin(id_, schema):
+            self.setdefault('8564', []).append(
+                {
+                    'u': u'https://www.linkedin.com/in/{id}'.format(id=quote_url(id_)),
+                    'y': 'LINKEDIN',
+                }
+            )
+        elif _is_schema_twitter(id_, schema):
+            self.setdefault('8564', []).append(
+                {
+                    'u': u'https://twitter.com/{id}'.format(id=id_),
+                    'y': 'TWITTER',
+                }
+            )
+        else:
+            if schema not in seen_schemas:
+                seen_schemas.add(schema)
+                field = 'a'
+            else:
+                field = 'z'
+            result.append({
+                field: id_,
+                '9': _convert_schema(schema),
+            })
+
+    return result
 
 
 @hepnames.over('name', '^100..')
