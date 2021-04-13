@@ -276,12 +276,12 @@ def test_ids_from_double_035__a_9():
 
     expected = [
         {
-            'schema': 'INSPIRE ID',
-            'value': 'INSPIRE-00134135',
-        },
-        {
             'schema': 'INSPIRE BAI',
             'value': 'H.Vogel.1',
+        },
+        {
+            'schema': 'INSPIRE ID',
+            'value': 'INSPIRE-00134135',
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -291,13 +291,13 @@ def test_ids_from_double_035__a_9():
 
     expected = [
         {
+            'a': 'H.Vogel.1',
+            '9': 'BAI'
+        },
+        {
             'a': 'INSPIRE-00134135',
             '9': 'INSPIRE'
         },
-        {
-            'a': 'H.Vogel.1',
-            '9': 'BAI'
-        }
     ]
     result = hepnames2marc.do(result)
 
@@ -405,15 +405,7 @@ def test_ids_from_035__a_9_with_cern_malformed():
     expected = [
         {
             'schema': 'CERN',
-            'value': 'CERN-645257',
-        },
-        {
-            'schema': 'CERN',
-            'value': 'CERN-783683',
-        },
-        {
-            'schema': 'CERN',
-            'value': 'CERN-724319',
+            'value': 'CERN-765559',
         },
         {
             'schema': 'CERN',
@@ -421,7 +413,15 @@ def test_ids_from_035__a_9_with_cern_malformed():
         },
         {
             'schema': 'CERN',
-            'value': 'CERN-765559',
+            'value': 'CERN-724319',
+        },
+        {
+            'schema': 'CERN',
+            'value': 'CERN-783683',
+        },
+        {
+            'schema': 'CERN',
+            'value': 'CERN-645257',
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -432,23 +432,23 @@ def test_ids_from_035__a_9_with_cern_malformed():
     expected = [
         {
             '9': 'CERN',
-            'a': 'CERN-645257',
-        },
-        {
-            '9': 'CERN',
-            'a': 'CERN-783683',
-        },
-        {
-            '9': 'CERN',
-            'a': 'CERN-724319',
-        },
-        {
-            '9': 'CERN',
-            'a': 'CERN-727986',
-        },
-        {
-            '9': 'CERN',
             'a': 'CERN-765559',
+        },
+        {
+            '9': 'CERN',
+            'z': 'CERN-727986',
+        },
+        {
+            '9': 'CERN',
+            'z': 'CERN-724319',
+        },
+        {
+            '9': 'CERN',
+            'z': 'CERN-783683',
+        },
+        {
+            '9': 'CERN',
+            'z': 'CERN-645257',
         },
     ]
     result = hepnames2marc.do(result)
@@ -606,12 +606,12 @@ def test_ids_from_double_035__a_9_with_kaken():
 
     expected = [
         {
-            'schema': 'INSPIRE BAI',
-            'value': 'Toshio.Suzuki.2',
-        },
-        {
             'schema': 'KAKEN',
             'value': 'KAKEN-70139070',
+        },
+        {
+            'schema': 'INSPIRE BAI',
+            'value': 'Toshio.Suzuki.2',
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -621,12 +621,12 @@ def test_ids_from_double_035__a_9_with_kaken():
 
     expected = [
         {
-            '9': 'BAI',
-            'a': 'Toshio.Suzuki.2',
-        },
-        {
             '9': 'KAKEN',
             'a': 'KAKEN-70139070',
+        },
+        {
+            '9': 'BAI',
+            'a': 'Toshio.Suzuki.2',
         },
     ]
     result = hepnames2marc.do(result)
@@ -784,6 +784,146 @@ def test_ids_from_035__9():
     result = hepnames.do(create_record(snippet))
 
     assert 'ids' not in result
+
+
+def test_ids_from_035__a_z_same_field_9():
+    schema = load_schema('authors')
+    subschema = schema['properties']['ids']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">INSPIRE</subfield>'
+        '    <subfield code="a">INSPIRE-00791106</subfield>'
+        '    <subfield code="z">INSPIRE-00739854</subfield>'
+        '  </datafield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">ORCID</subfield>'
+        '    <subfield code="a">0000-0001-8415-6720</subfield>'
+        '  </datafield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">BAI</subfield>'
+        '    <subfield code="a">Yen.Chen.Pan.1</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1709705
+
+    expected = [
+        {
+            'schema': 'INSPIRE BAI',
+            'value': 'Yen.Chen.Pan.1',
+        },
+        {
+            'schema': 'ORCID',
+            'value': '0000-0001-8415-6720',
+        },
+        {
+            'schema': 'INSPIRE ID',
+            'value': 'INSPIRE-00791106',
+        },
+        {
+            'schema': 'INSPIRE ID',
+            'value': 'INSPIRE-00739854',
+        },
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['ids'], subschema) is None
+    assert expected == result['ids']
+
+    expected = [
+        {
+            '9': 'BAI',
+            'a': 'Yen.Chen.Pan.1',
+        },
+        {
+            '9': 'ORCID',
+            'a': '0000-0001-8415-6720',
+        },
+        {
+            '9': 'INSPIRE',
+            'a': 'INSPIRE-00791106',
+        },
+        {
+            '9': 'INSPIRE',
+            'z': 'INSPIRE-00739854',
+        },
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['035']
+
+
+def test_ids_from_035__a_z_different_fields_9():
+    schema = load_schema('authors')
+    subschema = schema['properties']['ids']
+
+    snippet = (
+        '<record>'
+        '  <controlfield tag="001">1357501</controlfield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">INSPIRE</subfield>'
+        '    <subfield code="a">INSPIRE-00513748</subfield>'
+        '  </datafield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">BAI</subfield>'
+        '    <subfield code="a">Lei.Wu.1</subfield>'
+        '  </datafield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">ORCID</subfield>'
+        '    <subfield code="z">0000-0002-5310-8213</subfield>'
+        '  </datafield>'
+        '  <datafield tag="035" ind1=" " ind2=" ">'
+        '    <subfield code="9">ORCID</subfield>'
+        '    <subfield code="a">0000-0001-5010-7517</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1357501
+
+    expected = [
+        {
+            'schema': 'ORCID',
+            'value': '0000-0001-5010-7517',
+        },
+        {
+            'schema': 'INSPIRE BAI',
+            'value': 'Lei.Wu.1',
+        },
+        {
+            'schema': 'INSPIRE ID',
+            'value': 'INSPIRE-00513748',
+        },
+        {
+            'schema': 'ORCID',
+            'value': '0000-0002-5310-8213',
+        },
+    ]
+    result = hepnames.do(create_record(snippet))
+
+    assert validate(result['ids'], subschema) is None
+    assert expected == result['ids']
+
+    expected = [
+        {
+            '9': 'ORCID',
+            'a': '0000-0001-5010-7517',
+        },
+        {
+            '9': 'BAI',
+            'a': 'Lei.Wu.1',
+        },
+        {
+            '9': 'INSPIRE',
+            'a': 'INSPIRE-00513748',
+        },
+        {
+            '9': 'ORCID',
+            'z': '0000-0002-5310-8213',
+        },
+    ]
+    result = hepnames2marc.do(result)
+
+    assert expected == result['035']
 
 
 def test_name_from_100__a_g_q():
