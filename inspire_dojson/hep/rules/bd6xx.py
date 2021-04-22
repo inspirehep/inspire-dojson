@@ -92,23 +92,39 @@ def keywords(self, key, values):
 
     Also populates the ``energy_ranges`` key through side effects.
     """
+    def _get_source(value):
+        sources = force_list(value.get('9'))
+        if 'conference' in sources:
+            return 'conference'
+        if automatic_keywords or 'bibclassify' in sources:
+            return 'classifier'
+        return force_single_element(sources)
+
     keywords = self.get('keywords', [])
     energy_ranges = self.get('energy_ranges', [])
+    values = force_list(values)
+    automatic_keywords = any(
+        a_value.lower() == '* automatic keywords *'
+        for value in values for a_value in force_list(value.get('a'))
+    )
 
-    for value in force_list(values):
+    for value in values:
         if value.get('a'):
             schema = force_single_element(value.get('2', '')).upper()
-            sources = force_list(value.get('9'))
+            source = _get_source(value)
 
             a_values = force_list(value.get('a'))
 
-            if 'conference' not in sources:
-                for a_value in a_values:
-                    keywords.append({
-                        'schema': schema,
-                        'source': force_single_element(sources),
-                        'value': a_value,
-                    })
+            if source == 'conference':
+                continue
+            for a_value in a_values:
+                if a_value.lower() == '* automatic keywords *':
+                    continue
+                keywords.append({
+                    'schema': schema,
+                    'source': source,
+                    'value': a_value,
+                })
 
         if value.get('e'):
             energy_ranges.append(ENERGY_RANGES_MAP.get(value.get('e')))
@@ -137,10 +153,14 @@ def keywords2marc(self, key, values):
     result_695 = self.get('695', [])
     result_084 = self.get('084', [])
     result_6531 = self.get('6531', [])
+    automatic_keywords = False
 
     for value in values:
         schema = value.get('schema')
         source = value.get('source')
+        if source == 'classifier':
+            source = 'bibclassify'
+            automatic_keywords = True
         keyword = value.get('value')
 
         if schema == 'PACS' or schema == 'PDG':
@@ -172,6 +192,12 @@ def keywords2marc(self, key, values):
                 '9': source,
                 'a': keyword,
             })
+
+    if automatic_keywords:
+        result_695.insert(0, {
+            '2': 'INSPIRE',
+            'a': '* Automatic Keywords *',
+        })
 
     self['6531'] = result_6531
     self['084'] = result_084

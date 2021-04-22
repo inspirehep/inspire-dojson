@@ -525,3 +525,68 @@ def test_keywords_from_multiple_695__a_2():
     assert expected == result['695']
     assert '084' not in result
     assert '6531' not in result
+
+
+def test_keywords_from_695__a_2_9_automatic_keywords():
+    schema = load_schema('hep')
+    subschema = schema['properties']['keywords']
+
+    snippet = (
+        '<record>'
+        '  <datafield tag="695" ind1=" " ind2=" ">'
+        '    <subfield code="2">INSPIRE</subfield>'
+        '    <subfield code="a">* Automatic Keywords *</subfield>'
+        '  </datafield>'
+        '  <datafield tag="695" ind1=" " ind2=" ">'
+        '    <subfield code="2">INSPIRE</subfield>'
+        '    <subfield code="a">soliton: topological</subfield>'
+        '    <subfield code="9">bibclassify</subfield>'
+        '  </datafield>'
+        '  <datafield tag="695" ind1=" " ind2=" ">'
+        '    <subfield code="2">INSPIRE</subfield>'
+        '    <subfield code="a">soliton: classical</subfield>'
+        '    <subfield code="9">bibclassify</subfield>'
+        '  </datafield>'
+        '</record>'
+    )  # record/1859815
+
+    expected = [
+        {
+            'schema': 'INSPIRE',
+            'value': 'soliton: topological',
+            'source': 'classifier',
+        },
+        {
+            'schema': 'INSPIRE',
+            'value': 'soliton: classical',
+            'source': 'classifier',
+        },
+    ]
+
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['keywords'], subschema) is None
+    assert expected == result['keywords']
+    assert 'energy_ranges' not in result
+
+    expected = [
+        {
+            'a': '* Automatic Keywords *',
+            '2': 'INSPIRE',
+        },
+        {
+            'a': 'soliton: topological',
+            '2': 'INSPIRE',
+            '9': 'bibclassify',
+        },
+        {
+            'a': 'soliton: classical',
+            '2': 'INSPIRE',
+            '9': 'bibclassify',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['695']
+    assert '084' not in result
+    assert '6531' not in result
