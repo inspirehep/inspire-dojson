@@ -98,19 +98,8 @@ def marcxml2record(marcxml):
     return hep.do(marcjson)
 
 
-def record2marcxml(record):
-    """Convert a JSON record to a MARCXML string.
-
-    Deduces which set of rules to use by parsing the ``$schema`` key, as
-    it unequivocally determines which kind of record we have.
-
-    Args:
-        record(dict): a JSON record.
-
-    Returns:
-        str: a MARCXML string converted from the record.
-
-    """
+def record2marcxml_etree(record):
+    """Convert a JSON record to a MARCXML element tree."""
     schema_name = _get_schema_name(record)
 
     if schema_name == 'hep':
@@ -139,7 +128,24 @@ def record2marcxml(record):
                         datafield.append(SUBFIELD(_strip_invalid_chars_for_xml(el), {'code': code}))
                 record.append(datafield)
 
-    return tostring(record, encoding='utf8', pretty_print=True)
+    return record
+
+
+def record2marcxml(record):
+    """Convert a JSON record to a MARCXML string.
+
+    Deduces which set of rules to use by parsing the ``$schema`` key, as
+    it unequivocally determines which kind of record we have.
+
+    Args:
+        record(dict): a JSON record.
+
+    Returns:
+        str: a MARCXML string converted from the record.
+
+    """
+    record_tree = record2marcxml_etree(record)
+    return tostring(record_tree, encoding='utf8', pretty_print=True)
 
 
 def cds_marcxml2record(marcxml):
