@@ -237,7 +237,7 @@ def texkeys(self, key, value):
 @hep2marc.over('035', '^texkeys$')
 def texkeys2marc(self, key, value):
     """Populate the ``035`` MARC field."""
-    result = []
+    result = self.get('035', [])
 
     values = force_list(value)
     if values:

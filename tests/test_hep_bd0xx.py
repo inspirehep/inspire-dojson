@@ -837,6 +837,35 @@ def test_external_system_numbers_from_035__a_9_and_035__z_9():
     assert 'id_dict' not in result
 
 
+def test_035_from_arxiv_eprints_and_texkeys():
+    schema = load_schema('hep')
+    subschema_arxiv_eprints = schema['properties']['arxiv_eprints']
+    subschema_texkeys = schema['properties']['texkeys']
+    snippet = {
+        'arxiv_eprints': [
+            {'value': '2212.04977', 'categories': ['hep-ex']}
+        ],
+        'texkeys': ['LHCb:2022diq'],
+    }  # literature/2612668
+
+    assert validate(snippet['arxiv_eprints'], subschema_arxiv_eprints) is None
+    assert validate(snippet['texkeys'], subschema_texkeys) is None
+
+    expected = [
+        {
+            'a': 'oai:arXiv.org:2212.04977',
+            '9': 'arXiv',
+        },
+        {
+            'a': 'LHCb:2022diq',
+            '9': 'INSPIRETeX',
+        },
+    ]
+    result = hep2marc.do(snippet)
+
+    assert sorted(expected, key=str) == sorted(result['035'], key=str)
+
+
 def test_arxiv_eprints_from_037__a_c_9():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']
