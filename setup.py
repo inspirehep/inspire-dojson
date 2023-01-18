@@ -32,7 +32,7 @@ URL = "https://github.com/inspirehep/inspire-dojson"
 readme = open("README.rst").read()
 
 setup_requires = [
-    "autosemver~=0.0,>=0.5.2",
+    "autosemver~=0.0,>=0.5.2,<1.0.0",
 ]
 
 install_requires = [
@@ -44,6 +44,8 @@ install_requires = [
     "isbnid_fork~=0.0,>=0.5.2",
     "langdetect~=1.0,>=1.0.7",
     "pycountry~=17.0,>=17.5.4",
+    "MarkupSafe>=1.1.1,<2.1.0",
+    "urllib3~=1.25.0",
 ]
 
 docs_require = []
@@ -84,9 +86,9 @@ setup(
     platforms="any",
     description=__doc__,
     long_description=readme,
-    setup_requires=setup_requires,
     install_requires=install_requires,
     tests_require=tests_require,
+    setup_requires=setup_requires,
     extras_require=extras_require,
     classifiers=[
         "Development Status :: 4 - Beta",
