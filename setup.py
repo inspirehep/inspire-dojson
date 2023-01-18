@@ -27,61 +27,61 @@ from __future__ import absolute_import, division, print_function
 from setuptools import find_packages, setup
 
 
-URL = 'https://github.com/inspirehep/inspire-dojson'
+URL = "https://github.com/inspirehep/inspire-dojson"
 
-readme = open('README.rst').read()
+readme = open("README.rst").read()
 
 setup_requires = [
-    'autosemver~=0.0,>=0.5.2',
+    "autosemver~=0.0,>=0.5.2",
 ]
 
 install_requires = [
-    'Flask>=0.12.3, <2.0.0',
-    'IDUtils~=1.0,>=1.0.1',
-    'dojson~=1.0,>=1.3.1',
-    'inspire-schemas~=61.4',
-    'inspire-utils~=3.0,>=3.0.0',
-    'isbnid_fork~=0.0,>=0.5.2',
-    'langdetect~=1.0,>=1.0.7',
-    'pycountry~=17.0,>=17.5.4',
+    "Flask>=0.12.3, <2.0.0",
+    "IDUtils~=1.0,>=1.0.1",
+    "dojson~=1.0,>=1.3.1",
+    "inspire-schemas~=61.4",
+    "inspire-utils~=3.0,>=3.0.0",
+    "isbnid_fork~=0.0,>=0.5.2",
+    "langdetect~=1.0,>=1.0.7",
+    "pycountry~=17.0,>=17.5.4",
 ]
 
 docs_require = []
 
 tests_require = [
-    'flake8-future-import~=0.0,>=0.4.3',
-    'mock~=2.0,>=2.0.0',
-    'pytest~=4.0,>=4.6',
-    'pytest-cov~=2.0,>=2.6.1',
+    "flake8-future-import~=0.0,>=0.4.3",
+    "mock~=2.0,>=2.0.0",
+    "pytest~=4.0,>=4.6",
+    "pytest-cov~=2.0,>=2.6.1",
 ]
 
 extras_require = {
-    'docs': docs_require,
-    'tests': tests_require,
+    "docs": docs_require,
+    "tests": tests_require,
     'tests:python_version=="2.7"': [
-        'unicode-string-literal~=1.0,>=1.1',
+        "unicode-string-literal~=1.0,>=1.1",
     ],
 }
 
-extras_require['all'] = []
+extras_require["all"] = []
 for name, reqs in extras_require.items():
-    extras_require['all'].extend(reqs)
+    extras_require["all"].extend(reqs)
 
-packages = find_packages(exclude=['docs'])
+packages = find_packages(exclude=["docs"])
 
 setup(
-    name='inspire-dojson',
+    name="inspire-dojson",
     autosemver={
-        'bugtracker_url': URL + '/issues',
+        "bugtracker_url": URL + "/issues",
     },
     url=URL,
-    license='GPLv3',
-    author='CERN',
-    author_email='admin@inspirehep.net',
+    license="GPLv3",
+    author="CERN",
+    author_email="admin@inspirehep.net",
     packages=packages,
     include_package_data=True,
     zip_safe=False,
-    platforms='any',
+    platforms="any",
     description=__doc__,
     long_description=readme,
     setup_requires=setup_requires,
@@ -89,17 +89,17 @@ setup(
     tests_require=tests_require,
     extras_require=extras_require,
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        "Development Status :: 4 - Beta",
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
 )
