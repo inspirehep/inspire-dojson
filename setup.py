@@ -44,7 +44,7 @@ install_requires = [
     "isbnid_fork~=0.0,>=0.5.2",
     "langdetect~=1.0,>=1.0.7",
     "pycountry~=17.0,>=17.5.4",
-    "MarkupSafe>=1.1.1,<2.1.0",
+    "MarkupSafe>=1.1.1",
     "urllib3~=1.25.0",
 ]
 
