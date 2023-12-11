@@ -26,17 +26,14 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import find_packages, setup
 
-
 URL = "https://github.com/inspirehep/inspire-dojson"
 
 readme = open("README.rst").read()
 
-setup_requires = [
-    "autosemver~=0.0,>=0.5.2,<1.0.0",
-]
 
 install_requires = [
-    "Flask>=0.12.3",
+    'bump2version~=1.0',
+    "Flask>=0.12.3, <2.0.0",
     "IDUtils~=1.0,>=1.0.1",
     "dojson~=1.0,>=1.3.1",
     "inspire-schemas~=61.4",
@@ -60,9 +57,6 @@ tests_require = [
 extras_require = {
     "docs": docs_require,
     "tests": tests_require,
-    'tests:python_version=="2.7"': [
-        "unicode-string-literal~=1.0,>=1.1",
-    ],
 }
 
 extras_require["all"] = []
@@ -90,6 +84,7 @@ setup(
     tests_require=tests_require,
     setup_requires=setup_requires,
     extras_require=extras_require,
+    version="63.2.0",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
@@ -97,10 +92,8 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
