@@ -67,9 +67,6 @@ packages = find_packages(exclude=["docs"])
 
 setup(
     name="inspire-dojson",
-    autosemver={
-        "bugtracker_url": URL + "/issues",
-    },
     url=URL,
     license="GPLv3",
     author="CERN",
