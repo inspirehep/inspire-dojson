@@ -123,7 +123,10 @@ def documents2marc(self, key, value):
         return None
 
     def _get_filename_and_extension(value):
-        return os.path.splitext(value.get('filename', value['key']))
+        file_name, extension = os.path.splitext(value.get('filename', value['key']))
+        if file_name == "document" and value.get("material", "publication") != "publication":
+            file_name = value["material"]
+        return file_name, extension
 
     file_name, extension = _get_filename_and_extension(value)
 

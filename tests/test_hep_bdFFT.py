@@ -468,6 +468,69 @@ def test_documents_to_FFT_uses_filename():
     assert expected == result['FFT']
 
 
+def test_documents_to_FFT_uses_material_as_filename_fallback():
+    schema = load_schema('hep')
+    subschema = schema['properties']['documents']
+
+    snippet = {
+        "documents": [
+            {
+                "key": "8f09853e5bc12d6d077ba0833e97626e",
+                "url": "https://inspirehep.net/files/8f09853e5bc12d6d077ba0833e97626e",
+                "source": "Springer",
+                "fulltext": True,
+                "filename": "document",
+                "material": "addendum",
+            },
+            {
+                "key": "35715635c16bc869b4995e150b140bf8",
+                "url": "https://inspirehep.net/files/35715635c16bc869b4995e150b140bf8",
+                "hidden": True,
+                "source": "arxiv",
+                "filename": "2103.11769.pdf",
+                "fulltext": True,
+                "material": "preprint",
+                "original_url": "http://export.arxiv.org/pdf/2103.11769",
+            },
+            {
+                "key": "277ff3946ce757cba86a4ab4ebb95287",
+                "url": "https://inspirehep.net/files/277ff3946ce757cba86a4ab4ebb95287",
+                "filename": "document",
+                "fulltext": True,
+                "material": "publication",
+            }
+        ],
+    }  # literature/1852846
+
+    expected = [
+        {
+            "a": "https://inspirehep.net/files/8f09853e5bc12d6d077ba0833e97626e",
+            "d": "Fulltext",
+            "n": "addendum",
+            "t": "Springer",
+        },
+        {
+            "a": "https://inspirehep.net/files/35715635c16bc869b4995e150b140bf8",
+            "d": "Fulltext",
+            "n": "2103.11769",
+            "t": "arXiv",
+            "f": ".pdf",
+        },
+        {
+            "a": "https://inspirehep.net/files/277ff3946ce757cba86a4ab4ebb95287",
+            "d": "Fulltext",
+            "n": "document",
+            "t": "INSPIRE-PUBLIC",
+        }
+    ]
+
+    assert validate(snippet['documents'], subschema) is None
+
+    result = hep2marc.do(snippet)
+
+    assert expected == result['FFT']
+
+
 def test_figures_to_FFT():
     schema = load_schema('hep')
     subschema = schema['properties']['figures']
