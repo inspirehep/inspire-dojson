@@ -1,9 +1,9 @@
-name: Build and release
+name: Publish to PyPI
 
 on:
   push:
     tags:
-      - "*" # Push events to all tags'
+      - "*"
 
 jobs:
   publish:

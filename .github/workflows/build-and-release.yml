@@ -3,8 +3,6 @@ name: Build and release
 on:
   push:
     branches: [master]
-    tags-ignore:
-      - '*'
   pull_request:
     branches: [master]
 
