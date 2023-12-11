@@ -66,9 +66,29 @@ jobs:
         run: |
           bump2version patch --tag --verbose
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-          tags: true
+          python-version: 3.8
+
+      - name: Install python dependencies
+        run: |
+          pip --no-cache-dir install setuptools wheel "urllib3==1.25.11"
+          pip --no-cache-dir install -e .[tests,docs]
+
+      - name: Show python dependencies
+        run: |
+          pip freeze
+
+      - name: Build package
+        run: |
+          mkdir clean-build
+          python setup.py sdist bdist_wheel --universal --dist-dir ./clean-build
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@v1.3.1
+        with:
+          verify_metadata: false
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          packages_dir: clean-build/
