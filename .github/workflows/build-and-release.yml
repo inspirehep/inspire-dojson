@@ -46,6 +46,9 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_RELEASE_PACKAGES }}
 
       - name: Set up Python
         uses: actions/setup-python@v2
