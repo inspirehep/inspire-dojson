@@ -82,7 +82,6 @@ setup(
     long_description=readme,
     install_requires=install_requires,
     tests_require=tests_require,
-    setup_requires=setup_requires,
     extras_require=extras_require,
     version="63.2.0",
     classifiers=[
