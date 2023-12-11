@@ -66,10 +66,12 @@ jobs:
         run: |
           bump2version patch --tag --verbose
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          python-version: 3.8
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          tags: true
 
       - name: Install python dependencies
         run: |
