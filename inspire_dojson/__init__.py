@@ -28,4 +28,4 @@ from . import common  # noqa: F401
 from .api import marcxml2record, record2marcxml  # noqa: F401
 from .errors import DoJsonError  # noqa: F401
 
-__version__ = "63.2.11"
+__version__ = "63.2.12"
