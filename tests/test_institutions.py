@@ -23,16 +23,16 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.institutions import institutions
-from inspire_schemas.api import load_schema, validate
 
 
 def test_addresses_from_034__d_f_and_371__double_a_b_d_g():
     schema = load_schema('institutions')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/902630
         '<record>'
         '  <datafield tag="034" ind1=" " ind2=" ">'
         '    <subfield code="f">35.0499505</subfield>'
@@ -46,7 +46,7 @@ def test_addresses_from_034__d_f_and_371__double_a_b_d_g():
         '    <subfield code="g">JP</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/902630
+    )
 
     expected = [
         {
@@ -72,12 +72,12 @@ def test_external_system_identifiers_from_035__a_9():
     schema = load_schema('institutions')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/910133
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">HAL</subfield>'
         '  <subfield code="a">1969</subfield>'
         '</datafield>'
-    )  # record/910133
+    )
 
     expected = [
         {
@@ -95,7 +95,7 @@ def test_related_records_from_110__a_t_u_double_x_double_z():
     schema = load_schema('institutions')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1272953
         '<datafield tag="110" ind1=" " ind2=" ">'
         '  <subfield code="a">University of Pittsburgh</subfield>'
         '  <subfield code="t">U. Pittsburgh</subfield>'
@@ -105,7 +105,7 @@ def test_related_records_from_110__a_t_u_double_x_double_z():
         '  <subfield code="z">908047</subfield>'
         '  <subfield code="z">905042</subfield>'
         '</datafield>'
-    )  # record/1272953
+    )
 
     expected = [
         {
@@ -135,13 +135,12 @@ def test_icn_legacy_icn_institution_hierarchy_from_110__a_t_u():
     legacy_ICN_schema = schema['properties']['legacy_ICN']
     institution_hierarchy_schema = schema['properties']['institution_hierarchy']
 
-    snippet = (
-        '<datafield tag="110" ind1=" " ind2=" ">'
-        '  <subfield code="a">European Organization for Nuclear Research (CERN)</subfield>'
-        '  <subfield code="t">CERN, Geneva</subfield>'
-        '  <subfield code="u">CERN</subfield>'
-        '</datafield>'
-    )  # record/902725
+    snippet = (  # record/902725
+        '<datafield tag="110" ind1=" " ind2=" ">  <subfield code="a">European'
+        ' Organization for Nuclear Research (CERN)</subfield>  <subfield'
+        ' code="t">CERN, Geneva</subfield>  <subfield'
+        ' code="u">CERN</subfield></datafield>'
+    )
 
     expected_ICN = [
         'CERN, Geneva',
@@ -161,7 +160,9 @@ def test_icn_legacy_icn_institution_hierarchy_from_110__a_t_u():
     assert validate(result['legacy_ICN'], legacy_ICN_schema) is None
     assert expected_legacy_ICN == result['legacy_ICN']
 
-    assert validate(result['institution_hierarchy'], institution_hierarchy_schema) is None
+    assert (
+        validate(result['institution_hierarchy'], institution_hierarchy_schema) is None
+    )
     assert expected_institution_hierarchy == result['institution_hierarchy']
 
 
@@ -171,14 +172,13 @@ def test_icn_legacy_icn_institution_hierarchy_from_110__a_b_t_u():
     legacy_ICN_schema = schema['properties']['legacy_ICN']
     institution_hierarchy_schema = schema['properties']['institution_hierarchy']
 
-    snippet = (
-        '<datafield tag="110" ind1=" " ind2=" ">'
-        '  <subfield code="a">Université Libre de Bruxelles</subfield>'
-        '  <subfield code="b">Physique Theorique et Mathematique (PTM)</subfield>'
-        '  <subfield code="t">U. Libre Brussels, PTM</subfield>'
-        '  <subfield code="u">Brussels U., PTM</subfield>'
-        '</datafield>'
-    )  # record/909579
+    snippet = (  # record/909579
+        '<datafield tag="110" ind1=" " ind2=" ">  <subfield code="a">Université'
+        ' Libre de Bruxelles</subfield>  <subfield code="b">Physique Theorique'
+        ' et Mathematique (PTM)</subfield>  <subfield code="t">U. Libre'
+        ' Brussels, PTM</subfield>  <subfield code="u">Brussels U.,'
+        ' PTM</subfield></datafield>'
+    )
 
     expected_ICN = [
         'U. Libre Brussels, PTM',
@@ -201,7 +201,9 @@ def test_icn_legacy_icn_institution_hierarchy_from_110__a_b_t_u():
     assert validate(result['legacy_ICN'], legacy_ICN_schema) is None
     assert expected_legacy_ICN == result['legacy_ICN']
 
-    assert validate(result['institution_hierarchy'], institution_hierarchy_schema) is None
+    assert (
+        validate(result['institution_hierarchy'], institution_hierarchy_schema) is None
+    )
     assert expected_institution_hierarchy == result['institution_hierarchy']
 
 
@@ -209,7 +211,7 @@ def test_addresses_from_371__double_a_b_d_e_g():
     schema = load_schema('institutions')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/1209215
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Philosophenweg 16</subfield>'
         '  <subfield code="a">69120 Heidelberg</subfield>'
@@ -218,7 +220,7 @@ def test_addresses_from_371__double_a_b_d_e_g():
         '  <subfield code="e">69120</subfield>'
         '  <subfield code="g">DE</subfield>'
         '</datafield>'
-    )  # record/1209215
+    )
 
     expected = [
         {
@@ -243,7 +245,7 @@ def test_addresses_from_371__triple_a_b_d_e_g_and_371__triple_a_b_d_e_g_x():
     schema = load_schema('institutions')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/902696
         '<record>'
         '  <datafield tag="371" ind1=" " ind2=" ">'
         '    <subfield code="a">Université Libre de Bruxelles (ULB)</subfield>'
@@ -265,7 +267,7 @@ def test_addresses_from_371__triple_a_b_d_e_g_and_371__triple_a_b_d_e_g_x():
         '    <subfield code="x">secondary</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/902696
+    )
 
     expected = [
         {
@@ -303,7 +305,7 @@ def test_addresses_from_371__double_a_b_d_e_double_g():
     schema = load_schema('institutions')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/1241283
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="e">88003</subfield>'
         '  <subfield code="g">US</subfield>'
@@ -313,7 +315,7 @@ def test_addresses_from_371__double_a_b_d_e_double_g():
         '  <subfield code="d">USA</subfield>'
         '  <subfield code="g">US</subfield>'
         '</datafield>'
-    )  # record/1241283
+    )
 
     expected = [
         {
@@ -338,7 +340,7 @@ def test_addresses_from_371__a_b_d_e_g():
     schema = load_schema('institutions')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/902671
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Edgbaston, Birmingham B15 2TT</subfield>'
         '  <subfield code="b">Birmingham</subfield>'
@@ -346,7 +348,7 @@ def test_addresses_from_371__a_b_d_e_g():
         '  <subfield code="e">B15 2TT</subfield>'
         '  <subfield code="g">UK</subfield>'
         '</datafield>'
-    )  # record/902671
+    )
 
     expected = [
         {
@@ -370,11 +372,11 @@ def test_institution_type_from_372__a():
     schema = load_schema('institutions')
     subschema = schema['properties']['institution_type']
 
-    snippet = (
+    snippet = (  # record/902624
         '<datafield tag="372" ind1=" " ind2=" ">'
         '  <subfield code="a">Research center</subfield>'
         '</datafield>'
-    )  # record/902624
+    )
 
     expected = [
         'Research Center',
@@ -389,12 +391,12 @@ def test_name_variants_from_410__a_9():
     schema = load_schema('institutions')
     subschema = schema['properties']['name_variants']
 
-    snippet = (
+    snippet = (  # record/1496423
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">INSPIRE</subfield>'
         '  <subfield code="a">University of Chile</subfield>'
         '</datafield>'
-    )  # record/1496423
+    )
 
     expected = [
         {
@@ -409,12 +411,12 @@ def test_name_variants_from_410__a_9():
 
 
 def test_name_variants_from_410__a_9_discards_desy_source():
-    snippet = (
+    snippet = (  # record/902624
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">DESY</subfield>'
         '  <subfield code="a">Aachen Tech. Hochsch.</subfield>'
         '</datafield>'
-    )  # record/902624
+    )
 
     result = institutions.do(create_record(snippet))
 
@@ -422,12 +424,12 @@ def test_name_variants_from_410__a_9_discards_desy_source():
 
 
 def test_name_variants_from_410__a_9_discards_desy_aff_source():
-    snippet = (
+    snippet = (  # record/902626
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">DESY_AFF</subfield>'
         '  <subfield code="a">AARHUS UNIV</subfield>'
         '</datafield>'
-    )  # record/902626
+    )
 
     result = institutions.do(create_record(snippet))
 
@@ -435,13 +437,13 @@ def test_name_variants_from_410__a_9_discards_desy_aff_source():
 
 
 def test_name_variants_from_410__9_discards_other_sources():
-    snippet = (
+    snippet = (  # record/1338296
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">Tech</subfield>'
         '  <subfield code="a">CIIT</subfield>'
         '  <subfield code="g">Inst</subfield>'
         '</datafield>'
-    )  # record/1338296
+    )
 
     result = institutions.do(create_record(snippet))
 
@@ -452,12 +454,11 @@ def test_name_variants_from_410__double_a():
     schema = load_schema('institutions')
     subschema = schema['properties']['name_variants']
 
-    snippet = (
-        '<datafield tag="410" ind1=" " ind2=" ">'
-        '  <subfield code="a">Theoretische Teilchenphysik und Kosmologie</subfield>'
-        '  <subfield code="a">Elementarteilchenphysik</subfield>'
-        '</datafield>'
-    )  # record/902624
+    snippet = (  # record/902624
+        '<datafield tag="410" ind1=" " ind2=" ">  <subfield'
+        ' code="a">Theoretische Teilchenphysik und Kosmologie</subfield> '
+        ' <subfield code="a">Elementarteilchenphysik</subfield></datafield>'
+    )
 
     expected = [
         {'value': 'Theoretische Teilchenphysik und Kosmologie'},
@@ -473,20 +474,17 @@ def test_extra_words_from_410__decuple_g():
     schema = load_schema('institutions')
     subschema = schema['properties']['extra_words']
 
-    snippet = (
-        '<datafield tag="410" ind1=" " ind2=" ">'
-        '  <subfield code="g">Institut Theoretische Physik,</subfield>'
-        '  <subfield code="g">RWTH, Inst.</subfield>'
-        '  <subfield code="g">institute A</subfield>'
-        '  <subfield code="g">III. Physikalisches Institut, Technische Hochschule Aachen, Aachen, West</subfield>'
-        '  <subfield code="g">physics</subfield>'
-        '  <subfield code="g">52056</subfield>'
-        '  <subfield code="g">D-52056</subfield>'
-        '  <subfield code="g">DE-52056</subfield>'
-        '  <subfield code="g">phys</subfield>'
-        '  <subfield code="g">I. Physikalisches Institut</subfield>'
-        '</datafield>'
-    )  # record/902624
+    snippet = (  # record/902624
+        '<datafield tag="410" ind1=" " ind2=" ">  <subfield code="g">Institut'
+        ' Theoretische Physik,</subfield>  <subfield code="g">RWTH,'
+        ' Inst.</subfield>  <subfield code="g">institute A</subfield> '
+        ' <subfield code="g">III. Physikalisches Institut, Technische'
+        ' Hochschule Aachen, Aachen, West</subfield>  <subfield'
+        ' code="g">physics</subfield>  <subfield code="g">52056</subfield> '
+        ' <subfield code="g">D-52056</subfield>  <subfield'
+        ' code="g">DE-52056</subfield>  <subfield code="g">phys</subfield> '
+        ' <subfield code="g">I. Physikalisches Institut</subfield></datafield>'
+    )
 
     expected = [
         'Institut Theoretische Physik,',
@@ -510,13 +508,13 @@ def test_related_records_from_510__a_w_0_accepts_parents():
     schema = load_schema('institutions')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1430106
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">1385404</subfield>'
         '  <subfield code="a">U. Caen (main)</subfield>'
         '  <subfield code="w">t</subfield>'
         '</datafield>'
-    )  # record/1430106
+    )
 
     expected = [
         {
@@ -537,7 +535,7 @@ def test_related_records_from_double_510__a_w_0_accepts_parents():
     schema = load_schema('institutions')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1430106
         '<record>'
         '  <datafield tag="510" ind1=" " ind2=" ">'
         '    <subfield code="0">1385404</subfield>'
@@ -550,7 +548,7 @@ def test_related_records_from_double_510__a_w_0_accepts_parents():
         '    <subfield code="w">t</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1430106
+    )
 
     expected = [
         {
@@ -578,7 +576,7 @@ def test_related_records_from_double_510__a_w_0_accepts_predecessors():
     schema = load_schema('institutions')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/902916
         '<record>'
         '  <datafield tag="510" ind1=" " ind2=" ">'
         '    <subfield code="0">903276</subfield>'
@@ -591,7 +589,7 @@ def test_related_records_from_double_510__a_w_0_accepts_predecessors():
         '    <subfield code="w">a</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/902916
+    )
 
     expected = [
         {
@@ -619,13 +617,13 @@ def test_related_records_from_510__a_w_0_accepts_other():
     schema = load_schema('institutions')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/902971
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">945696</subfield>'
         '  <subfield code="a">UMass Amherst</subfield>'
         '  <subfield code="w">r</subfield>'
         '</datafield>'
-    )  # record/902971
+    )
 
     expected = [
         {
@@ -646,13 +644,13 @@ def test_related_records_from__510__a_w_0_accepts_successors():
     schema = load_schema('institutions')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/902831
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">911753</subfield>'
         '  <subfield code="a">HZB, Berlin</subfield>'
         '  <subfield code="w">b</subfield>'
         '</datafield>'
-    )  # record/902831
+    )
 
     expected = [
         {
@@ -670,11 +668,11 @@ def test_related_records_from__510__a_w_0_accepts_successors():
 
 
 def test_related_records_from_510__w_discards_malformed():
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="w">foo</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     result = institutions.do(create_record(snippet))
 
@@ -685,11 +683,11 @@ def test_core_from_980__a_core():
     schema = load_schema('institutions')
     subschema = schema['properties']['core']
 
-    snippet = (
+    snippet = (  # record/902645
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">CORE</subfield>'
         '</datafield>'
-    )  # record/902645
+    )
 
     expected = True
     result = institutions.do(create_record(snippet))
@@ -702,12 +700,12 @@ def test_core_from_980__a_b_noncore():
     schema = load_schema('institutions')
     subschema = schema['properties']['core']
 
-    snippet = (
+    snippet = (  # record/906132
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">NONCORE</subfield>'
         '  <subfield code="b">NON-PPF</subfield>'
         '</datafield>'
-    )  # record/906132
+    )
 
     expected = False
     result = institutions.do(create_record(snippet))
@@ -720,11 +718,11 @@ def test_private_notes_from_667__a():
     schema = load_schema('institutions')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
+    snippet = (  # record/902663
         '<datafield tag="667" ind1=" " ind2=" ">'
         '  <subfield code="a">Former ICN = Negev U.</subfield>'
         '</datafield>'
-    )  # record/902663
+    )
 
     expected = [
         {'value': 'Former ICN = Negev U.'},
@@ -739,14 +737,23 @@ def test_private_notes_from_595__a():
     schema = load_schema('institutions')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<datafield tag="595" ind1=" " ind2=" ">'
-        '  <subfield code="a">The Division is located inside the Department of Physics and Astronomy of the University of Catania Scientific Campus ("Città Universitaria" or "Cittadella"). Via Santa Sofia 64 95123 CATANIA</subfield>'
-        '</datafield>'
-    )  # record/902879
+    snippet = (  # record/902879
+        '<datafield tag="595" ind1=" " ind2=" ">  <subfield code="a">The'
+        ' Division is located inside the Department of Physics and Astronomy of'
+        ' the University of Catania Scientific Campus ("Città Universitaria" or'
+        ' "Cittadella"). Via Santa Sofia 64 95123'
+        ' CATANIA</subfield></datafield>'
+    )
 
     expected = [
-        {'value': u'The Division is located inside the Department of Physics and Astronomy of the University of Catania Scientific Campus ("Città Universitaria" or "Cittadella"). Via Santa Sofia 64 95123 CATANIA'},
+        {
+            'value': (
+                u'The Division is located inside the Department of Physics and'
+                u' Astronomy of the University of Catania Scientific Campus'
+                u' ("Città Universitaria" or "Cittadella"). Via Santa Sofia 64'
+                u' 95123 CATANIA'
+            )
+        },
     ]
     result = institutions.do(create_record(snippet))
 
@@ -758,20 +765,31 @@ def test_private_notes_from_double_595__a():
     schema = load_schema('institutions')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="595" ind1=" " ind2=" ">'
-        '    <subfield code="a">The Roma II Structure was established in 1989 at the University of Rome “Tor Vergata” - cc</subfield>'
-        '  </datafield>'
-        '  <datafield tag="595" ind1=" " ind2=" ">'
-        '    <subfield code="a">REDACTED thinks we don\'t have to write 110__t: "INFN, Rome 2" because Rome 2 is only in the url but not in the site. She\'ll ask to REDACTED (from INFN) to have her feedback.</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/907691
+    snippet = (  # record/907691
+        '<record>  <datafield tag="595" ind1=" " ind2=" ">    <subfield'
+        ' code="a">The Roma II Structure was established in 1989 at the'
+        ' University of Rome “Tor Vergata” - cc</subfield>  </datafield> '
+        ' <datafield tag="595" ind1=" " ind2=" ">    <subfield'
+        ' code="a">REDACTED thinks we don\'t have to write 110__t: "INFN, Rome'
+        ' 2" because Rome 2 is only in the url but not in the site. She\'ll ask'
+        ' to REDACTED (from INFN) to have her feedback.</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
-        {'value': u'The Roma II Structure was established in 1989 at the University of Rome “Tor Vergata” - cc'},
-        {'value': u'REDACTED thinks we don\'t have to write 110__t: "INFN, Rome 2" because Rome 2 is only in the url but not in the site. She\'ll ask to REDACTED (from INFN) to have her feedback.'},
+        {
+            'value': (
+                u'The Roma II Structure was established in 1989 at the'
+                u' University of Rome “Tor Vergata” - cc'
+            )
+        },
+        {
+            'value': (
+                u'REDACTED thinks we don\'t have to write 110__t: "INFN, Rome'
+                u' 2" because Rome 2 is only in the url but not in the site.'
+                u' She\'ll ask to REDACTED (from INFN) to have her feedback.'
+            )
+        },
     ]
     result = institutions.do(create_record(snippet))
 
@@ -783,14 +801,19 @@ def test_public_notes_from_680__i():
     schema = load_schema('institutions')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<datafield tag="680" ind1=" " ind2=" ">'
-        '  <subfield code="i">2nd address: Organisation Européenne pour la Recherche Nucléaire (CERN), F-01631 Prévessin Cedex, France</subfield>'
-        '</datafield>'
-    )  # record/902725
+    snippet = (  # record/902725
+        '<datafield tag="680" ind1=" " ind2=" ">  <subfield code="i">2nd'
+        ' address: Organisation Européenne pour la Recherche Nucléaire (CERN),'
+        ' F-01631 Prévessin Cedex, France</subfield></datafield>'
+    )
 
     expected = [
-        {'value': u'2nd address: Organisation Européenne pour la Recherche Nucléaire (CERN), F-01631 Prévessin Cedex, France'}
+        {
+            'value': (
+                u'2nd address: Organisation Européenne pour la Recherche'
+                u' Nucléaire (CERN), F-01631 Prévessin Cedex, France'
+            )
+        }
     ]
     result = institutions.do(create_record(snippet))
 
@@ -802,14 +825,17 @@ def test_historical_data_from_6781_a():
     schema = load_schema('institutions')
     subschema = schema['properties']['historical_data']
 
-    snippet = (
-        '<datafield tag="678" ind1="1" ind2=" ">'
-        '  <subfield code="a">Became IFH (Inst for Hochenergiephysik)in 1968. Since 1992 the official name of the Inst. is simply DESY Zeuthen. Changed 1/26/99 AMR</subfield>'
-        '</datafield>'
-    )  # record/902666
+    snippet = (  # record/902666
+        '<datafield tag="678" ind1="1" ind2=" ">  <subfield code="a">Became IFH'
+        ' (Inst for Hochenergiephysik)in 1968. Since 1992 the official name of'
+        ' the Inst. is simply DESY Zeuthen. Changed 1/26/99'
+        ' AMR</subfield></datafield>'
+    )
 
     expected = [
-        'Became IFH (Inst for Hochenergiephysik)in 1968. Since 1992 the official name of the Inst. is simply DESY Zeuthen. Changed 1/26/99 AMR'
+        'Became IFH (Inst for Hochenergiephysik)in 1968. Since 1992 the'
+        ' official name of the Inst. is simply DESY Zeuthen. Changed'
+        ' 1/26/99 AMR'
     ]
     result = institutions.do(create_record(snippet))
 
@@ -821,14 +847,15 @@ def test_historical_data_from_6781_multiple_a():
     schema = load_schema('institutions')
     subschema = schema['properties']['historical_data']
 
-    snippet = (
-        '<datafield tag="678" ind1="1" ind2=" ">'
-        '  <subfield code="a">Conseil européen pour la Recherche Nucléaire (1952-1954)</subfield>'
-        '  <subfield code="a">Organisation européenne pour la Recherche nucléaire (1954-now)</subfield>'
-        '  <subfield code="a">Sub title: Laboratoire européen pour la Physique des Particules (1984-now)</subfield>'
-        '  <subfield code="a">Sub title: European Laboratory for Particle Physics (1984-now)</subfield>'
-        '</datafield>'
-    )  # record/902725
+    snippet = (  # record/902725
+        '<datafield tag="678" ind1="1" ind2=" ">  <subfield code="a">Conseil'
+        ' européen pour la Recherche Nucléaire (1952-1954)</subfield> '
+        ' <subfield code="a">Organisation européenne pour la Recherche'
+        ' nucléaire (1954-now)</subfield>  <subfield code="a">Sub title:'
+        ' Laboratoire européen pour la Physique des Particules'
+        ' (1984-now)</subfield>  <subfield code="a">Sub title: European'
+        ' Laboratory for Particle Physics (1984-now)</subfield></datafield>'
+    )
 
     expected = [
         u'Conseil européen pour la Recherche Nucléaire (1952-1954)',
@@ -846,7 +873,7 @@ def test_deleted_from_980__multiple_b_and_980__a_and_980__c():
     schema = load_schema('institutions')
     subschema = schema['properties']['deleted']
 
-    snippet = (
+    snippet = (  # record/905453
         '<record>'
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="b">CK90</subfield>'
@@ -860,7 +887,7 @@ def test_deleted_from_980__multiple_b_and_980__a_and_980__c():
         '    <subfield code="c">DELETED</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/905453
+    )
 
     expected = True
     result = institutions.do(create_record(snippet))
@@ -873,11 +900,11 @@ def test_inactive_from_980__a():
     schema = load_schema('institutions')
     subschema = schema['properties']['inactive']
 
-    snippet = (
+    snippet = (  # record/1241100
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">DEAD</subfield>'
         '</datafield>'
-    )  # record/1241100
+    )
 
     expected = True
     result = institutions.do(create_record(snippet))

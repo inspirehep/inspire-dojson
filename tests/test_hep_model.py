@@ -23,18 +23,16 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep
-from inspire_schemas.api import load_schema, validate
 
 
 def test_ensure_curated():
     schema = load_schema('hep')
     subschema = schema['properties']['curated']
 
-    snippet = (
-        '<record></record>'
-    )  # synthetic data
+    snippet = '<record></record>'  # synthetic data
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -47,12 +45,12 @@ def test_ensure_curated_when_500_present():
     schema = load_schema('hep')
     subschema = schema['properties']['curated']
 
-    snippet = (
+    snippet = (  # record/1450044
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="a">5 pages</subfield>'
         '</datafield>'
-    )  # record/1450044
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -62,12 +60,13 @@ def test_ensure_curated_when_500_present():
 
 
 def test_set_citeable_when_not_citeable():
-    snippet = (
-        '<datafield tag="773" ind1=" " ind2=" ">'
-        '  <subfield code="c">152-61</subfield>'
-        '  <subfield code="x">Proc. of Athens Topical Conference on Recently Discovered Resonant Particles, Athens, Ohio, 1963. Athens, Ohio, Ohio U., 1963. p. 152-61</subfield>'
-        '</datafield>'
-    )  # record/59
+    snippet = (  # record/59
+        '<datafield tag="773" ind1=" " ind2=" ">  <subfield'
+        ' code="c">152-61</subfield>  <subfield code="x">Proc. of Athens'
+        ' Topical Conference on Recently Discovered Resonant Particles, Athens,'
+        ' Ohio, 1963. Athens, Ohio, Ohio U., 1963. p.'
+        ' 152-61</subfield></datafield>'
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -78,7 +77,7 @@ def test_set_citeable_when_citeable():
     schema = load_schema('hep')
     subschema = schema['properties']['citeable']
 
-    snippet = (
+    snippet = (  # record/4328
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="p">Nucl.Phys.</subfield>'
         '  <subfield code="v">22</subfield>'
@@ -86,7 +85,7 @@ def test_set_citeable_when_citeable():
         '  <subfield code="y">1961</subfield>'
         '  <subfield code="1">1214548</subfield>'
         '</datafield>'
-    )  # record/4328
+    )
 
     expected = True
     result = hep.do(create_record(snippet))

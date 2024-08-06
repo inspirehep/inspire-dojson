@@ -28,7 +28,6 @@ from functools import partial
 
 from dojson import utils
 from idutils import is_arxiv_post_2007
-
 from inspire_schemas.api import ReferenceBuilder, load_schema
 from inspire_schemas.utils import (
     build_pubnote,
@@ -38,8 +37,12 @@ from inspire_utils.dedupers import dedupe_list
 from inspire_utils.helpers import force_list, maybe_int
 from inspire_utils.record import get_value
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element, get_recid_from_ref, get_record_ref
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import (
+    force_single_element,
+    get_recid_from_ref,
+    get_record_ref,
+)
 
 COLLECTIONS_MAP = {
     'babar-analysisdocument': 'BABAR Analysis Documents',
@@ -170,7 +173,9 @@ def document_type(self, key, value):
         elif normalized_a_value == 'deleted':
             self['deleted'] = True
         elif normalized_a_value in COLLECTIONS_MAP:
-            self.setdefault('_collections', []).append(COLLECTIONS_MAP[normalized_a_value])
+            self.setdefault('_collections', []).append(
+                COLLECTIONS_MAP[normalized_a_value]
+            )
         elif normalized_a_value in DOCUMENT_TYPE_MAP:
             document_type.append(DOCUMENT_TYPE_MAP[normalized_a_value])
         elif normalized_a_value in valid_publication_types:
@@ -255,14 +260,15 @@ def publication_type2marc(self, key, value):
 @utils.for_each_value
 def references(self, key, value):
     """Populate the ``references`` key."""
+
     def _has_curator_flag(value):
         normalized_nine_values = [el.upper() for el in force_list(value.get('9'))]
         return 'CURATOR' in normalized_nine_values
 
     def _is_curated(value):
-        is_explicitly_curated = (
-            force_single_element(value.get('z')) == '1' and _has_curator_flag(value)
-        )
+        is_explicitly_curated = force_single_element(
+            value.get('z')
+        ) == '1' and _has_curator_flag(value)
         has_only_0_and_z = set(value.keys()) == {'0', 'z'}
         return is_explicitly_curated or has_only_0_and_z
 
@@ -323,8 +329,16 @@ def references2marc(self, key, value):
 
     external_ids = force_list(reference.get('external_system_identifiers'))
     u_values = force_list(get_value(reference, 'urls.value'))
-    u_values.extend(CDS_RECORD_FORMAT.format(el['value']) for el in external_ids if el.get('schema') == 'CDS')
-    u_values.extend(ADS_RECORD_FORMAT.format(el['value']) for el in external_ids if el.get('schema') == 'ADS')
+    u_values.extend(
+        CDS_RECORD_FORMAT.format(el['value'])
+        for el in external_ids
+        if el.get('schema') == 'CDS'
+    )
+    u_values.extend(
+        ADS_RECORD_FORMAT.format(el['value'])
+        for el in external_ids
+        if el.get('schema') == 'ADS'
+    )
 
     authors = force_list(reference.get('authors'))
     e_values = [el['full_name'] for el in authors if el.get('inspire_role') == 'editor']
@@ -333,10 +347,16 @@ def references2marc(self, key, value):
     r_values = force_list(reference.get('report_numbers'))
     if reference.get('arxiv_eprint'):
         arxiv_eprint = reference['arxiv_eprint']
-        r_values.append('arXiv:' + arxiv_eprint if is_arxiv_post_2007(arxiv_eprint) else arxiv_eprint)
+        r_values.append(
+            'arXiv:' + arxiv_eprint
+            if is_arxiv_post_2007(arxiv_eprint)
+            else arxiv_eprint
+        )
 
     if reference.get('publication_info'):
-        reference['publication_info'] = convert_new_publication_info_to_old([reference['publication_info']])[0]
+        reference['publication_info'] = convert_new_publication_info_to_old(
+            [reference['publication_info']]
+        )[0]
     journal_title = get_value(reference, 'publication_info.journal_title')
     journal_volume = get_value(reference, 'publication_info.journal_volume')
     page_start = get_value(reference, 'publication_info.page_start')

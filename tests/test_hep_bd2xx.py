@@ -22,21 +22,22 @@
 
 from __future__ import absolute_import, division, print_function
 
+import pytest
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_rpp_from_210__a():
     schema = load_schema('hep')
     subschema = schema['properties']['rpp']
 
-    snippet = (
+    snippet = (  # record/875948
         '<datafield tag="210" ind1=" " ind2=" ">'
         '  <subfield code="a">RPP</subfield>'
         '</datafield>'
-    )  # record/875948
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -54,11 +55,11 @@ def test_rpp_from_210__a__RPP_section():
     schema = load_schema('hep')
     subschema = schema['properties']['rpp']
 
-    snippet = (
+    snippet = (  # record/806134
         '<datafield tag="210" ind1=" " ind2=" ">'
         '  <subfield code="a">RPP section</subfield>'
         '</datafield>'
-    )  # record/806134
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -76,18 +77,19 @@ def test_titles_from_245__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['titles']
 
-    snippet = (
-        '<datafield tag="245" ind1=" " ind2=" ">'
-        '  <subfield code="a">Exact Form of Boundary Operators Dual to '
-        'Interacting Bulk Scalar Fields in the AdS/CFT Correspondence</subfield>'
-        '  <subfield code="9">arXiv</subfield>'
-        '</datafield>'
-    )  # record/001511698
+    snippet = (  # record/001511698
+        '<datafield tag="245" ind1=" " ind2=" ">  <subfield code="a">Exact Form'
+        ' of Boundary Operators Dual to Interacting Bulk Scalar Fields in the'
+        ' AdS/CFT Correspondence</subfield>  <subfield'
+        ' code="9">arXiv</subfield></datafield>'
+    )
 
     expected = [
         {
-            'title': 'Exact Form of Boundary Operators Dual to Interacting '
-                     'Bulk Scalar Fields in the AdS/CFT Correspondence',
+            'title': (
+                'Exact Form of Boundary Operators Dual to Interacting '
+                'Bulk Scalar Fields in the AdS/CFT Correspondence'
+            ),
             'source': 'arXiv',
         },
     ]
@@ -98,8 +100,10 @@ def test_titles_from_245__a_9():
 
     expected = [
         {
-            'a': 'Exact Form of Boundary Operators Dual to Interacting '
-                 'Bulk Scalar Fields in the AdS/CFT Correspondence',
+            'a': (
+                'Exact Form of Boundary Operators Dual to Interacting '
+                'Bulk Scalar Fields in the AdS/CFT Correspondence'
+            ),
             '9': 'arXiv',
         },
     ]
@@ -112,19 +116,21 @@ def test_titles_from_246__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['titles']
 
-    snippet = (
+    snippet = (  # record/1511471
         '<datafield tag="246" ind1=" " ind2=" ">'
         '  <subfield code="a">Superintegrable relativistic systems in'
         ' spacetime-dependent background fields</subfield>'
         '  <subfield code="9">arXiv</subfield>'
         '</datafield>'
-    )  # record/1511471
+    )
 
     expected = [
         {
             'source': 'arXiv',
-            'title': 'Superintegrable relativistic systems in '
-                     'spacetime-dependent background fields',
+            'title': (
+                'Superintegrable relativistic systems in '
+                'spacetime-dependent background fields'
+            ),
         },
     ]
     result = hep.do(create_record(snippet))
@@ -134,7 +140,10 @@ def test_titles_from_246__a_9():
 
     expected = [
         {
-            'a': 'Superintegrable relativistic systems in spacetime-dependent background fields',
+            'a': (
+                'Superintegrable relativistic systems in spacetime-dependent'
+                ' background fields'
+            ),
             '9': 'arXiv',
         },
     ]
@@ -147,12 +156,12 @@ def test_titles_from_245__a_b():
     schema = load_schema('hep')
     subschema = schema['properties']['titles']
 
-    snippet = (
-        '<datafield tag="245" ind1=" " ind2=" ">'
-        '  <subfield code="a">Proceedings, New Observables in Quarkonium Production</subfield>'
-        '  <subfield code="b">Trento, Italy</subfield>'
-        '</datafield>'
-    )  # record/1510141
+    snippet = (  # record/1510141
+        '<datafield tag="245" ind1=" " ind2=" ">  <subfield'
+        ' code="a">Proceedings, New Observables in Quarkonium'
+        ' Production</subfield>  <subfield code="b">Trento,'
+        ' Italy</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -176,15 +185,16 @@ def test_titles_from_245__a_b():
     assert expected == result['245']
 
 
-def test_title_translations_from_242__a(stable_langdetect):
+@pytest.mark.usefixtures(name='_stable_langdetect')
+def test_title_translations_from_242__a():
     schema = load_schema('hep')
     subschema = schema['properties']['title_translations']
 
-    snippet = (
+    snippet = (  # record/8352
         '<datafield tag="242" ind1=" " ind2=" ">'
         '  <subfield code="a">The redshift of extragalactic nebulae</subfield>'
         '</datafield>'
-    )  # record/8352
+    )
 
     expected = [
         {
@@ -207,16 +217,17 @@ def test_title_translations_from_242__a(stable_langdetect):
     assert expected == result['242']
 
 
-def test_title_translations_from_242__a_b(stable_langdetect):
+@pytest.mark.usefixtures(name='_stable_langdetect')
+def test_title_translations_from_242__a_b():
     schema = load_schema('hep')
     subschema = schema['properties']['title_translations']
 
-    snippet = (
-        '<datafield tag="242" ind1=" " ind2=" ">'
-        '  <subfield code="a">Generalized Hamilton-Jacobi Formalism</subfield>'
-        '  <subfield code="b">Field Theories with Upper-Order Derivatives</subfield>'
-        '</datafield>'
-    )  # record/1501064
+    snippet = (  # record/1501064
+        '<datafield tag="242" ind1=" " ind2=" ">  <subfield'
+        ' code="a">Generalized Hamilton-Jacobi Formalism</subfield>  <subfield'
+        ' code="b">Field Theories with Upper-Order'
+        ' Derivatives</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -245,11 +256,11 @@ def test_editions_from_250__a():
     schema = load_schema('hep')
     subschema = schema['properties']['editions']
 
-    snippet = (
+    snippet = (  # record/1383727
         '<datafield tag="250" ind1=" " ind2=" ">'
         '  <subfield code="a">2nd ed.</subfield>'
         '</datafield>'
-    )  # record/1383727
+    )
 
     expected = [
         '2nd ed.',
@@ -271,13 +282,13 @@ def test_imprints_from_260__a_b_c():
     schema = load_schema('hep')
     subschema = schema['properties']['imprints']
 
-    snippet = (
+    snippet = (  # record/1614215
         '<datafield tag="260" ind1=" " ind2=" ">'
         '  <subfield code="a">Geneva</subfield>'
         '  <subfield code="b">CERN</subfield>'
         '  <subfield code="c">2017</subfield>'
         '</datafield>'
-    )  # record/1614215
+    )
 
     expected = [
         {
@@ -307,15 +318,13 @@ def test_imprints_from_260__c_wrong_date():
     schema = load_schema('hep')
     subschema = schema['properties']['imprints']
 
-    snippet = (
+    snippet = (  # record/1314991
         '<datafield tag="260" ind1=" " ind2=" ">'
         '  <subfield code="c">2014-00-01</subfield>'
         '</datafield>'
-    )  # record/1314991
+    )
 
-    expected = [
-        {'date': '2014'}
-    ]
+    expected = [{'date': '2014'}]
     result = hep.do(create_record(snippet))
 
     assert validate(result['imprints'], subschema) is None
@@ -333,11 +342,11 @@ def test_preprint_date_from_269__c():
     schema = load_schema('hep')
     subschema = schema['properties']['preprint_date']
 
-    snippet = (
+    snippet = (  # record/1375944
         '<datafield tag="269" ind1=" " ind2=" ">'
         '  <subfield code="c">2015-05-03</subfield>'
         '</datafield>'
-    )  # record/1375944
+    )
 
     expected = '2015-05-03'
     result = hep.do(create_record(snippet))
@@ -357,11 +366,11 @@ def test_preprint_date_from_269__c_wrong_date():
     schema = load_schema('hep')
     subschema = schema['properties']['preprint_date']
 
-    snippet = (
+    snippet = (  # record/1194517
         '<datafield tag="269" ind1=" " ind2=" ">'
         '  <subfield code="c">2001-02-31</subfield>'
         '</datafield>'
-    )  # record/1194517
+    )
 
     expected = '2001-02'
     result = hep.do(create_record(snippet))

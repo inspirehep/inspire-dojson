@@ -27,16 +27,14 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 
-from flask import current_app
-from isbn import ISBN
-from six import binary_type, iteritems, text_type
-from six.moves import urllib
-
 from dojson.utils import GroupableOrderedDict
-
+from flask import current_app
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
+from isbn import ISBN
+from six import binary_type, iteritems, text_type
+from six.moves import urllib
 
 DEFAULT_AFS_PATH = '/afs/cern.ch/project/inspire/PROD'
 
@@ -136,9 +134,14 @@ def afs_url(file_path):
 
     if process_path:
         if afs_service:
-            return os.path.join(afs_service, urllib.request.pathname2url(file_path.encode('utf-8')))
+            return os.path.join(
+                afs_service,
+                urllib.request.pathname2url(file_path.encode('utf-8')),
+            )
         file_path = os.path.join(afs_path, file_path)
-        return urllib.parse.urljoin('file://', urllib.request.pathname2url(file_path.encode('utf-8')))
+        return urllib.parse.urljoin(
+            'file://', urllib.request.pathname2url(file_path.encode('utf-8'))
+        )
 
     return file_path
 
@@ -161,7 +164,7 @@ def afs_url_to_path(url):
     if not afs_service or not url.startswith(afs_service):
         return url
 
-    path = url[len(afs_service):].lstrip('/')
+    path = url[len(afs_service) :].lstrip('/')
     return urllib.parse.urljoin('file://', os.path.join(afs_path, path))
 
 
@@ -227,6 +230,7 @@ def dedupe_all_lists(obj, exclude_keys=()):
 
 def normalize_date_aggressively(date):
     """Normalize date, stripping date parts until a valid date is obtained."""
+
     def _strip_last_part(date):
         parts = date.split('-')
         return '-'.join(parts[:-1])

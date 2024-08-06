@@ -26,12 +26,11 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 from idutils import normalize_issn
-
 from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
-from .model import journals
-from ..utils import get_record_ref
+from inspire_dojson.journals.model import journals
+from inspire_dojson.utils import get_record_ref
 
 
 @journals.over('issns', '^022..')
@@ -152,7 +151,8 @@ def _private_notes(self, key, value):
         {
             'source': value.get('9'),
             'value': _private_note,
-        } for _private_note in force_list(value.get('x'))
+        }
+        for _private_note in force_list(value.get('x'))
     ]
 
 

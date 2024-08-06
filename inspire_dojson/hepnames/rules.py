@@ -27,7 +27,6 @@ from __future__ import absolute_import, division, print_function
 import re
 
 from dojson import utils
-
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import (
     normalize_arxiv_category,
@@ -37,22 +36,23 @@ from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 from inspire_utils.name import normalize_name
 
-from .model import hepnames, hepnames2marc
-from ..utils import (
+from inspire_dojson.hepnames.model import hepnames, hepnames2marc
+from inspire_dojson.utils import (
     force_single_element,
-    get_record_ref,
     get_recid_from_ref,
+    get_record_ref,
     normalize_rank,
     quote_url,
-    unquote_url
+    unquote_url,
 )
-
 
 AWARD_YEAR = re.compile(r'\(?(?P<year>\d{4})\)?')
 INSPIRE_BAI = re.compile(r'(\w+\.)+\d+')
 LOOKS_LIKE_CERN = re.compile(r'^\d+$|^CER[MN]?-|^CNER-|^CVERN-', re.I)
 NON_DIGIT = re.compile(r'[^\d]+')
-LINKEDIN_URL = re.compile(r'https?://(\w+\.)?linkedin\.com/in/(?P<page>[\w%-]+)', re.UNICODE)
+LINKEDIN_URL = re.compile(
+    r'https?://(\w+\.)?linkedin\.com/in/(?P<page>[\w%-]+)', re.UNICODE
+)
 TWITTER_URL = re.compile(r'https?://(www\.)?twitter\.com/(?P<handle>\w+)')
 WIKIPEDIA_URL = re.compile(r'https?://(?P<lang>\w+)\.wikipedia\.org/wiki/(?P<page>.*)')
 
@@ -111,15 +111,20 @@ def ids(self, key, value):
     z_value = _try_to_correct_value(schema, z_value)
 
     if schema and a_value:
-        ids.insert(0, {
-            'schema': schema,
-            'value': a_value,
-        })
+        ids.insert(
+            0,
+            {
+                'schema': schema,
+                'value': a_value,
+            },
+        )
     if schema and z_value:
-        ids.append({
-            'schema': schema,
-            'value': z_value,
-        })
+        ids.append(
+            {
+                'schema': schema,
+                'value': z_value,
+            }
+        )
 
     return ids
 
@@ -130,11 +135,9 @@ def ids2marc(self, key, values):
 
     Also populates the ``8564`` and ``970`` MARC field through side effects.
     """
+
     def _convert_schema(schema):
-        conversion = {
-            'INSPIRE BAI': 'BAI',
-            'INSPIRE ID': 'INSPIRE'
-        }
+        conversion = {'INSPIRE BAI': 'BAI', 'INSPIRE ID': 'INSPIRE'}
         return conversion.get(schema, schema)
 
     def _is_schema_spires(id_, schema):
@@ -175,10 +178,12 @@ def ids2marc(self, key, values):
                 field = 'a'
             else:
                 field = 'z'
-            result.append({
-                field: id_,
-                '9': _convert_schema(schema),
-            })
+            result.append(
+                {
+                    field: id_,
+                    '9': _convert_schema(schema),
+                }
+            )
 
     return result
 
@@ -187,8 +192,10 @@ def ids2marc(self, key, values):
 def name(self, key, value):
     """Populate the ``name`` key.
 
-    Also populates the ``status``, ``birth_date`` and ``death_date`` keys through side effects.
+    Also populates the ``status``, ``birth_date`` and ``death_date``
+    keys through side effects.
     """
+
     def _get_title(value):
         c_value = force_single_element(value.get('c', ''))
         if c_value != 'title (e.g. Sir)':
@@ -280,14 +287,20 @@ def positions(self, key, value):
     current_email_addresses = force_list(value.get('m'))
     non_current_email_addresses = force_list(value.get('o'))
 
-    email_addresses.extend({
-        'value': address,
-        'current': True,
-    } for address in current_email_addresses)
-    email_addresses.extend({
-        'value': address,
-        'current': False,
-    } for address in non_current_email_addresses)
+    email_addresses.extend(
+        {
+            'value': address,
+            'current': True,
+        }
+        for address in current_email_addresses
+    )
+    email_addresses.extend(
+        {
+            'value': address,
+            'current': False,
+        }
+        for address in non_current_email_addresses
+    )
 
     self['email_addresses'] = email_addresses
 
@@ -345,9 +358,7 @@ def email_addresses2marc(self, key, value):
     Also populates the 371 field as a side effect.
     """
     m_or_o = 'm' if value.get('current') else 'o'
-    element = {
-        m_or_o: value.get('value')
-    }
+    element = {m_or_o: value.get('value')}
 
     if value.get('hidden'):
         return element
@@ -365,25 +376,30 @@ def email_addresses595(self, key, value):
     emails = self.get('email_addresses', [])
 
     if value.get('o'):
-        emails.append({
-            'value': value.get('o'),
-            'current': False,
-            'hidden': True,
-        })
+        emails.append(
+            {
+                'value': value.get('o'),
+                'current': False,
+                'hidden': True,
+            }
+        )
 
     if value.get('m'):
-        emails.append({
-            'value': value.get('m'),
-            'current': True,
-            'hidden': True,
-        })
+        emails.append(
+            {
+                'value': value.get('m'),
+                'current': True,
+                'hidden': True,
+            }
+        )
 
     notes = self.get('_private_notes', [])
     new_note = (
         {
             'source': value.get('9'),
             'value': _private_note,
-        } for _private_note in force_list(value.get('a'))
+        }
+        for _private_note in force_list(value.get('a'))
     )
     notes.extend(new_note)
     self['_private_notes'] = notes
@@ -393,7 +409,6 @@ def email_addresses595(self, key, value):
 
 @hepnames.over('name', '^400..')
 def name_variants(self, key, value):
-
     name_item = self.get('name', {})
     name_variants_list = name_item.get('name_variants', [])
 
@@ -409,6 +424,7 @@ def arxiv_categories(self, key, value):
 
     Also populates the ``inspire_categories`` key through side effects.
     """
+
     def _is_arxiv(category):
         return category in valid_arxiv_categories()
 
@@ -452,8 +468,8 @@ def arxiv_categories(self, key, value):
     arxiv_categories = self.get('arxiv_categories', [])
     inspire_categories = self.get('inspire_categories', [])
 
-    for value in force_list(value):
-        for a_value in force_list(value.get('a')):
+    for current_value in force_list(value):
+        for a_value in force_list(current_value.get('a')):
             normalized_a_value = _normalize(a_value)
 
             if _is_arxiv(normalized_a_value):
@@ -535,10 +551,7 @@ def birth_and_death_date2marc(self, key, value):
 def awards(self, key, value):
     award = AWARD_YEAR.sub('', value.get('a')).strip()
     year_match = AWARD_YEAR.search(value.get('a'))
-    if year_match:
-        year = int(year_match.group('year'))
-    else:
-        year = None
+    year = int(year_match.group('year')) if year_match else None
 
     return {
         'name': award,
@@ -552,7 +565,7 @@ def awards(self, key, value):
 def awards2marc(self, key, value):
     return {
         'a': ' '.join([value.get('name', ''), str(value.get('year', ''))]).strip(),
-        'u': value.get('url')
+        'u': value.get('url'),
     }
 
 
@@ -571,10 +584,7 @@ def project_membership(self, key, values):
             record = get_record_ref(recid, 'experiments')
             yield {
                 'curated_relation': record is not None,
-                'current': (
-                    True if marc_dict.get('z', '').lower() == 'current'
-                    else False
-                ),
+                'current': (marc_dict.get('z', '').lower() == 'current'),
                 'end_date': end_year,
                 'name': name,
                 'record': record,
@@ -643,10 +653,13 @@ def advisors(self, key, value):
     recid = force_single_element(value.get('x'))
     record = get_record_ref(recid, 'authors')
 
-    ids = [{
-        'schema': _get_id_schema(id_),
-        'value': id_,
-    } for id_ in force_list(value.get('i'))]
+    ids = [
+        {
+            'schema': _get_id_schema(id_),
+            'value': id_,
+        }
+        for id_ in force_list(value.get('i'))
+    ]
 
     hidden = value.get('h') == 'HIDDEN' or None
 
@@ -656,7 +669,7 @@ def advisors(self, key, value):
         'ids': ids,
         'record': record,
         'hidden': hidden,
-        'curated_relation': value.get('y') == '1' if record else None
+        'curated_relation': value.get('y') == '1' if record else None,
     }
 
 
@@ -670,7 +683,7 @@ def advisors2marc(self, key, value):
         'a': value.get('name'),
         'g': value.get('degree_type'),
         'i': ids,
-        'h': 'HIDDEN' if value.get('hidden') else None
+        'h': 'HIDDEN' if value.get('hidden') else None,
     }
 
 
@@ -735,14 +748,16 @@ def new_record(self, key, value):
     new_record = self.get('new_record', {})
     ids = self.get('ids', [])
 
-    for value in force_list(value):
-        for id_ in force_list(value.get('a')):
-            ids.append({
-                'schema': 'SPIRES',
-                'value': id_,
-            })
+    for current_value in force_list(value):
+        for id_ in force_list(current_value.get('a')):
+            ids.append(
+                {
+                    'schema': 'SPIRES',
+                    'value': id_,
+                }
+            )
 
-        new_recid = force_single_element(value.get('d', ''))
+        new_recid = force_single_element(current_value.get('d', ''))
         if new_recid:
             new_record = get_record_ref(new_recid, 'authors')
 
@@ -756,18 +771,19 @@ def deleted(self, key, value):
 
     Also populates the ``stub`` key through side effects.
     """
+
     def _is_deleted(value):
         return force_single_element(value.get('c', '')).upper() == 'DELETED'
 
     def _is_stub(value):
-        return not (force_single_element(value.get('a', '')).upper() == 'USEFUL')
+        return force_single_element(value.get('a', '')).upper() != 'USEFUL'
 
     deleted = self.get('deleted')
     stub = self.get('stub')
 
-    for value in force_list(value):
-        deleted = not deleted and _is_deleted(value)
-        stub = not stub and _is_stub(value)
+    for current_value in force_list(value):
+        deleted = not deleted and _is_deleted(current_value)
+        stub = not stub and _is_stub(current_value)
 
     self['stub'] = stub
     return deleted

@@ -27,13 +27,11 @@ from __future__ import absolute_import, division, print_function
 import re
 
 from dojson import utils
-
 from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element, get_record_ref
-
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import force_single_element, get_record_ref
 
 IS_DEFENSE_DATE = re.compile('Presented (on )?(?P<defense_date>.*)', re.IGNORECASE)
 
@@ -44,6 +42,7 @@ def public_notes(self, key, value):
 
     Also populates the ``curated`` and ``thesis_info`` keys through side effects.
     """
+
     def _means_not_curated(public_note):
         return public_note in [
             '*Brief entry*',
@@ -58,24 +57,30 @@ def public_notes(self, key, value):
     thesis_info = self.get('thesis_info', {})
 
     source = force_single_element(value.get('9', ''))
-    for value in force_list(value):
-        for public_note in force_list(value.get('a')):
+    for current_value in force_list(value):
+        for public_note in force_list(current_value.get('a')):
             match = IS_DEFENSE_DATE.match(public_note)
             if match:
                 try:
-                    thesis_info['defense_date'] = normalize_date(match.group('defense_date'))
+                    thesis_info['defense_date'] = normalize_date(
+                        match.group('defense_date')
+                    )
                 except ValueError:
-                    public_notes.append({
-                        'source': source,
-                        'value': public_note,
-                    })
+                    public_notes.append(
+                        {
+                            'source': source,
+                            'value': public_note,
+                        }
+                    )
             elif _means_not_curated(public_note):
                 self['curated'] = False
             else:
-                public_notes.append({
-                    'source': source,
-                    'value': public_note,
-                })
+                public_notes.append(
+                    {
+                        'source': source,
+                        'value': public_note,
+                    }
+                )
 
     self['thesis_info'] = thesis_info
     return public_notes
@@ -84,6 +89,7 @@ def public_notes(self, key, value):
 @hep.over('thesis_info', '^502..')
 def thesis_info(self, key, value):
     """Populate the ``thesis_info`` key."""
+
     def _get_degree_type(value):
         DEGREE_TYPES_MAP = {
             'RAPPORT DE STAGE': 'other',
@@ -112,11 +118,14 @@ def thesis_info(self, key, value):
         if len(c_values) != len(z_values):
             return [{'name': c_value} for c_value in c_values]
         else:
-            return [{
-                'curated_relation': True,
-                'name': c_value,
-                'record': get_record_ref(z_value, 'institutions'),
-            } for c_value, z_value in zip(c_values, z_values)]
+            return [
+                {
+                    'curated_relation': True,
+                    'name': c_value,
+                    'record': get_record_ref(z_value, 'institutions'),
+                }
+                for c_value, z_value in zip(c_values, z_values)
+            ]
 
     thesis_info = self.get('thesis_info', {})
 
@@ -133,6 +142,7 @@ def thesis_info2marc(self, key, value):
 
     Also populates the ``500`` MARC field through side effects.
     """
+
     def _get_b_value(value):
         DEGREE_TYPES_MAP = {
             'bachelor': 'Bachelor',
@@ -152,9 +162,11 @@ def thesis_info2marc(self, key, value):
     result_502 = self.get('502', {})
 
     if value.get('defense_date'):
-        result_500.append({
-            'a': u'Presented on {}'.format(value.get('defense_date')),
-        })
+        result_500.append(
+            {
+                'a': u'Presented on {}'.format(value.get('defense_date')),
+            }
+        )
 
     result_502 = {
         'b': _get_b_value(value),
@@ -176,10 +188,12 @@ def abstracts(self, key, value):
     source = force_single_element(value.get('9'))
 
     for a_value in force_list(value.get('a')):
-        result.append({
-            'source': source,
-            'value': a_value,
-        })
+        result.append(
+            {
+                'source': source,
+                'value': a_value,
+            }
+        )
 
     return result
 
@@ -220,6 +234,7 @@ def funding_info2marc(self, key, value):
 @utils.for_each_value
 def license(self, key, value):
     """Populate the ``license`` key."""
+
     def _get_license(value):
         a_values = force_list(value.get('a'))
 
@@ -301,6 +316,7 @@ def _private_notes(self, key, value):
 
     Also populates the ``_export_to`` key through side effects.
     """
+
     def _is_for_cds(value):
         normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
         return 'CDS' in normalized_c_values
@@ -316,21 +332,23 @@ def _private_notes(self, key, value):
     _private_notes = self.get('_private_notes', [])
     _export_to = self.get('_export_to', {})
 
-    for value in force_list(value):
-        if _is_for_cds(value):
+    for current_value in force_list(value):
+        if _is_for_cds(current_value):
             _export_to['CDS'] = True
 
-        if _is_for_hal(value):
+        if _is_for_hal(current_value):
             _export_to['HAL'] = True
-        elif _is_not_for_hal(value):
+        elif _is_not_for_hal(current_value):
             _export_to['HAL'] = False
 
-        source = force_single_element(value.get('9'))
-        for _private_note in force_list(value.get('a')):
-            _private_notes.append({
-                'source': source,
-                'value': _private_note,
-            })
+        source = force_single_element(current_value.get('9'))
+        for _private_note in force_list(current_value.get('a')):
+            _private_notes.append(
+                {
+                    'source': source,
+                    'value': _private_note,
+                }
+            )
 
     self['_export_to'] = _export_to
     return _private_notes
@@ -343,6 +361,7 @@ def _private_notes2marc(self, key, value):
 
     Also populates the `595_H` MARC key through side effects.
     """
+
     def _is_from_hal(value):
         return value.get('source') == 'HAL'
 
@@ -358,6 +377,7 @@ def _private_notes2marc(self, key, value):
 @hep2marc.over('595', '^_export_to$')
 def _export_to2marc(self, key, value):
     """Populate the ``595`` MARC field."""
+
     def _is_for_cds(value):
         return 'CDS' in value
 
@@ -405,10 +425,7 @@ def _desy_bookkeeping2marc(self, key, value):
             's': value.get('status'),
         }
 
-    self.setdefault('035', []).append({
-        '9': 'DESY',
-        'z': value['identifier']
-    })
+    self.setdefault('035', []).append({'9': 'DESY', 'z': value['identifier']})
 
 
 @hep.over('_private_notes', '^595.H')
@@ -420,5 +437,6 @@ def _private_notes_hal(self, key, value):
         {
             'source': 'HAL',
             'value': _private_note,
-        } for _private_note in force_list(value.get('a'))
+        }
+        for _private_note in force_list(value.get('a'))
     ]

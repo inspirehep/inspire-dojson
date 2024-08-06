@@ -22,8 +22,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from inspire_dojson.model import FilterOverdo
 from inspire_dojson.experiments.model import add_project_type
+from inspire_dojson.model import FilterOverdo
 
 
 def test_add_project_type():

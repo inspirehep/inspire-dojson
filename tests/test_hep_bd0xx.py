@@ -23,20 +23,20 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_isbns_from_020__a():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1510325
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">9780198759713</subfield>'
         '</datafield>'
-    )  # record/1510325
+    )
 
     expected = [
         {'value': '9780198759713'},
@@ -58,11 +58,11 @@ def test_isbns_from_020__a_handles_capital_x():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1230427
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">069114558X</subfield>'
         '</datafield>'
-    )  # record/1230427
+    )
 
     expected = [
         {'value': '9780691145587'},
@@ -84,12 +84,12 @@ def test_isbns_from_020__a_b_normalizes_online():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1504286
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">978-94-024-0999-4</subfield>'
         '  <subfield code="b">Online</subfield>'
         '</datafield>'
-    )  # record/1504286
+    )
 
     expected = [
         {
@@ -117,12 +117,12 @@ def test_isbns_from_020__a_b_normalizes_print():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1509456
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">9781786341105</subfield>'
         '  <subfield code="b">Print</subfield>'
         '</datafield>'
-    )  # record/1509456
+    )
 
     expected = [
         {
@@ -150,12 +150,12 @@ def test_isbns_from_020__a_b_normalizes_electronic():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1292006
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">9783319006260</subfield>'
         '  <subfield code="b">electronic version</subfield>'
         '</datafield>'
-    )  # record/1292006
+    )
 
     expected = [
         {
@@ -181,12 +181,12 @@ def test_isbns_from_020__a_b_normalizes_ebook():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1430829
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">9783319259017</subfield>'
         '  <subfield code="b">eBook</subfield>'
         '</datafield>'
-    )  # record/1430829
+    )
 
     expected = [
         {
@@ -214,12 +214,12 @@ def test_isbns_from_020__a_b_normalizes_hardcover():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1351311
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">978-981-4571-66-1</subfield>'
         '  <subfield code="b">hardcover</subfield>'
         '</datafield>'
-    )  # record/1351311
+    )
 
     expected = [
         {
@@ -247,12 +247,12 @@ def test_isbns_from_020__a_b_handles_dots():
     schema = load_schema('hep')
     subschema = schema['properties']['isbns']
 
-    snippet = (
+    snippet = (  # record/1426768
         '<datafield tag="020" ind1=" " ind2=" ">'
         '  <subfield code="a">978.90.9023556.1</subfield>'
         '  <subfield code="b">Online</subfield>'
         '</datafield>'
-    )  # record/1426768
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -263,14 +263,14 @@ def test_dois_from_0247_a_2_double_9_ignores_curator_source():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/1117362
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="2">DOI</subfield>'
         '  <subfield code="9">bibcheck</subfield>'
         '  <subfield code="9">CURATOR</subfield>'
         '  <subfield code="a">10.1590/S1806-11172008005000006</subfield>'
         '</datafield>'
-    )  # record/1117362
+    )
 
     expected = [
         {
@@ -299,12 +299,12 @@ def test_dois_from_0247_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/1302395
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="2">DOI</subfield>'
         '  <subfield code="a">10.1088/0264-9381/31/24/245004</subfield>'
         '</datafield>'
-    )  # record/1302395
+    )
 
     expected = [
         {'value': '10.1088/0264-9381/31/24/245004'},
@@ -329,7 +329,7 @@ def test_dois_from_0247_a_2_9_and_0247_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/1286727
         '<record>'
         '  <datafield tag="024" ind1="7" ind2=" ">'
         '    <subfield code="2">DOI</subfield>'
@@ -341,7 +341,7 @@ def test_dois_from_0247_a_2_9_and_0247_a_2():
         '    <subfield code="a">10.1088/1475-7516/2015/03/044</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1286727
+    )
 
     expected = [
         {
@@ -377,7 +377,7 @@ def test_dois_from_0247_a_2_and_0247_a_2_9():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/1273665
         '<record>'
         '  <datafield tag="024" ind1="7" ind2=" ">'
         '    <subfield code="2">DOI</subfield>'
@@ -389,7 +389,7 @@ def test_dois_from_0247_a_2_and_0247_a_2_9():
         '    <subfield code="a">10.1103/PhysRevD.91.019903</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1273665
+    )
 
     expected = [
         {
@@ -425,14 +425,14 @@ def test_dois_from_0247_a_q_2_9_normalizes_erratum():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/898839
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="2">DOI</subfield>'
         '  <subfield code="9">bibmatch</subfield>'
         '  <subfield code="a">10.1103/PhysRevC.93.049901</subfield>'
         '  <subfield code="q">Erratum</subfield>'
         '</datafield>'
-    )  # record/898839
+    )
 
     expected = [
         {
@@ -463,13 +463,13 @@ def test_dois_from_0247_a_q_2_normalizes_ebook():
     schema = load_schema('hep')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/1509573
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="2">DOI</subfield>'
         '  <subfield code="a">10.1017/CBO9780511813924</subfield>'
         '  <subfield code="q">ebook</subfield>'
         '</datafield>'
-    )  # record/1509573
+    )
 
     expected = [
         {
@@ -498,12 +498,12 @@ def test_persistent_identifiers_from_0247_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['persistent_identifiers']
 
-    snippet = (
+    snippet = (  # record/1623117
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="2">HDL</subfield>'
         '  <subfield code="a">10150/625467</subfield>'
         '</datafield>'
-    )  # record/1623117
+    )
 
     expected = [
         {
@@ -531,12 +531,12 @@ def test_texkeys_from_035__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['texkeys']
 
-    snippet = (
+    snippet = (  # record/1403324
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">INSPIRETeX</subfield>'
         '  <subfield code="a">Hagedorn:1963hdh</subfield>'
         '</datafield>'
-    )  # record/1403324
+    )
 
     expected = [
         'Hagedorn:1963hdh',
@@ -561,7 +561,7 @@ def test_texkeys_from_035__z_9_and_035__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['texkeys']
 
-    snippet = (
+    snippet = (  # record/1498308
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">SPIRESTeX</subfield>'
@@ -572,10 +572,10 @@ def test_texkeys_from_035__z_9_and_035__a_9():
         '    <subfield code="a">Akiba:2016ofq</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1498308
+    )
 
     expected = [
-        'Akiba:2016ofq',       # XXX: the first one is the one coming
+        'Akiba:2016ofq',  # XXX: the first one is the one coming
         'N.Cartiglia:2015cn',  # from the "a" field.
     ]
     result = hep.do(create_record(snippet))
@@ -591,7 +591,7 @@ def test_texkeys_from_035__z_9_and_035__a_9():
         {
             '9': 'INSPIRETeX',
             'z': 'N.Cartiglia:2015cn',
-        }
+        },
     ]
     result = hep2marc.do(result)
 
@@ -602,12 +602,12 @@ def test_desy_bookkeekping_from_035__z_9_DESY():
     schema = load_schema('hep')
     subschema = schema['properties']['_desy_bookkeeping']
 
-    snippet = (
+    snippet = (  # record/1635310
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">DESY</subfield>'
         '  <subfield code="z">DA17-kp47ch</subfield>'
         '</datafield>'
-    )  # record/1635310
+    )
 
     expected = [
         {
@@ -634,7 +634,7 @@ def test_desy_bookkeekping_from_035__z_9_DESY_and_595_Da_d_s():
     schema = load_schema('hep')
     subschema = schema['properties']['_desy_bookkeeping']
 
-    snippet = (
+    snippet = (  # record/1635310
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">DESY</subfield>'
@@ -646,7 +646,7 @@ def test_desy_bookkeekping_from_035__z_9_DESY_and_595_Da_d_s():
         '    <subfield code="s">abs</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1635310
+    )
 
     expected = [
         {
@@ -683,12 +683,12 @@ def test_desy_bookkeekping_from_035__z_9_DESY_and_595_Da_d_s():
 
 
 def test_external_system_identifiers_from_035__a_9_discards_arxiv():
-    snippet = (
+    snippet = (  # record/1498308
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="a">oai:arXiv.org:1611.05079</subfield>'
         '</datafield>'
-    )  # record/1498308
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -699,12 +699,12 @@ def test_external_system_identifiers_from_035__z_9_handles_cernkey():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/451647
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">CERNKEY</subfield>'
         '  <subfield code="z">0263439</subfield>'
         '</datafield>'
-    )  # record/451647
+    )
 
     expected = [
         {
@@ -729,7 +729,7 @@ def test_external_system_identifiers_from_035__z_9_handles_cernkey():
 
 
 def test_external_system_numbers_from_035__a_d_h_m_9_ignores_oai():
-    snippet = (
+    snippet = (  # record/1403324
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">http://cds.cern.ch/oai2d</subfield>'
         '  <subfield code="a">oai:cds.cern.ch:325030</subfield>'
@@ -737,7 +737,7 @@ def test_external_system_numbers_from_035__a_d_h_m_9_ignores_oai():
         '  <subfield code="h">2015-11-09T16:22:48Z</subfield>'
         '  <subfield code="m">marcxml</subfield>'
         '</datafield>'
-    )  # record/1403324
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -760,12 +760,12 @@ def test_external_system_numbers_from_035__a_9_hepdata():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/1498566
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="a">ins1498566</subfield>'
         '    <subfield code="9">HEPDATA</subfield>'
         '  </datafield>'
-    )  # record/1498566
+    )
 
     expected = [
         {
@@ -793,7 +793,7 @@ def test_external_system_numbers_from_035__a_9_and_035__z_9():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/700376
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">OSTI</subfield>'
@@ -804,7 +804,7 @@ def test_external_system_numbers_from_035__a_9_and_035__z_9():
         '    <subfield code="z">897192</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/700376
+    )
 
     expected = [
         {
@@ -842,9 +842,7 @@ def test_035_from_arxiv_eprints_and_texkeys():
     subschema_arxiv_eprints = schema['properties']['arxiv_eprints']
     subschema_texkeys = schema['properties']['texkeys']
     snippet = {
-        'arxiv_eprints': [
-            {'value': '2212.04977', 'categories': ['hep-ex']}
-        ],
+        'arxiv_eprints': [{'value': '2212.04977', 'categories': ['hep-ex']}],
         'texkeys': ['LHCb:2022diq'],
     }  # literature/2612668
 
@@ -870,13 +868,13 @@ def test_arxiv_eprints_from_037__a_c_9():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']
 
-    snippet = (
+    snippet = (  # record/1368891
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="a">arXiv:1505.01843</subfield>'
         '  <subfield code="c">hep-ph</subfield>'
         '</datafield>'
-    )  # record/1368891
+    )
 
     expected = [
         {
@@ -907,13 +905,13 @@ def test_arxiv_eprints_from_037__a_c_9_old_identifier():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']
 
-    snippet = (
+    snippet = (  # record/782187
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="a">hep-th/0110148</subfield>'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="c">hep-th</subfield>'
         '</datafield>'
-    )  # record/782187
+    )
 
     expected = [
         {
@@ -944,20 +942,20 @@ def test_arxiv_eprints_from_037__a_c_9_obsolete_category():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']
 
-    snippet = (
+    snippet = (  # record/450571
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="a">funct-an/9710003</subfield>'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="c">funct-an</subfield>'
         '</datafield>'
-    )  # record/450571
+    )
 
     expected = [
         {
             'categories': [
                 'math.FA',
             ],
-            'value': 'funct-an/9710003'
+            'value': 'funct-an/9710003',
         },
     ]
     result = hep.do(create_record(snippet))
@@ -981,11 +979,11 @@ def test_report_numbers_from_037__a():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
 
-    snippet = (
+    snippet = (  # record/1511277
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="a">CERN-EP-2016-319</subfield>'
         '</datafield>'
-    )  # record/1511277
+    )
 
     expected = [
         {'value': 'CERN-EP-2016-319'},
@@ -1007,7 +1005,7 @@ def test_report_numbers_from_two_037__a():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
 
-    snippet = (
+    snippet = (  # record/26564
         '<record>'
         '  <datafield tag="037" ind1=" " ind2=" ">'
         '    <subfield code="a">UTPT-89-27</subfield>'
@@ -1016,7 +1014,7 @@ def test_report_numbers_from_two_037__a():
         '    <subfield code="a">CALT-68-1585</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/26564
+    )
 
     expected = [
         {
@@ -1044,11 +1042,11 @@ def test_report_numbers_hidden_from_037__z():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
 
-    snippet = (
+    snippet = (  # record/1508174
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="z">FERMILAB-PUB-17-011-CMS</subfield>'
         '</datafield>'
-    )  # record/1508174
+    )
 
     expected = [
         {
@@ -1061,9 +1059,7 @@ def test_report_numbers_hidden_from_037__z():
     assert validate(result['report_numbers'], subschema) is None
     assert expected == result['report_numbers']
 
-    expected = [
-        {'z': 'FERMILAB-PUB-17-011-CMS'}
-    ]
+    expected = [{'z': 'FERMILAB-PUB-17-011-CMS'}]
     result = hep2marc.do(result)
 
     assert expected == result['037']
@@ -1073,12 +1069,12 @@ def test_report_numbers_from_037__z_9():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
 
-    snippet = (
+    snippet = (  # record/1326454
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="9">SLAC</subfield>'
         '  <subfield code="a">SLAC-PUB-16140</subfield>'
         '</datafield>'
-    )  # record/1326454
+    )
 
     expected = [
         {
@@ -1106,12 +1102,12 @@ def test_report_numbers_from_037__a_9_arXiv_reportnumber():
     schema = load_schema('hep')
     subschema = schema['properties']['report_numbers']
 
-    snippet = (
+    snippet = (  # record/1618037
         '<datafield tag="037" ind1=" " ind2=" ">'
         '  <subfield code="9">arXiv:reportnumber</subfield>'
         '  <subfield code="a">LIGO-P1500247</subfield>'
         '</datafield>'
-    )  # record/1618037
+    )
 
     expected = [
         {
@@ -1140,7 +1136,7 @@ def test_arxiv_eprints_from_037__a_c_9_and_multiple_65017_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['arxiv_eprints']
 
-    snippet = (
+    snippet = (  # record/1511862
         '<record>'
         '  <datafield tag="037" ind1=" " ind2=" ">'
         '    <subfield code="9">arXiv</subfield>'
@@ -1156,7 +1152,7 @@ def test_arxiv_eprints_from_037__a_c_9_and_multiple_65017_a_2():
         '    <subfield code="2">arXiv</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1511862
+    )
 
     expected = [
         {
@@ -1164,7 +1160,7 @@ def test_arxiv_eprints_from_037__a_c_9_and_multiple_65017_a_2():
                 'math-ph',
                 'gr-qc',
             ],
-            'value': '1702.00702'
+            'value': '1702.00702',
         }
     ]
     result = hep.do(create_record(snippet))
@@ -1213,11 +1209,7 @@ def test_arxiv_eprints_037__a_9_lowercase_arxiv():
         "</datafield>"
     )
 
-    expected = [
-        {
-            'value': '1703.09086'
-        }
-    ]
+    expected = [{'value': '1703.09086'}]
     result = hep.do(create_record(snippet))
 
     assert validate(result['arxiv_eprints'], subschema) is None
@@ -1238,11 +1230,11 @@ def test_languages_from_041__a():
     schema = load_schema('hep')
     subschema = schema['properties']['languages']
 
-    snippet = (
+    snippet = (  # record/1503566
         '<datafield tag="041" ind1=" " ind2=" ">'
         '  <subfield code="a">Italian</subfield>'
         '</datafield>'
-    )  # record/1503566
+    )
 
     expected = [
         'it',
@@ -1264,11 +1256,11 @@ def test_languages_from_041__a_handles_multiple_languages_in_one_a():
     schema = load_schema('hep')
     subschema = schema['properties']['languages']
 
-    snippet = (
+    snippet = (  # record/116959
         '<datafield tag="041" ind1=" " ind2=" ">'
         '  <subfield code="a">Russian / English</subfield>'
         '</datafield>'
-    )  # record/116959
+    )
 
     expected = [
         'ru',
@@ -1292,7 +1284,7 @@ def test_languages_from_double_041__a():
     schema = load_schema('hep')
     subschema = schema['properties']['languages']
 
-    snippet = (
+    snippet = (  # record/1231408
         '<record>'
         '  <datafield tag="041" ind1=" " ind2=" ">'
         '    <subfield code="a">French</subfield>'
@@ -1301,7 +1293,7 @@ def test_languages_from_double_041__a():
         '    <subfield code="a">German</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1231408
+    )
 
     expected = [
         'fr',

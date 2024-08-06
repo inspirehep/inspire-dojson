@@ -25,9 +25,7 @@
 from __future__ import absolute_import, division, print_function
 
 import six
-
 from inspire_utils.helpers import force_list
-
 
 country_to_iso_code = {
     'AFGHANISTAN': 'AF',
@@ -295,7 +293,7 @@ countries_alternative_codes = {
     'FR': ['FX'],
     'GB': ['UK'],
     'TL': ['TP'],
-    'CD': ['ZR']
+    'CD': ['ZR'],
 }
 
 countries_alternative_spellings = {
@@ -311,13 +309,26 @@ countries_alternative_spellings = {
     'CN': ['PR CHINA'],
     'CS': ['CZECHSOLVAKIA'],
     'CZ': ['PRAGUE'],
-    'DE': ['DEUTSCHLAND', 'WEST GERMANY', 'EAST GERMANY', 'BAVARIA',
-           'GERMANY (DESY)'],
+    'DE': [
+        'DEUTSCHLAND',
+        'WEST GERMANY',
+        'EAST GERMANY',
+        'BAVARIA',
+        'GERMANY (DESY)',
+    ],
     'ES': ['CANARY ISLANDS', 'MADRID'],
     'FR': ['CORSICA'],
     'GR': ['CRETE'],
-    'GB': ['UK', 'ENGLAND', 'ENG', 'SCOTLAND', 'WALES', 'SCOTLAND/UK',
-           'NORTHERN IRELAND', 'LONDON'],
+    'GB': [
+        'UK',
+        'ENGLAND',
+        'ENG',
+        'SCOTLAND',
+        'WALES',
+        'SCOTLAND/UK',
+        'NORTHERN IRELAND',
+        'LONDON',
+    ],
     'ID': ['BALI'],
     'IL': ['JERUSALEM'],
     'IR': ['IRAN'],
@@ -333,9 +344,13 @@ countries_alternative_spellings = {
     'VE': ['VENEZUELA'],
     'VN': ['VIETNAM'],
     'US': ['UNITED STATES OF AMERICA', 'UNITED STATES', 'US', 'USA'],
-    'ZA': ['SAFRICA']
+    'ZA': ['SAFRICA'],
 }
-countries_from_alternative_spellings = {spelling: code for (code, spellings) in countries_alternative_spellings.items() for spelling in spellings}
+countries_from_alternative_spellings = {
+    spelling: code
+    for (code, spellings) in countries_alternative_spellings.items()
+    for spelling in spellings
+}
 
 
 us_state_to_iso_code = {
@@ -389,7 +404,7 @@ us_state_to_iso_code = {
     'WASHINGTON': 'WA',
     'WEST VIRGINIA': 'WV',
     'WISCONSIN': 'WI',
-    'WYOMING': 'WY'
+    'WYOMING': 'WY',
 }
 
 us_states_alternative_spellings = {
@@ -445,12 +460,29 @@ us_states_alternative_spellings = {
     'WI': ['WI', 'WIS', 'WISC'],
     'WY': ['WY'],
 }
-us_states_from_alternative_spellings = {spelling: state for (state, spellings) in us_states_alternative_spellings.items() for spelling in spellings}
+us_states_from_alternative_spellings = {
+    spelling: state
+    for (state, spellings) in us_states_alternative_spellings.items()
+    for spelling in spellings
+}
 
-south_korean_cities = ['SEOUL', 'DAEJON', 'DAEJEON', 'MT SORAK', 'POHANG',
-                       'JEJU ISLAND', 'CHEJU ISLAND', 'GYEONGJU', 'BUSAN',
-                       'DAEGU', 'GYEONGIU', 'PUSAN', 'YONGPYONG',
-                       'PHOENIX PARK', 'CHEJU ISLAND']
+south_korean_cities = [
+    'SEOUL',
+    'DAEJON',
+    'DAEJEON',
+    'MT SORAK',
+    'POHANG',
+    'JEJU ISLAND',
+    'CHEJU ISLAND',
+    'GYEONGJU',
+    'BUSAN',
+    'DAEGU',
+    'GYEONGIU',
+    'PUSAN',
+    'YONGPYONG',
+    'PHOENIX PARK',
+    'CHEJU ISLAND',
+]
 
 
 def match_country_code(original_code):
@@ -459,7 +491,10 @@ def match_country_code(original_code):
         if iso_code_to_country_name.get(original_code):
             return original_code
         else:
-            for country_code, alternatives in countries_alternative_codes.items():
+            for (
+                country_code,
+                alternatives,
+            ) in countries_alternative_codes.items():
                 for alternative in alternatives:
                     if original_code == alternative:
                         return country_code
@@ -541,8 +576,9 @@ def parse_conference_address(address_string):
     }
 
 
-def parse_institution_address(address, city, state_province,
-                              country, postal_code, country_code):
+def parse_institution_address(
+    address, city, state_province, country, postal_code, country_code
+):
     """Parse an institution address."""
     address_list = force_list(address)
     state_province = match_us_state(state_province) or state_province
@@ -560,7 +596,11 @@ def parse_institution_address(address, city, state_province,
     if not country_code and country:
         country_code = match_country_name_to_its_code(country)
 
-    if not country_code and state_province and state_province in us_state_to_iso_code.values():
+    if (
+        not country_code
+        and state_province
+        and state_province in us_state_to_iso_code.values()
+    ):
         country_code = 'US'
 
     return {

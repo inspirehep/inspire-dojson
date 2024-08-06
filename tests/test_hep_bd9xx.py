@@ -23,6 +23,7 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
 from inspire_dojson.hep.rules.bd9xx import (
@@ -31,7 +32,6 @@ from inspire_dojson.hep.rules.bd9xx import (
     DOCUMENT_TYPE_MAP,
     DOCUMENT_TYPE_REVERSE_MAP,
 )
-from inspire_schemas.api import load_schema, validate
 
 
 def test_collections_map_contains_all_valid_collections():
@@ -76,12 +76,12 @@ def test_record_affiliations_from_902__a_z():
     schema = load_schema('hep')
     subschema = schema['properties']['record_affiliations']
 
-    snippet = (
+    snippet = (  # record/1216295
         '<datafield tag="902" ind1=" " ind2=" ">'
         '  <subfield code="a">Iowa State U.</subfield>'
         '  <subfield code="z">902893</subfield>'
         '</datafield>'
-    )  # record/1216295
+    )
 
     expected = [
         {
@@ -109,7 +109,7 @@ def test_record_affiliations_from_double_902__a_z():
     schema = load_schema('hep')
     subschema = schema['properties']['record_affiliations']
 
-    snippet = (
+    snippet = (  # record/1216295
         '<record>'
         '  <datafield tag="902" ind1=" " ind2=" ">'
         '    <subfield code="a">Iowa State U.</subfield>'
@@ -120,7 +120,7 @@ def test_record_affiliations_from_double_902__a_z():
         '    <subfield code="z">902642</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1216295
+    )
 
     expected = [
         {
@@ -156,11 +156,11 @@ def test_citeable_from_980__a_citeable():
     schema = load_schema('hep')
     subschema = schema['properties']['citeable']
 
-    snippet = (
+    snippet = (  # record/1511471
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">Citeable</subfield>'
         '</datafield>'
-    )  # record/1511471
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -180,11 +180,11 @@ def test_core_from_980__a_core():
     schema = load_schema('hep')
     subschema = schema['properties']['core']
 
-    snippet = (
+    snippet = (  # record/1509993
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">CORE</subfield>'
         '</datafield>'
-    )  # record/1509993
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -204,11 +204,11 @@ def test_core_from_980__a_noncore():
     schema = load_schema('hep')
     subschema = schema['properties']['core']
 
-    snippet = (
+    snippet = (  # record/1411887
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">NONCORE</subfield>'
         '</datafield>'
-    )  # record/1411887
+    )
 
     expected = False
     result = hep.do(create_record(snippet))
@@ -228,11 +228,11 @@ def test_deleted_from_980__c():
     schema = load_schema('hep')
     subschema = schema['properties']['deleted']
 
-    snippet = (
+    snippet = (  # record/1508668
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="c">DELETED</subfield>'
         '</datafield>'
-    )  # record/1508668
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -252,11 +252,11 @@ def test_deleted_from_980__a():
     schema = load_schema('hep')
     subschema = schema['properties']['deleted']
 
-    snippet = (
+    snippet = (  # record/931344
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">DELETED</subfield>'
         '</datafield>'
-    )  # record/931344
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -276,11 +276,11 @@ def test_collections_from_980__a():
     schema = load_schema('hep')
     subschema = schema['properties']['_collections']
 
-    snippet = (
+    snippet = (  # record/1610892
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">HEP</subfield>'
         '</datafield>'
-    )  # record/1610892
+    )
 
     expected = ['Literature']
     result = hep.do(create_record(snippet))
@@ -300,11 +300,11 @@ def test_collections_from_980__a_hal_hidden():
     schema = load_schema('hep')
     subschema = schema['properties']['_collections']
 
-    snippet = (
+    snippet = (  # record/1505341
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">HALhidden</subfield>'
         '</datafield>'
-    )  # record/1505341
+    )
 
     expected = [
         'HAL Hidden',
@@ -326,11 +326,11 @@ def test_collections_from_980__a_babar_analysis_document():
     schema = load_schema('hep')
     subschema = schema['properties']['_collections']
 
-    snippet = (
+    snippet = (  # record/1598316
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">BABAR-AnalysisDocument</subfield>'
         '</datafield>'
-    )  # record/1598316
+    )
 
     expected = [
         'BABAR Analysis Documents',
@@ -352,7 +352,7 @@ def test_collections_from_double_980__a():
     schema = load_schema('hep')
     subschema = schema['properties']['_collections']
 
-    snippet = (
+    snippet = (  # record/1201407
         '<record>'
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">D0-PRELIMINARY-NOTE</subfield>'
@@ -361,7 +361,7 @@ def test_collections_from_double_980__a():
         '    <subfield code="a">HEP</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1201407
+    )
 
     expected = [
         'D0 Preliminary Notes',
@@ -388,11 +388,11 @@ def test_refereed_from_980__a_published():
     schema = load_schema('hep')
     subschema = schema['properties']['refereed']
 
-    snippet = (
+    snippet = (  # record/1509992
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">Published</subfield>'
         '</datafield>'
-    )  # record/1509992
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -412,9 +412,7 @@ def test_document_type_defaults_to_article():
     schema = load_schema('hep')
     subschema = schema['properties']['document_type']
 
-    snippet = (
-        '<record></record>'
-    )  # synthetic data
+    snippet = '<record></record>'  # synthetic data
 
     expected = [
         'article',
@@ -429,11 +427,11 @@ def test_document_type_from_980__a():
     schema = load_schema('hep')
     subschema = schema['properties']['document_type']
 
-    snippet = (
+    snippet = (  # record/1512050
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">Book</subfield>'
         '</datafield>'
-    )  # record/1512050
+    )
 
     expected = [
         'book',
@@ -455,11 +453,11 @@ def test_document_type_from_980__a_handles_conference_paper():
     schema = load_schema('hep')
     subschema = schema['properties']['document_type']
 
-    snippet = (
+    snippet = (  # record/1589240
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">ConferencePaper</subfield>'
         '</datafield>'
-    )  # record/1589240
+    )
 
     expected = [
         'conference paper',
@@ -481,11 +479,11 @@ def test_document_type_from_980__a_handles_activity_report():
     schema = load_schema('hep')
     subschema = schema['properties']['document_type']
 
-    snippet = (
+    snippet = (  # record/1514964
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">ActivityReport</subfield>'
         '</datafield>'
-    )  # record/1514964
+    )
 
     expected = [
         'activity report',
@@ -507,11 +505,11 @@ def test_publication_type_from_980__a():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_type']
 
-    snippet = (
+    snippet = (  # record/1509993
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">Review</subfield>'
         '</datafield>'
-    )  # record/1509993
+    )
 
     expected = [
         'review',
@@ -533,11 +531,11 @@ def test_withdrawn_from_980__a_withdrawn():
     schema = load_schema('hep')
     subschema = schema['properties']['withdrawn']
 
-    snippet = (
+    snippet = (  # record/1486153
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">Withdrawn</subfield>'
         '</datafield>'
-    )  # record/1486153
+    )
 
     expected = True
     result = hep.do(create_record(snippet))
@@ -557,12 +555,12 @@ def test_references_from_999C5r_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/41194
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="r">solv-int/9611008</subfield>'
         '  <subfield code="0">433620</subfield>'
         '</datafield>'
-    )  # record/41194
+    )
 
     expected = [
         {
@@ -598,13 +596,13 @@ def test_references_from_999C5r_s_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/863300
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="r">arXiv:1006.1289</subfield>'
         '  <subfield code="s">Prog.Part.Nucl.Phys.,65,149</subfield>'
         '  <subfield code="0">857206</subfield>'
         '</datafield>'
-    )  # record/863300
+    )
 
     expected = [
         {
@@ -647,17 +645,16 @@ def test_references_from_999C5h_m_o_y_z_0_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="0">1242925</subfield>'
-        '  <subfield code="9">CURATOR</subfield>'
-        '  <subfield code="h">M. Schwarz</subfield>'
-        '  <subfield code="m">Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)</subfield>'
-        '  <subfield code="o">7</subfield>'
-        '  <subfield code="y">2010</subfield>'
-        '  <subfield code="z">1</subfield>'
-        '</datafield>'
-    )  # record/1289907
+    snippet = (  # record/1289907
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="0">1242925</subfield>  <subfield code="9">CURATOR</subfield> '
+        ' <subfield code="h">M. Schwarz</subfield>  <subfield'
+        ' code="m">Nontrivial Spacetime Topology, Modified Dispersion'
+        ' Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut,'
+        ' Munich, Germany,)</subfield>  <subfield code="o">7</subfield> '
+        ' <subfield code="y">2010</subfield>  <subfield'
+        ' code="z">1</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -672,7 +669,11 @@ def test_references_from_999C5h_m_o_y_z_0_9():
                 ],
                 'label': '7',
                 'misc': [
-                    'Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)',
+                    (
+                        'Nontrivial Spacetime Topology, Modified Dispersion'
+                        ' Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT'
+                        ' (Verlag Dr. Hut, Munich, Germany,)'
+                    ),
                 ],
                 'publication_info': {
                     'year': 2010,
@@ -692,7 +693,11 @@ def test_references_from_999C5h_m_o_y_z_0_9():
             'h': [
                 'Schwarz, M.',
             ],
-            'm': 'Nontrivial Spacetime Topology, Modified Dispersion Relations, and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut, Munich, Germany,)',
+            'm': (
+                'Nontrivial Spacetime Topology, Modified Dispersion Relations,'
+                ' and an SO(3)Skyrme Model, PhD Thesis, KIT (Verlag Dr. Hut,'
+                ' Munich, Germany,)'
+            ),
             'o': '7',
             'y': 2010,
             'z': 1,
@@ -707,7 +712,7 @@ def test_references_from_999C5h_m_o_t_y_repeated_z_0_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/1095388
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="0">794379</subfield>'
         '  <subfield code="h">S. Weinberg</subfield>'
@@ -719,7 +724,7 @@ def test_references_from_999C5h_m_o_t_y_repeated_z_0_9():
         '  <subfield code="9">CURATOR</subfield>'
         '  <subfield code="z">1</subfield>'
         '</datafield>'
-    )  # record/1095388
+    )
 
     expected = [
         {
@@ -771,17 +776,15 @@ def test_references_from_999C5h_m_o_r_s_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="0">857215</subfield>'
-        '  <subfield code="h">R. C. Myers and A. Sinha</subfield>'
-        '  <subfield code="m">Seeing a c-theorem with holography ; [hep-th]</subfield>'
-        '  <subfield code="o">10</subfield>'
-        '  <subfield code="r">arXiv:1006.1263</subfield>'
-        '  <subfield code="s">Phys.Rev.,D82,046006</subfield>'
-        '  <subfield code="y">2010</subfield>'
-        '</datafield>'
-    )  # record/1498589
+    snippet = (  # record/1498589
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="0">857215</subfield>  <subfield code="h">R. C. Myers and A.'
+        ' Sinha</subfield>  <subfield code="m">Seeing a c-theorem with'
+        ' holography ; [hep-th]</subfield>  <subfield code="o">10</subfield> '
+        ' <subfield code="r">arXiv:1006.1263</subfield>  <subfield'
+        ' code="s">Phys.Rev.,D82,046006</subfield>  <subfield'
+        ' code="y">2010</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -839,17 +842,16 @@ def test_references_from_999C5a_h_o_s_x_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="a">doi:10.1142/S0217751X0804055X</subfield>'
-        '  <subfield code="h">G.K. Leontaris</subfield>'
-        '  <subfield code="o">15</subfield>'
-        '  <subfield code="s">Int.J.Mod.Phys.,A23,2055</subfield>'
-        '  <subfield code="x">Int. J. Mod. Phys. A 23 (doi:10.1142/S0217751X0804055X)</subfield>'
-        '  <subfield code="y">2008</subfield>'
-        '  <subfield code="0">780399</subfield>'
-        '</datafield>'
-    )  # record/1478478
+    snippet = (  # record/1478478
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="a">doi:10.1142/S0217751X0804055X</subfield>  <subfield'
+        ' code="h">G.K. Leontaris</subfield>  <subfield code="o">15</subfield> '
+        ' <subfield code="s">Int.J.Mod.Phys.,A23,2055</subfield>  <subfield'
+        ' code="x">Int. J. Mod. Phys. A 23'
+        ' (doi:10.1142/S0217751X0804055X)</subfield>  <subfield'
+        ' code="y">2008</subfield>  <subfield'
+        ' code="0">780399</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -911,16 +913,15 @@ def test_references_from_999C50_h_m_o_r_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="0">701721</subfield>'
-        '  <subfield code="h">A. Ferrari, P.R. Sala, A. Fasso, and J. Ranft</subfield>'
-        '  <subfield code="m">FLUKA: a multi-particle transport code, CERN-10 , INFN/TC_05/11</subfield>'
-        '  <subfield code="o">13</subfield>'
-        '  <subfield code="r">SLAC-R-773</subfield>'
-        '  <subfield code="y">2005</subfield>'
-        '</datafield>'
-    )  # record/1478478
+    snippet = (  # record/1478478
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="0">701721</subfield>  <subfield code="h">A. Ferrari, P.R. Sala,'
+        ' A. Fasso, and J. Ranft</subfield>  <subfield code="m">FLUKA: a'
+        ' multi-particle transport code, CERN-10 , INFN/TC_05/11</subfield> '
+        ' <subfield code="o">13</subfield>  <subfield'
+        ' code="r">SLAC-R-773</subfield>  <subfield'
+        ' code="y">2005</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -978,7 +979,7 @@ def test_references_from_999C59_h_m_o_double_r_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/1449990
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="9">CURATOR</subfield>'
         '  <subfield code="h">Bennett, J</subfield>'
@@ -988,7 +989,7 @@ def test_references_from_999C59_h_m_o_double_r_y():
         '  <subfield code="r">CERN-INTCP-186</subfield>'
         '  <subfield code="y">2004</subfield>'
         '</datafield>'
-    )  # record/1449990
+    )
 
     expected = [
         {
@@ -1039,17 +1040,15 @@ def test_references_from_999C50_9_r_u_h_m_o():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="0">1511470</subfield>'
-        '  <subfield code="9">CURATOR</subfield>'
-        '  <subfield code="r">urn:nbn:de:hebis:77-diss-1000009520</subfield>'
-        '  <subfield code="u">http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316</subfield>'
-        '  <subfield code="h">K. Wiebe</subfield>'
-        '  <subfield code="m">Ph.D. thesis, University of Mainz, in preparation</subfield>'
-        '  <subfield code="o">51</subfield>'
-        '</datafield>'
-    )  # record/1504897
+    snippet = (  # record/1504897
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield code="0">1511470</subfield>'
+        '  <subfield code="9">CURATOR</subfield>  <subfield'
+        ' code="r">urn:nbn:de:hebis:77-diss-1000009520</subfield>  <subfield'
+        ' code="u">http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316</subfield>'
+        '  <subfield code="h">K. Wiebe</subfield>  <subfield code="m">Ph.D. thesis,'
+        ' University of Mainz, in preparation</subfield>  <subfield'
+        ' code="o">51</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1070,7 +1069,9 @@ def test_references_from_999C50_9_r_u_h_m_o():
                     'urn:nbn:de:hebis:77-diss-1000009520',
                 ],
                 'urls': [
-                    {'value': 'http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316'},
+                    {
+                        'value': 'http://www.diss.fu-berlin.de/diss/receive/FUDISS_thesis_000000094316'
+                    },
                 ],
             },
         },
@@ -1107,15 +1108,14 @@ def test_reference_from_999C5t_p_y_e_o():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="t">Higher Transcendetal Functions Vol. I, Bateman Manuscript Project</subfield>'
-        '  <subfield code="p">New York: McGraw-Hill Book Company, Inc.</subfield>'
-        '  <subfield code="y">1953</subfield>'
-        '  <subfield code="e">Erdélyi,A.</subfield>'
-        '  <subfield code="o">16</subfield>'
-        '</datafield>'
-    )  # record/1590099
+    snippet = (  # record/1590099
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield code="t">Higher'
+        ' Transcendetal Functions Vol. I, Bateman Manuscript Project</subfield>'
+        '  <subfield code="p">New York: McGraw-Hill Book Company,'
+        ' Inc.</subfield>  <subfield code="y">1953</subfield>  <subfield'
+        ' code="e">Erdélyi,A.</subfield>  <subfield'
+        ' code="o">16</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1129,7 +1129,12 @@ def test_reference_from_999C5t_p_y_e_o():
                 'imprint': {'publisher': 'New York: McGraw-Hill Book Company, Inc.'},
                 'label': '16',
                 'publication_info': {'year': 1953},
-                'title': {'title': 'Higher Transcendetal Functions Vol. I, Bateman Manuscript Project'},
+                'title': {
+                    'title': (
+                        'Higher Transcendetal Functions Vol. I, Bateman'
+                        ' Manuscript Project'
+                    )
+                },
             },
         },
     ]
@@ -1159,33 +1164,26 @@ def test_reference_from_999C5o_h_c_t_s_r_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="o">36</subfield>'
-        '  <subfield code="h">S. Chatrchyan et al.</subfield>'
-        '  <subfield code="c">CMS Collaboration</subfield>'
-        '  <subfield code="t">Angular analysis and branching fraction measurement of the decay B0 → K∗0 µ+ µ-</subfield>'
-        '  <subfield code="s">Phys.Lett.,B727,77</subfield>'
-        '  <subfield code="r">arXiv:1308.3409 [hep-ex]</subfield>'
-        '  <subfield code="y">2013</subfield>'
-        '  <subfield code="0">1247976</subfield>'
-        '</datafield>'
-    )  # record/1591975
+    snippet = (  # record/1591975
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="o">36</subfield>  <subfield code="h">S. Chatrchyan et'
+        ' al.</subfield>  <subfield code="c">CMS Collaboration</subfield> '
+        ' <subfield code="t">Angular analysis and branching fraction'
+        ' measurement of the decay B0 → K∗0 µ+ µ-</subfield>  <subfield'
+        ' code="s">Phys.Lett.,B727,77</subfield>  <subfield'
+        ' code="r">arXiv:1308.3409 [hep-ex]</subfield>  <subfield'
+        ' code="y">2013</subfield>  <subfield'
+        ' code="0">1247976</subfield></datafield>'
+    )
 
     expected = [
         {
             'curated_relation': False,
-            'record': {
-                '$ref': 'http://localhost:5000/api/literature/1247976'
-            },
+            'record': {'$ref': 'http://localhost:5000/api/literature/1247976'},
             'reference': {
                 'arxiv_eprint': '1308.3409',
-                'authors': [
-                    {'full_name': u'Chatrchyan, S.'}
-                ],
-                'collaborations': [
-                    'CMS Collaboration'
-                ],
+                'authors': [{'full_name': u'Chatrchyan, S.'}],
+                'collaborations': ['CMS Collaboration'],
                 'label': '36',
                 'publication_info': {
                     'artid': '77',
@@ -1194,8 +1192,13 @@ def test_reference_from_999C5o_h_c_t_s_r_y_0():
                     'page_start': '77',
                     'year': 2013,
                 },
-                'title': {'title': u'Angular analysis and branching fraction measurement of the decay B0 → K∗0 µ+ µ-'},
-            }
+                'title': {
+                    'title': (
+                        u'Angular analysis and branching fraction measurement'
+                        u' of the decay B0 → K∗0 µ+ µ-'
+                    )
+                },
+            },
         }
     ]
     result = hep.do(create_record(snippet))
@@ -1217,7 +1220,10 @@ def test_reference_from_999C5o_h_c_t_s_r_y_0():
                 'arXiv:1308.3409',
             ],
             's': 'Phys.Lett.,B727,77',
-            't': u'Angular analysis and branching fraction measurement of the decay B0 → K∗0 µ+ µ-',
+            't': (
+                u'Angular analysis and branching fraction measurement of the'
+                u' decay B0 → K∗0 µ+ µ-'
+            ),
             'y': 2013,
             'z': 0,
         }
@@ -1231,18 +1237,16 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="9">CURATOR</subfield>'
-        '  <subfield code="b">C93-06-08</subfield>'
-        '  <subfield code="h">C. Gaspar</subfield>'
-        '  <subfield code="m">Real Time Conference,, Vancouver, Canada</subfield>'
-        '  <subfield code="o">7</subfield>'
-        '  <subfield code="p">IEEE</subfield>'
-        '  <subfield code="t">DIM - A Distributed Information Management System for the Delphi experiment at CERN</subfield>'
-        '  <subfield code="y">1993</subfield>'
-        '</datafield>'
-    )  # record/1481519
+    snippet = (  # record/1481519
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="9">CURATOR</subfield>  <subfield code="b">C93-06-08</subfield> '
+        ' <subfield code="h">C. Gaspar</subfield>  <subfield code="m">Real Time'
+        ' Conference,, Vancouver, Canada</subfield>  <subfield'
+        ' code="o">7</subfield>  <subfield code="p">IEEE</subfield>  <subfield'
+        ' code="t">DIM - A Distributed Information Management System for the'
+        ' Delphi experiment at CERN</subfield>  <subfield'
+        ' code="y">1993</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1260,7 +1264,12 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
                     'cnum': 'C93-06-08',
                     'year': 1993,
                 },
-                'title': {'title': 'DIM - A Distributed Information Management System for the Delphi experiment at CERN'},
+                'title': {
+                    'title': (
+                        'DIM - A Distributed Information Management System for'
+                        ' the Delphi experiment at CERN'
+                    )
+                },
             },
         },
     ]
@@ -1279,7 +1288,10 @@ def test_references_from_999C5b_h_m_o_p_t_y_9():
             'm': 'Real Time Conference,, Vancouver, Canada',
             'o': '7',
             'p': 'IEEE',
-            't': 'DIM - A Distributed Information Management System for the Delphi experiment at CERN',
+            't': (
+                'DIM - A Distributed Information Management System for the'
+                ' Delphi experiment at CERN'
+            ),
             'y': 1993,
             'z': 0,
         },
@@ -1293,18 +1305,16 @@ def test_references_from_999C5a_h_i_m_o_p_y_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="o">16</subfield>'
-        '  <subfield code="h">A. Del Guerra</subfield>'
-        '  <subfield code="m">Ionizing Radiation Detectors for Medical Imaging Crossref:</subfield>'
-        '  <subfield code="p">World Scientific</subfield>'
-        '  <subfield code="i">9812562621</subfield>'
-        '  <subfield code="a">doi:10.1142/5408</subfield>'
-        '  <subfield code="y">2004</subfield>'
-        '  <subfield code="9">refextract</subfield>'
-        '</datafield>'
-    )  # record/1593684
+    snippet = (  # record/1593684
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="o">16</subfield>  <subfield code="h">A. Del Guerra</subfield> '
+        ' <subfield code="m">Ionizing Radiation Detectors for Medical Imaging'
+        ' Crossref:</subfield>  <subfield code="p">World Scientific</subfield> '
+        ' <subfield code="i">9812562621</subfield>  <subfield'
+        ' code="a">doi:10.1142/5408</subfield>  <subfield'
+        ' code="y">2004</subfield>  <subfield'
+        ' code="9">refextract</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1355,7 +1365,7 @@ def test_references_from_999C5h_o_q_t_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/1592189
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="h">Gromov, M.</subfield>'
         '  <subfield code="t">Spaces and questions</subfield>'
@@ -1363,7 +1373,7 @@ def test_references_from_999C5h_o_q_t_y():
         '  <subfield code="q">Geom. Funct. Anal., GAFA 2000</subfield>'
         '  <subfield code="o">16</subfield>'
         '</datafield>'
-    )  # record/1592189
+    )
 
     expected = [
         {
@@ -1406,11 +1416,11 @@ def test_references_from_999C5k():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="k">Robilotta:2008js</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     expected = [
         {
@@ -1439,7 +1449,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/1410105
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="0">568216</subfield>'
         '  <subfield code="9">CURATOR</subfield>'
@@ -1452,7 +1462,7 @@ def test_references_from_999C5d_multiple_h_o_r_0_9():
         '  <subfield code="o">20</subfield>'
         '  <subfield code="r">hep-ph/0112168v2</subfield>'
         '</datafield>'
-    )  # record/1410105
+    )
 
     expected = [
         {
@@ -1506,7 +1516,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/1613562
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="h">W, Schoutens.</subfield>'
         '  <subfield code="k">Bouwknegt:1992wg</subfield>'
@@ -1517,7 +1527,7 @@ def test_references_from_999C5h_k_double_m_o_s_y_0():
         '  <subfield code="y">1993</subfield>'
         '  <subfield code="0">338634</subfield>'
         '</datafield>'
-    )  # record/1613562
+    )
 
     expected = [
         {
@@ -1573,17 +1583,15 @@ def test_references_from_999C5_0_h_m_o_r_t_y():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="0">674429</subfield>'
-        '  <subfield code="h">R. Ardito et al.</subfield>'
-        '  <subfield code="m">66</subfield>'
-        '  <subfield code="o">57</subfield>'
-        '  <subfield code="r">hep-ex/0501010</subfield>'
-        '  <subfield code="t">CUORE: A Cryogenic underground Observatory for Rare Events</subfield>'
-        '  <subfield code="y">2005</subfield>'
-        '</datafield>'
-    )  # record/1615506
+    snippet = (  # record/1615506
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="0">674429</subfield>  <subfield code="h">R. Ardito et'
+        ' al.</subfield>  <subfield code="m">66</subfield>  <subfield'
+        ' code="o">57</subfield>  <subfield code="r">hep-ex/0501010</subfield> '
+        ' <subfield code="t">CUORE: A Cryogenic underground Observatory for'
+        ' Rare Events</subfield>  <subfield'
+        ' code="y">2005</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1601,7 +1609,11 @@ def test_references_from_999C5_0_h_m_o_r_t_y():
                     '66',
                 ],
                 'publication_info': {'year': 2005},
-                'title': {'title': 'CUORE: A Cryogenic underground Observatory for Rare Events'},
+                'title': {
+                    'title': (
+                        'CUORE: A Cryogenic underground Observatory for Rare Events'
+                    )
+                },
             },
         },
     ]
@@ -1635,12 +1647,12 @@ def test_references_from_999C5_0_z():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
+    snippet = (  # record/374213
         '<datafield tag="999" ind1="C" ind2="5">'
         '  <subfield code="0">351013</subfield>'
         '  <subfield code="z">1</subfield>'
         '</datafield>'
-    )  # record/374213
+    )
 
     expected = [
         {
@@ -1670,21 +1682,21 @@ def test_references_from_999C5u_as_cds_system_identifiers():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="o">59</subfield>'
-        '  <subfield code="c">ATLAS Collaboration</subfield>'
-        '  <subfield code="c">CMS Collaboration</subfield>'
-        '  <subfield code="m">The LHC Higgs Combination Group Collaboration Tech. Rep CERN, Geneva, Aug</subfield>'
-        '  <subfield code="h">G. Aad et al.</subfield>'
-        '  <subfield code="t">Procedure for the LHC Higgs boson search combination in Summer 2011</subfield>'
-        '  <subfield code="r">CMS-NOTE-2011-005</subfield>'
-        '  <subfield code="r">ATL-PHYS-PUB-2011-11</subfield>'
-        '  <subfield code="u">http://cds.cern.ch/record/1379837</subfield>'
-        '  <subfield code="y">2011</subfield>'
-        '  <subfield code="0">1196797</subfield>'
-        '</datafield>'
-    )  # record/1665526
+    snippet = (  # record/1665526
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="o">59</subfield>  <subfield code="c">ATLAS'
+        ' Collaboration</subfield>  <subfield code="c">CMS'
+        ' Collaboration</subfield>  <subfield code="m">The LHC Higgs'
+        ' Combination Group Collaboration Tech. Rep CERN, Geneva,'
+        ' Aug</subfield>  <subfield code="h">G. Aad et al.</subfield> '
+        ' <subfield code="t">Procedure for the LHC Higgs boson search'
+        ' combination in Summer 2011</subfield>  <subfield'
+        ' code="r">CMS-NOTE-2011-005</subfield>  <subfield'
+        ' code="r">ATL-PHYS-PUB-2011-11</subfield>  <subfield'
+        ' code="u">http://cds.cern.ch/record/1379837</subfield>  <subfield'
+        ' code="y">2011</subfield>  <subfield'
+        ' code="0">1196797</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1697,14 +1709,20 @@ def test_references_from_999C5u_as_cds_system_identifiers():
                     'ATL-PHYS-PUB-2011-11',
                 ],
                 'title': {
-                    'title': 'Procedure for the LHC Higgs boson search combination in Summer 2011',
+                    'title': (
+                        'Procedure for the LHC Higgs boson search combination'
+                        ' in Summer 2011'
+                    ),
                 },
                 'collaborations': [
                     'ATLAS Collaboration',
                     'CMS Collaboration',
                 ],
                 'misc': [
-                    'The LHC Higgs Combination Group Collaboration Tech. Rep CERN, Geneva, Aug',
+                    (
+                        'The LHC Higgs Combination Group Collaboration Tech.'
+                        ' Rep CERN, Geneva, Aug'
+                    ),
                 ],
                 'label': '59',
                 'publication_info': {
@@ -1722,7 +1740,7 @@ def test_references_from_999C5u_as_cds_system_identifiers():
                     },
                 ],
             },
-            'curated_relation': False
+            'curated_relation': False,
         }
     ]
     result = hep.do(create_record(snippet))
@@ -1739,7 +1757,10 @@ def test_references_from_999C5u_as_cds_system_identifiers():
             'h': [
                 u'Aad, G.',
             ],
-            'm': 'The LHC Higgs Combination Group Collaboration Tech. Rep CERN, Geneva, Aug',
+            'm': (
+                'The LHC Higgs Combination Group Collaboration Tech. Rep CERN,'
+                ' Geneva, Aug'
+            ),
             'o': '59',
             '0': 1196797,
             'r': [
@@ -1763,17 +1784,16 @@ def test_references_from_999C5u_as_ads_system_identifiers():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="o">25</subfield>'
-        '  <subfield code="m">Kragh, Helge Bibcode:PhP...17..107K</subfield>'
-        '  <subfield code="t">Pascual Jordan, Varying Gravity, and the Expanding Earth</subfield>'
-        '  <subfield code="s">Phys.Perspect.,17,107</subfield>'
-        '  <subfield code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield>'
-        '  <subfield code="a">doi:10.1007/s00016-015-0157-9</subfield>'
-        '  <subfield code="y">2015</subfield>'
-        '</datafield>'
-    )  # record/1663135
+    snippet = (  # record/1663135
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="o">25</subfield>  <subfield code="m">Kragh, Helge'
+        ' Bibcode:PhP...17..107K</subfield>  <subfield code="t">Pascual Jordan,'
+        ' Varying Gravity, and the Expanding Earth</subfield>  <subfield'
+        ' code="s">Phys.Perspect.,17,107</subfield>  <subfield'
+        ' code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield> '
+        ' <subfield code="a">doi:10.1007/s00016-015-0157-9</subfield> '
+        ' <subfield code="y">2015</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1800,7 +1820,7 @@ def test_references_from_999C5u_as_ads_system_identifiers():
                 ],
                 'dois': [
                     '10.1007/s00016-015-0157-9',
-                ]
+                ],
             },
         }
     ]
@@ -1834,18 +1854,18 @@ def test_references_from_999C5u_duplicated_u():
     schema = load_schema('hep')
     subschema = schema['properties']['references']
 
-    snippet = (
-        '<datafield tag="999" ind1="C" ind2="5">'
-        '  <subfield code="o">25</subfield>'
-        '  <subfield code="m">Kragh, Helge Bibcode:PhP...17..107K</subfield>'
-        '  <subfield code="t">Pascual Jordan, Varying Gravity, and the Expanding Earth</subfield>'
-        '  <subfield code="s">Phys.Perspect.,17,107</subfield>'
-        '  <subfield code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield>'
-        '  <subfield code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield>'
-        '  <subfield code="a">doi:10.1007/s00016-015-0157-9</subfield>'
-        '  <subfield code="y">2015</subfield>'
-        '</datafield>'
-    )  # record/1663135
+    snippet = (  # record/1663135
+        '<datafield tag="999" ind1="C" ind2="5">  <subfield'
+        ' code="o">25</subfield>  <subfield code="m">Kragh, Helge'
+        ' Bibcode:PhP...17..107K</subfield>  <subfield code="t">Pascual Jordan,'
+        ' Varying Gravity, and the Expanding Earth</subfield>  <subfield'
+        ' code="s">Phys.Perspect.,17,107</subfield>  <subfield'
+        ' code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield> '
+        ' <subfield'
+        ' code="u">http://adsabs.harvard.edu/abs/2015PhP...17..107K</subfield> '
+        ' <subfield code="a">doi:10.1007/s00016-015-0157-9</subfield> '
+        ' <subfield code="y">2015</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1872,7 +1892,7 @@ def test_references_from_999C5u_duplicated_u():
                 ],
                 'dois': [
                     '10.1007/s00016-015-0157-9',
-                ]
+                ],
             },
         }
     ]

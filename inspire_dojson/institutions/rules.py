@@ -27,13 +27,11 @@ from __future__ import absolute_import, division, print_function
 import re
 
 from dojson import utils
-
 from inspire_utils.helpers import force_list, maybe_float, maybe_int
 
-from .model import institutions
-from ..utils import force_single_element, get_record_ref
-from ..utils.geo import parse_institution_address
-
+from inspire_dojson.institutions.model import institutions
+from inspire_dojson.utils import force_single_element, get_record_ref
+from inspire_dojson.utils.geo import parse_institution_address
 
 ACRONYM = re.compile(r'\s*\((.*)\)\s*$')
 
@@ -78,38 +76,44 @@ def ICN(self, key, value):
     institution_hierarchy = self.get('institution_hierarchy', [])
     related_records = self.get('related_records', [])
 
-    for value in force_list(value):
+    for current_value in force_list(value):
         ICN.extend(force_list(value.get('t')))
 
         if not legacy_ICN:
-            legacy_ICN = force_single_element(value.get('u'))
+            legacy_ICN = force_single_element(current_value.get('u'))
 
-        for b_value in force_list(value.get('b')):
+        for b_value in force_list(current_value.get('b')):
             department_name, department_acronym = _split_acronym(b_value)
-            institution_hierarchy.append({
-                'acronym': department_acronym,
-                'name': department_name,
-            })
+            institution_hierarchy.append(
+                {
+                    'acronym': department_acronym,
+                    'name': department_name,
+                }
+            )
 
-        for a_value in force_list(value.get('a')):
+        for a_value in force_list(current_value.get('a')):
             institution_name, institution_acronym = _split_acronym(a_value)
-            institution_hierarchy.append({
-                'acronym': institution_acronym,
-                'name': institution_name,
-            })
+            institution_hierarchy.append(
+                {
+                    'acronym': institution_acronym,
+                    'name': institution_name,
+                }
+            )
 
-        x_values = force_list(value.get('x'))
-        z_values = force_list(value.get('z'))
+        x_values = force_list(current_value.get('x'))
+        z_values = force_list(current_value.get('z'))
 
         # XXX: we zip only when they have the same length, otherwise
         #      we might match a relation with the wrong recid.
         if len(x_values) == len(z_values):
             for _, recid in zip(x_values, z_values):
-                related_records.append({
-                    'curated_relation': True,
-                    'record': get_record_ref(recid, 'institutions'),
-                    'relation_freetext': 'obsolete',
-                })
+                related_records.append(
+                    {
+                        'curated_relation': True,
+                        'record': get_record_ref(recid, 'institutions'),
+                        'relation_freetext': 'obsolete',
+                    }
+                )
 
     self['related_records'] = related_records
     self['institution_hierarchy'] = institution_hierarchy
@@ -159,10 +163,7 @@ def institution_type(self, key, value):
 
 @institutions.over('name_variants', '^410..')
 def name_variants(self, key, value):
-    valid_sources = [
-        'ADS',
-        'INSPIRE'
-    ]
+    valid_sources = ['ADS', 'INSPIRE']
 
     if value.get('9') and value.get('9') not in valid_sources:
         return self.get('name_variants', [])
@@ -175,10 +176,12 @@ def name_variants(self, key, value):
 
     source = force_single_element(value.get('9'))
     for name_variant in force_list(value.get('a')):
-        name_variants.append({
-            'source': source,
-            'value': name_variant,
-        })
+        name_variants.append(
+            {
+                'source': source,
+                'value': name_variant,
+            }
+        )
 
     return name_variants
 

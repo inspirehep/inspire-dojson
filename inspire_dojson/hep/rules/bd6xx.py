@@ -25,13 +25,11 @@
 from __future__ import absolute_import, division, print_function
 
 import six
-
 from dojson import utils
-
 from inspire_utils.helpers import force_list
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element, get_record_ref
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import force_single_element, get_record_ref
 
 ENERGY_RANGES_MAP = {
     '1': '0-3 GeV',
@@ -65,10 +63,12 @@ def accelerator_experiments(self, key, value):
     #      we might match a value with the wrong recid.
     if len(e_values) == len(zero_values):
         for e_value, zero_value in zip(e_values, zero_values):
-            result.append({
-                'legacy_name': e_value,
-                'record': get_record_ref(zero_value, 'experiments'),
-            })
+            result.append(
+                {
+                    'legacy_name': e_value,
+                    'record': get_record_ref(zero_value, 'experiments'),
+                }
+            )
     else:
         for e_value in e_values:
             result.append({'legacy_name': e_value})
@@ -92,6 +92,7 @@ def keywords(self, key, values):
 
     Also populates the ``energy_ranges`` key through side effects.
     """
+
     def _get_source(value):
         sources = force_list(value.get('9'))
         if 'conference' in sources:
@@ -105,7 +106,8 @@ def keywords(self, key, values):
     values = force_list(values)
     automatic_keywords = any(
         a_value.lower() == '* automatic keywords *'
-        for value in values for a_value in force_list(value.get('a'))
+        for value in values
+        for a_value in force_list(value.get('a'))
     )
 
     for value in values:
@@ -120,11 +122,13 @@ def keywords(self, key, values):
             for a_value in a_values:
                 if a_value.lower() == '* automatic keywords *':
                     continue
-                keywords.append({
-                    'schema': schema,
-                    'source': source,
-                    'value': a_value,
-                })
+                keywords.append(
+                    {
+                        'schema': schema,
+                        'source': source,
+                        'value': a_value,
+                    }
+                )
 
         if value.get('e'):
             energy_ranges.append(ENERGY_RANGES_MAP.get(value.get('e')))
@@ -164,40 +168,53 @@ def keywords2marc(self, key, values):
         keyword = value.get('value')
 
         if schema == 'PACS' or schema == 'PDG':
-            result_084.append({
-                '2': schema,
-                '9': source,
-                'a': keyword,
-            })
+            result_084.append(
+                {
+                    '2': schema,
+                    '9': source,
+                    'a': keyword,
+                }
+            )
         elif schema == 'JACOW':
-            result_6531.append({
-                '2': 'JACoW',
-                '9': source,
-                'a': keyword,
-            })
+            result_6531.append(
+                {
+                    '2': 'JACoW',
+                    '9': source,
+                    'a': keyword,
+                }
+            )
         elif schema == 'INSPIRE':
-            result_695.append({
-                '2': 'INSPIRE',
-                '9': source,
-                'a': keyword,
-            })
+            result_695.append(
+                {
+                    '2': 'INSPIRE',
+                    '9': source,
+                    'a': keyword,
+                }
+            )
         elif schema == 'INIS':
-            result_695.append({
-                '2': 'INIS',
-                '9': source,
-                'a': keyword,
-            })
+            result_695.append(
+                {
+                    '2': 'INIS',
+                    '9': source,
+                    'a': keyword,
+                }
+            )
         elif source != 'magpie':
-            result_6531.append({
-                '9': source,
-                'a': keyword,
-            })
+            result_6531.append(
+                {
+                    '9': source,
+                    'a': keyword,
+                }
+            )
 
     if automatic_keywords:
-        result_695.insert(0, {
-            '2': 'INSPIRE',
-            'a': '* Automatic Keywords *',
-        })
+        result_695.insert(
+            0,
+            {
+                '2': 'INSPIRE',
+                'a': '* Automatic Keywords *',
+            },
+        )
 
     self['6531'] = result_6531
     self['084'] = result_084

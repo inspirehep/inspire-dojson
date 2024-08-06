@@ -27,16 +27,11 @@ from __future__ import absolute_import, division, print_function
 import re
 
 from dojson import utils
-
 from inspire_utils.dedupers import dedupe_list
 from inspire_utils.helpers import force_list, maybe_int
 
-from ..model import hep, hep2marc
-from ...utils import (
-    force_single_element,
-    get_record_ref,
-)
-
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import force_single_element, get_record_ref
 
 ORCID = re.compile(r'\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
 
@@ -52,10 +47,12 @@ def _authors(key, value):
         #      we might match a value with the wrong recid.
         if len(u_values) == len(z_values):
             for u_value, z_value in zip(u_values, z_values):
-                result.append({
-                    'record': get_record_ref(z_value, 'institutions'),
-                    'value': u_value,
-                })
+                result.append(
+                    {
+                        'record': get_record_ref(z_value, 'institutions'),
+                        'value': u_value,
+                    }
+                )
         else:
             for u_value in u_values:
                 result.append({'value': u_value})
@@ -63,15 +60,23 @@ def _authors(key, value):
         return dedupe_list(result)
 
     def _get_affiliations_identifiers(value):
-        t_values = (t_value.split(':', 1) for t_value in dedupe_list(force_list(value.get('t'))))
+        t_values = (
+            t_value.split(':', 1) for t_value in dedupe_list(force_list(value.get('t')))
+        )
 
-        return [{'schema': schema.upper(), 'value': identifier} for schema, identifier in t_values]
+        return [
+            {'schema': schema.upper(), 'value': identifier}
+            for schema, identifier in t_values
+        ]
 
     def _get_curated_relation(value):
         return value.get('y') == '1' or None
 
     def _get_emails(value):
-        return [el[6:] if el.startswith('email:') else el for el in force_list(value.get('m'))]
+        return [
+            el[6:] if el.startswith('email:') else el
+            for el in force_list(value.get('m'))
+        ]
 
     def _get_full_names(value):
         return [full_name.strip(', ') for full_name in force_list(value.get('a'))]
@@ -93,40 +98,52 @@ def _authors(key, value):
 
         i_values = force_list(value.get('i'))
         for i_value in i_values:
-            result.append({
-                'schema': 'INSPIRE ID',
-                'value': i_value,
-            })
+            result.append(
+                {
+                    'schema': 'INSPIRE ID',
+                    'value': i_value,
+                }
+            )
 
         j_values = force_list(value.get('j'))
         for j_value in j_values:
             if _is_jacow(j_value):
-                result.append({
-                    'schema': 'JACOW',
-                    'value': 'JACoW-' + j_value[6:],
-                })
+                result.append(
+                    {
+                        'schema': 'JACOW',
+                        'value': 'JACoW-' + j_value[6:],
+                    }
+                )
             elif _is_orcid(j_value):
-                result.append({
-                    'schema': 'ORCID',
-                    'value': j_value[6:].replace('.', ''),
-                })
+                result.append(
+                    {
+                        'schema': 'ORCID',
+                        'value': j_value[6:].replace('.', ''),
+                    }
+                )
             elif _is_naked_orcid(j_value):
-                result.append({
-                    'schema': 'ORCID',
-                    'value': j_value,
-                })
+                result.append(
+                    {
+                        'schema': 'ORCID',
+                        'value': j_value,
+                    }
+                )
             elif _is_cern(j_value):
-                result.append({
-                    'schema': 'CERN',
-                    'value': 'CERN-' + j_value[5:],
-                })
+                result.append(
+                    {
+                        'schema': 'CERN',
+                        'value': 'CERN-' + j_value[5:],
+                    }
+                )
 
         w_values = force_list(value.get('w'))
         for w_value in w_values:
-            result.append({
-                'schema': 'INSPIRE BAI',
-                'value': w_value,
-            })
+            result.append(
+                {
+                    'schema': 'INSPIRE BAI',
+                    'value': w_value,
+                }
+            )
 
         return dedupe_list(result)
 
@@ -146,7 +163,9 @@ def _authors(key, value):
         return dedupe_list([{'value': el} for el in force_list(value.get('v'))])
 
     def _get_record(value):
-        return get_record_ref(maybe_int(force_single_element(value.get('x'))), 'authors')
+        return get_record_ref(
+            maybe_int(force_single_element(value.get('x'))), 'authors'
+        )
 
     full_names = _get_full_names(value)
     if len(full_names) == 1:
@@ -172,7 +191,8 @@ def _authors(key, value):
                 'full_name': full_name,
                 'inspire_roles': _get_inspire_roles(value),
                 'raw_affiliations': _get_raw_affiliations(value),
-            } for full_name in full_names
+            }
+            for full_name in full_names
         ]
 
 
@@ -218,13 +238,12 @@ def authors2marc(self, key, value):
         return ids
 
     def _get_affiliations(value):
-        return [
-            aff.get('value') for aff in value.get('affiliations', [])
-        ]
+        return [aff.get('value') for aff in value.get('affiliations', [])]
 
     def _get_affiliations_identifiers(value):
         return [
-            u'{}:{}'.format(aff.get('schema'), aff.get('value')) for aff in value.get('affiliations_identifiers', [])
+            u'{}:{}'.format(aff.get('schema'), aff.get('value'))
+            for aff in value.get('affiliations_identifiers', [])
         ]
 
     def _get_inspire_roles(value):
@@ -232,9 +251,7 @@ def authors2marc(self, key, value):
         return ['ed.' for role in values if role == 'editor']
 
     def _get_raw_affiliations(value):
-        return [
-            aff.get('value') for aff in value.get('raw_affiliations', [])
-        ]
+        return [aff.get('value') for aff in value.get('raw_affiliations', [])]
 
     def get_value_100_700(value):
         ids = _get_ids(value)

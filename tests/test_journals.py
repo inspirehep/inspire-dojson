@@ -23,20 +23,20 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.journals import journals
-from inspire_schemas.api import load_schema, validate
 
 
 def test_issns_from_022__a():
     schema = load_schema('journals')
     subschema = schema['properties']['issns']
 
-    snippet = (
+    snippet = (  # record/1445059
         '<datafield tag="022" ind1=" " ind2=" ">'
         '  <subfield code="a">2213-1337</subfield>'
         '</datafield> '
-    )  # record/1445059
+    )
 
     expected = [
         {'value': '2213-1337'},
@@ -51,12 +51,12 @@ def test_issns_from_022__a_b():
     schema = load_schema('journals')
     subschema = schema['properties']['issns']
 
-    snippet = (
+    snippet = (  # record/1513418
         '<datafield tag="022" ind1=" " ind2=" ">'
         '  <subfield code="a">1812-9471</subfield>'
         '  <subfield code="b">Print</subfield>'
         '</datafield>'
-    )  # record/1513418
+    )
 
     expected = [
         {
@@ -74,7 +74,7 @@ def test_issns_from_double_022__a_b():
     schema = load_schema('journals')
     subschema = schema['properties']['issns']
 
-    snippet = (
+    snippet = (  # record/1513418
         '<record>'
         '  <datafield tag="022" ind1=" " ind2=" ">'
         '    <subfield code="a">1812-9471</subfield>'
@@ -85,7 +85,7 @@ def test_issns_from_double_022__a_b():
         '    <subfield code="b">Online</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1513418
+    )
 
     expected = [
         {
@@ -107,12 +107,12 @@ def test_issns_from_022__a_b_handles_electronic():
     schema = load_schema('journals')
     subschema = schema['properties']['issns']
 
-    snippet = (
+    snippet = (  # record/1415879
         '<datafield tag="022" ind1=" " ind2=" ">'
         '  <subfield code="a">2469-9888</subfield>'
         '  <subfield code="b">electronic</subfield>'
         '</datafield>'
-    )  # record/1415879
+    )
 
     expected = [
         {
@@ -130,11 +130,10 @@ def test_journal_title_from_130__a():
     schema = load_schema('journals')
     subschema = schema['properties']['journal_title']
 
-    snippet = (
-        '<datafield tag="130" ind1=" " ind2=" ">'
-        '  <subfield code="a">Physical Review Special Topics - Accelerators and Beams</subfield>'
-        '</datafield>'
-    )  # record/1212820
+    snippet = (  # record/1212820
+        '<datafield tag="130" ind1=" " ind2=" ">  <subfield code="a">Physical'
+        ' Review Special Topics - Accelerators and Beams</subfield></datafield>'
+    )
 
     expected = {'title': 'Physical Review Special Topics - Accelerators and Beams'}
     result = journals.do(create_record(snippet))
@@ -147,12 +146,12 @@ def test_journal_title_from_130__a_b():
     schema = load_schema('journals')
     subschema = schema['properties']['journal_title']
 
-    snippet = (
+    snippet = (  # record/1325601
         '<datafield tag="130" ind1=" " ind2=" ">'
         '  <subfield code="a">Humana Mente</subfield>'
         '  <subfield code="b">Journal of Philosophical Studies</subfield>'
         '</datafield>'
-    )  # record/1325601
+    )
 
     expected = {
         'title': 'Humana Mente',
@@ -168,13 +167,13 @@ def test_related_records_from_530__a_w_0():
     schema = load_schema('journals')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1415879
         '<datafield tag="530" ind1=" " ind2=" ">'
         '  <subfield code="0">1212820</subfield>'
         '  <subfield code="a">Phys.Rev.ST Accel.Beams</subfield>'
         '  <subfield code="w">a</subfield>'
         '</datafield>'
-    )  # record/1415879
+    )
 
     expected = [
         {
@@ -195,14 +194,14 @@ def test_related_records_from_530__a_i_w_0():
     schema = load_schema('journals')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1214386
         '<datafield tag="530" ind1=" " ind2=" ">'
         '  <subfield code="0">1214339</subfield>'
         '  <subfield code="a">Zh.Eksp.Teor.Fiz.</subfield>'
         '  <subfield code="i">Original version (Russian)</subfield>'
         '  <subfield code="w">r</subfield>'
         '</datafield>'
-    )  # record/1214386
+    )
 
     expected = [
         {
@@ -223,13 +222,13 @@ def test_related_successor_records_from_530__a_i_w_0():
     schema = load_schema('journals')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1504005
         '<datafield tag="530" ind1=" " ind2=" ">'
         '<subfield code="0">1214520</subfield>'
         '<subfield code="a">Phil.Mag.</subfield>'
         '<subfield code="w">b</subfield>'
         '/datafield>'
-    )  # record/1504005
+    )
 
     expected = [
         {
@@ -250,11 +249,11 @@ def test_license_from_540__a():
     schema = load_schema('journals')
     subschema = schema['properties']['license']
 
-    snippet = (
+    snippet = (  # record/1617955
         '<datafield tag="540" ind1=" " ind2=" ">'
         '  <subfield code="a">CC-BY 4.0</subfield>'
         '</datafield>'
-    )  # record/1617955
+    )
 
     expected = {'license': 'CC-BY 4.0'}
     result = journals.do(create_record(snippet))
@@ -267,14 +266,14 @@ def test_harvesting_info_from_583__a_c_i_3():
     schema = load_schema('journals')
     subschema = schema['properties']['_harvesting_info']
 
-    snippet = (
+    snippet = (  # record/1616534
         '<datafield tag="583" ind1=" " ind2=" ">'
         '  <subfield code="c">2017-08-21</subfield>'
         '  <subfield code="3">New Phys.Sae Mulli,67</subfield>'
         '  <subfield code="a">partial</subfield>'
         '  <subfield code="i">harvest</subfield>'
         '</datafield>'
-    )  # record/1616534
+    )
 
     expected = {
         'coverage': 'partial',
@@ -292,11 +291,11 @@ def test_public_notes_from_640__a():
     schema = load_schema('journals')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/1466026
         '<datafield tag="640" ind1=" " ind2=" ">'
         '  <subfield code="a">v.1 starts 2013</subfield>'
         '</datafield>'
-    )  # record/1466026
+    )
 
     expected = [
         {'value': 'v.1 starts 2013'},
@@ -311,11 +310,11 @@ def test_publisher_from_643__b():
     schema = load_schema('journals')
     subschema = schema['properties']['publisher']
 
-    snippet = (
+    snippet = (  # record/1211888
         '<datafield tag="643" ind1=" " ind2=" ">'
         '  <subfield code="b">ANITA PUBLICATIONS, INDIA</subfield>'
         '</datafield>'
-    )  # record/1211888
+    )
 
     expected = ['ANITA PUBLICATIONS, INDIA']
     result = journals.do(create_record(snippet))
@@ -328,7 +327,7 @@ def test_publisher_from_double_643__b():
     schema = load_schema('journals')
     subschema = schema['properties']['publisher']
 
-    snippet = (
+    snippet = (  # record/1212635
         '<record>'
         '  <datafield tag="643" ind1=" " ind2=" ">'
         '    <subfield code="b">Elsevier</subfield>'
@@ -337,7 +336,7 @@ def test_publisher_from_double_643__b():
         '    <subfield code="b">Science Press</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1212635
+    )
 
     expected = [
         'Elsevier',
@@ -353,11 +352,11 @@ def test_private_notes_from_667__x():
     schema = load_schema('journals')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
+    snippet = (  # record/1485643
         '<datafield tag="667" ind1=" " ind2=" ">'
         '  <subfield code="x">Open Access</subfield>'
         '</datafield>'
-    )  # record/1485643
+    )
 
     expected = [
         {'value': 'Open Access'},
@@ -372,12 +371,11 @@ def test_private_notes_from_667__double_x():
     schema = load_schema('journals')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<datafield tag="667" ind1=" " ind2=" ">'
-        '  <subfield code="x">Do not use vol, use year and page: 2006:2154,2006</subfield>'
-        '  <subfield code="x">even year is not unique</subfield>'
-        '</datafield>'
-    )  # record/1212189
+    snippet = (  # record/1212189
+        '<datafield tag="667" ind1=" " ind2=" ">  <subfield code="x">Do not use'
+        ' vol, use year and page: 2006:2154,2006</subfield>  <subfield'
+        ' code="x">even year is not unique</subfield></datafield>'
+    )
 
     expected = [
         {'value': 'Do not use vol, use year and page: 2006:2154,2006'},
@@ -393,11 +391,11 @@ def test_doi_prefixes_from_677__d():
     schema = load_schema('journals')
     subschema = schema['properties']['doi_prefixes']
 
-    snippet = (
+    snippet = (  # record/1617963
         '<datafield tag="677" ind1=" " ind2=" ">'
         '  <subfield code="d">10.17406/GJSFR</subfield>'
         '</datafield>'
-    )  # record/1617963
+    )
 
     expected = ['10.17406/GJSFR']
     result = journals.do(create_record(snippet))
@@ -410,14 +408,19 @@ def test_public_notes_from_680__i():
     schema = load_schema('journals')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        u'<datafield tag="680" ind1=" " ind2=" ">'
-        u'  <subfield code="i">Russian Title: Высокомолекулярные соединения. Серия В. Химия полимеров (Vysokomolekulyarnye Soedineniya, Seriya B)</subfield>'
-        u'</datafield>'
-    )  # record/1615699
+    snippet = (  # record/1615699
+        u'<datafield tag="680" ind1=" " ind2=" ">  <subfield code="i">Russian'
+        u' Title: Высокомолекулярные соединения. Серия В. Химия полимеров'
+        u' (Vysokomolekulyarnye Soedineniya, Seriya B)</subfield></datafield>'
+    )
 
     expected = [
-        {'value': u'Russian Title: Высокомолекулярные соединения. Серия В. Химия полимеров (Vysokomolekulyarnye Soedineniya, Seriya B)'},
+        {
+            'value': (
+                u'Russian Title: Высокомолекулярные соединения. Серия В. Химия'
+                u' полимеров (Vysokomolekulyarnye Soedineniya, Seriya B)'
+            )
+        },
     ]
     result = journals.do(create_record(snippet))
 
@@ -429,7 +432,7 @@ def test_proceedings_from_double_690__a():
     schema = load_schema('journals')
     subschema = schema['properties']['proceedings']
 
-    snippet = (
+    snippet = (  # record/1213080
         '<record>'
         '  <datafield tag="690" ind1=" " ind2=" ">'
         '    <subfield code="a">NON-PUBLISHED</subfield>'
@@ -438,7 +441,7 @@ def test_proceedings_from_double_690__a():
         '    <subfield code="a">Proceedings</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1213080
+    )
 
     expected = True
     result = journals.do(create_record(snippet))
@@ -451,11 +454,11 @@ def test_refereed_from_690__a_peer_review():
     schema = load_schema('journals')
     subschema = schema['properties']['refereed']
 
-    snippet = (
+    snippet = (  # record/1617955
         '<datafield tag="690" ind1=" " ind2=" ">'
         '  <subfield code="a">Peer Review</subfield>'
         '</datafield>'
-    )  # record/1617955
+    )
 
     expected = True
     result = journals.do(create_record(snippet))
@@ -468,11 +471,11 @@ def test_refereed_from_690__a_non_published():
     schema = load_schema('journals')
     subschema = schema['properties']['refereed']
 
-    snippet = (
+    snippet = (  # record/1357923
         '<datafield tag="690" ind1=" " ind2=" ">'
         '  <subfield code="a">NON-PUBLISHED</subfield>'
         '</datafield>'
-    )  # record/1357923
+    )
 
     expected = False
     result = journals.do(create_record(snippet))
@@ -485,11 +488,11 @@ def test_short_title_from_711__a():
     schema = load_schema('journals')
     subschema = schema['properties']['short_title']
 
-    snippet = (
+    snippet = (  # record/1212820
         '<datafield tag="711" ind1=" " ind2=" ">'
         '  <subfield code="a">Phys.Rev.ST Accel.Beams</subfield>'
         '</datafield>'
-    )  # record/1212820
+    )
 
     expected = 'Phys.Rev.ST Accel.Beams'
     result = journals.do(create_record(snippet))
@@ -503,12 +506,12 @@ def test_short_title_from_711__a_u():
     short_title_schema = schema['properties']['short_title']
     title_variants_schema = schema['properties']['title_variants']
 
-    snippet = (
+    snippet = (  # record/1485822
         '<datafield tag="711" ind1=" " ind2=" ">'
         '  <subfield code="a">Univ.Politech.Bucharest Sci.Bull.</subfield>'
         '  <subfield code="u">Univ.Politech.Bucharest Sci.Bull.A</subfield>'
         '</datafield>'
-    )  # record/1485822
+    )
 
     expected_short_title = 'Univ.Politech.Bucharest Sci.Bull.A'
     expected_title_variants = ['Univ.Politech.Bucharest Sci.Bull.']
@@ -526,7 +529,7 @@ def test_short_title_from_711__a_u_and_double_730__a():
     short_title_schema = schema['properties']['short_title']
     title_variants_schema = schema['properties']['title_variants']
 
-    snippet = (
+    snippet = (  # record/1212928
         '<record>'
         '  <datafield tag="711" ind1=" " ind2=" ">'
         '    <subfield code="a">Diss.Abstr.Int.</subfield>'
@@ -539,7 +542,7 @@ def test_short_title_from_711__a_u_and_double_730__a():
         '    <subfield code="a">DABBB</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1212928
+    )
 
     expected_short_title = 'Diss.Abstr.Int.B'
     expected_title_variants = [
@@ -560,11 +563,10 @@ def test_title_variants_from_730__a():
     schema = load_schema('journals')
     subschema = schema['properties']['title_variants']
 
-    snippet = (
-        '<datafield tag="730" ind1=" " ind2=" ">'
-        '  <subfield code="a">PHYSICAL REVIEW SPECIAL TOPICS ACCELERATORS AND BEAMS</subfield>'
-        '</datafield>'
-    )  # record/1212820
+    snippet = (  # record/1212820
+        '<datafield tag="730" ind1=" " ind2=" ">  <subfield code="a">PHYSICAL'
+        ' REVIEW SPECIAL TOPICS ACCELERATORS AND BEAMS</subfield></datafield>'
+    )
 
     expected = ['PHYSICAL REVIEW SPECIAL TOPICS ACCELERATORS AND BEAMS']
     result = journals.do(create_record(snippet))
@@ -577,16 +579,13 @@ def test_title_variants_from_double_730__a():
     schema = load_schema('journals')
     subschema = schema['properties']['title_variants']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="730" ind1=" " ind2=" ">'
-        '    <subfield code="a">PHYS REV SPECIAL TOPICS ACCELERATORS BEAMS</subfield>'
-        '  </datafield>'
-        '  <datafield tag="730" ind1=" " ind2=" ">'
-        '    <subfield code="a">PHYSICS REVIEW ST ACCEL BEAMS</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1212820
+    snippet = (  # record/1212820
+        '<record>  <datafield tag="730" ind1=" " ind2=" ">    <subfield'
+        ' code="a">PHYS REV SPECIAL TOPICS ACCELERATORS BEAMS</subfield> '
+        ' </datafield>  <datafield tag="730" ind1=" " ind2=" ">    <subfield'
+        ' code="a">PHYSICS REVIEW ST ACCEL BEAMS</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
         'PHYS REV SPECIAL TOPICS ACCELERATORS BEAMS',
@@ -599,12 +598,12 @@ def test_title_variants_from_double_730__a():
 
 
 def test_title_variants_skips_730_when_it_contains_a_b():
-    snippet = (
+    snippet = (  # record/1511950
         '<datafield tag="730" ind1=" " ind2=" ">'
         '  <subfield code="a">AIHPD</subfield>'
         '  <subfield code="b">D</subfield>'
         '</datafield>'
-    )  # record/1511950
+    )
 
     result = journals.do(create_record(snippet))
 
@@ -615,7 +614,7 @@ def test_book_series_from_double_980__a():
     schema = load_schema('journals')
     subschema = schema['properties']['book_series']
 
-    snippet = (
+    snippet = (  # record/1311535
         '<record>'
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">JOURNALS</subfield>'
@@ -624,7 +623,7 @@ def test_book_series_from_double_980__a():
         '    <subfield code="a">BookSeries</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1311535
+    )
 
     expected = True
     result = journals.do(create_record(snippet))
@@ -637,11 +636,11 @@ def test_deleted_from_980__a():
     schema = load_schema('journals')
     subschema = schema['properties']['deleted']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">DELETED</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     expected = True
     result = journals.do(create_record(snippet))

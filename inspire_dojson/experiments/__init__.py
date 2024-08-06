@@ -24,5 +24,5 @@
 
 from __future__ import absolute_import, division, print_function
 
-from . import rules  # noqa: F401
-from .model import experiments  # noqa: F401
+from inspire_dojson.experiments import rules  # noqa: F401
+from inspire_dojson.experiments.model import experiments  # noqa: F401

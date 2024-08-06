@@ -22,5 +22,4 @@
 
 set -e
 
-flake8 inspire_dojson tests
 py.test tests

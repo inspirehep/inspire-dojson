@@ -23,7 +23,6 @@
 from __future__ import absolute_import, division, print_function
 
 import pytest
-
 from flask import current_app
 from mock import patch
 
@@ -31,13 +30,13 @@ from inspire_dojson.utils import (
     absolute_url,
     afs_url,
     afs_url_to_path,
-    normalize_rank,
+    dedupe_all_lists,
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
-    dedupe_all_lists,
-    strip_empty_values,
     normalize_date_aggressively,
+    normalize_rank,
+    strip_empty_values,
 )
 
 
@@ -164,7 +163,9 @@ def test_afs_url_converts_afs_path():
 
 def test_afs_url_converts_new_afs_path():
     expected = 'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g220/4413039/content.xml'
-    result = afs_url('/opt/venvs/inspire-legacy/var/data/files/g220/4413039/content.xml')
+    result = afs_url(
+        '/opt/venvs/inspire-legacy/var/data/files/g220/4413039/content.xml'
+    )
 
     assert expected == result
 
@@ -195,7 +196,9 @@ def test_afs_url_with_custom_afs_path():
 
 def test_afs_url_handles_unicode():
     expected = u'file:///afs/cern.ch/project/inspire/PROD/var/data/files/g70/1407585/%E7%89%A9%E7%90%86%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%AD%A6%E9%99%A2-%E6%9D%8E%E5%A8%9C-200650218-%E5%AD%A6%E4%BD%8D%E7%BA%A7....pdf%3B1'
-    result = afs_url(u'/opt/cds-invenio/var/data/files/g70/1407585/物理科学与技术学院-李娜-200650218-学位级....pdf;1')
+    result = afs_url(
+        u'/opt/cds-invenio/var/data/files/g70/1407585/物理科学与技术学院-李娜-200650218-学位级....pdf;1'
+    )
 
     assert expected == result
 
@@ -214,7 +217,6 @@ def test_afs_url_with_afs_service_enabled_converts_afs_path():
     config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested'}
 
     with patch.dict(current_app.config, config):
-
         expected = 'http://jessicajones.com/nested/nested/var/file.txt'
         result = afs_url('/opt/cds-invenio/var/file.txt')
 
@@ -225,7 +227,6 @@ def test_afs_url_with_afs_service_enabled_with_trailing_slash_converts_afs_path(
     config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested/'}
 
     with patch.dict(current_app.config, config):
-
         expected = 'http://jessicajones.com/nested/nested/var/file.txt'
         result = afs_url('/opt/cds-invenio/var/file.txt')
 
@@ -261,7 +262,7 @@ def test_afs_url_converts_afs_url_to_path():
 def test_afs_url_handles_custom_afs_path():
     config = {
         'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested',
-        'LEGACY_AFS_PATH': '/foo/bar'
+        'LEGACY_AFS_PATH': '/foo/bar',
     }
 
     expected = "file:///foo/bar/var/file.txt"
@@ -350,13 +351,17 @@ def test_get_recid_from_ref_returns_none_on_ref_malformed():
 
 
 def test_dedupe_all_lists():
-    obj = {'l0': list(range(10)) + list(range(10)),
-           'o1': [{'foo': 'bar'}] * 10,
-           'o2': [{'foo': [1, 2]}, {'foo': [1, 1, 2]}] * 10}
+    obj = {
+        'l0': list(range(10)) + list(range(10)),
+        'o1': [{'foo': 'bar'}] * 10,
+        'o2': [{'foo': [1, 2]}, {'foo': [1, 1, 2]}] * 10,
+    }
 
-    expected = {'l0': list(range(10)),
-                'o1': [{'foo': 'bar'}],
-                'o2': [{'foo': [1, 2]}]}
+    expected = {
+        'l0': list(range(10)),
+        'o1': [{'foo': 'bar'}],
+        'o2': [{'foo': [1, 2]}],
+    }
 
     assert dedupe_all_lists(obj) == expected
 
@@ -404,7 +409,7 @@ def test_normalize_date_aggressively_strips_wrong_month():
 
 
 def test_normalize_date_aggressively_raises_on_wrong_format():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Unknown string format: 2014=12'):
         normalize_date_aggressively('2014=12-01')
 
 
