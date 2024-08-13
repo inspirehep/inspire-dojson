@@ -24,8 +24,12 @@
 
 from __future__ import absolute_import, division, print_function
 
-from ..model import FilterOverdo, add_schema, add_collection, clean_record
-
+from inspire_dojson.model import (
+    FilterOverdo,
+    add_collection,
+    add_schema,
+    clean_record,
+)
 
 filters = [
     add_schema('data.json'),

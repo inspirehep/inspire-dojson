@@ -27,16 +27,20 @@ from __future__ import absolute_import, division, print_function
 import itertools
 
 import six
-
+from inspire_schemas.builders.literature import is_citeable
 from inspire_schemas.utils import (
     convert_old_publication_info_to_new,
     normalize_arxiv_category,
 )
-from inspire_schemas.builders.literature import is_citeable
 from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 
-from ..model import FilterOverdo, add_schema, clean_marc, clean_record
+from inspire_dojson.model import (
+    FilterOverdo,
+    add_schema,
+    clean_marc,
+    clean_record,
+)
 
 
 def add_arxiv_categories(record, blob):
@@ -56,7 +60,9 @@ def convert_publication_infos(record, blob):
     if not record.get('publication_info'):
         return record
 
-    record['publication_info'] = convert_old_publication_info_to_new(record['publication_info'])
+    record['publication_info'] = convert_old_publication_info_to_new(
+        record['publication_info']
+    )
 
     return record
 
@@ -69,7 +75,9 @@ def move_incomplete_publication_infos(record, blob):
         if not non_empty_keys:
             continue
         if non_empty_keys.issubset({'journal_record', 'journal_title'}):
-            public_note = {'value': u'Submitted to {}'.format(publication_info['journal_title'])}
+            public_note = {
+                'value': u'Submitted to {}'.format(publication_info['journal_title'])
+            }
             record.setdefault('public_notes', []).append(public_note)
         else:
             publication_infos.append(publication_info)
@@ -112,7 +120,9 @@ def ensure_ordered_figures(record, blob):
         else:
             unordered_figures_list.append(figure)
 
-    record['figures'] = [value for key, value in sorted(six.iteritems(ordered_figures_dict))]
+    record['figures'] = [
+        value for key, value in sorted(six.iteritems(ordered_figures_dict))
+    ]
     record['figures'].extend(unordered_figures_list)
     return record
 
@@ -127,7 +137,10 @@ def ensure_unique_documents_and_figures(record, blob):
                 else:
                     duplicate_keys_list.append(element['key'])
 
-    for index, attachment in itertools.chain(duplicates(record.get('documents', [])), duplicates(record.get('figures', []))):
+    for index, attachment in itertools.chain(
+        duplicates(record.get('documents', [])),
+        duplicates(record.get('figures', [])),
+    ):
         attachment['key'] = u'{}_{}'.format(index, attachment['key'])
 
     return record
@@ -140,15 +153,9 @@ def write_ids(record, blob):
     for schema, values in six.iteritems(id_dict):
         z_values = iter(values)
         a_value = next(z_values)
-        result_035.append({
-            '9': schema,
-            'a': a_value
-        })
+        result_035.append({'9': schema, 'a': a_value})
         for z_value in z_values:
-            result_035.append({
-                '9': schema,
-                'z': z_value
-            })
+            result_035.append({'9': schema, 'z': z_value})
 
     if 'id_dict' in record:
         del record['id_dict']

@@ -28,11 +28,10 @@ import os
 import re
 
 from dojson import utils
-
 from inspire_utils.helpers import force_list
 
-from ..model import hep, hep2marc
-from ...utils import absolute_url, afs_url, afs_url_to_path
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import absolute_url, afs_url, afs_url_to_path
 
 
 @hep.over('documents', '^FFT[^%][^%]')
@@ -42,8 +41,13 @@ def documents(self, key, value):
 
     Also populates the ``figures`` key through side effects.
     """
+
     def _is_hidden(value):
-        return 'HIDDEN' in [val.upper() for val in force_list(value.get('o'))] or _get_source(value) == 'arxiv' or None
+        return (
+            'HIDDEN' in [val.upper() for val in force_list(value.get('o'))]
+            or _get_source(value) == 'arxiv'
+            or None
+        )
 
     def _is_figure(value):
         return value.get('f', "").endswith(".png")
@@ -81,13 +85,15 @@ def documents(self, key, value):
 
     if _is_figure(value):
         index, caption = _get_index_and_caption(value.get('d', ''))
-        figures.append({
-            'key': _get_key(value),
-            'caption': caption,
-            'url': afs_url(value.get('a')),
-            'order': index,
-            'source': 'arxiv',  # XXX: we don't have any other figures on legacy
-        })
+        figures.append(
+            {
+                'key': _get_key(value),
+                'caption': caption,
+                'url': afs_url(value.get('a')),
+                'order': index,
+                'source': 'arxiv',  # XXX: we don't have any other figures on legacy
+            }
+        )
         self['figures'] = figures
     else:
         return {
@@ -124,7 +130,10 @@ def documents2marc(self, key, value):
 
     def _get_filename_and_extension(value):
         file_name, extension = os.path.splitext(value.get('filename', value['key']))
-        if file_name == "document" and value.get("material", "publication") != "publication":
+        if (
+            file_name == "document"
+            and value.get("material", "publication") != "publication"
+        ):
             file_name = value["material"]
         return file_name, extension
 
@@ -145,12 +154,14 @@ def figures2marc(self, key, values):
     fft = self.setdefault('FFT', [])
     for index, value in enumerate(values):
         file_name, extension = os.path.splitext(value.get('filename', value['key']))
-        fft.append({
-            'd': u'{:05d} {}'.format(index, value.get('caption')),
-            'a': afs_url_to_path(absolute_url(value.get('url'))),
-            't': 'Plot',
-            'n': file_name,
-            'f': extension,
-        })
+        fft.append(
+            {
+                'd': u'{:05d} {}'.format(index, value.get('caption')),
+                'a': afs_url_to_path(absolute_url(value.get('url'))),
+                't': 'Plot',
+                'n': file_name,
+                'f': extension,
+            }
+        )
 
     return fft

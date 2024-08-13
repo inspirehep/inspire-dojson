@@ -23,23 +23,23 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.conferences import conferences
 from inspire_dojson.hep import hep, hep2marc
 from inspire_dojson.hepnames import hepnames, hepnames2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_acquisition_source_from_541__a_c():
     schema = load_schema('hep')
     subschema = schema['properties']['acquisition_source']
 
-    snippet = (
+    snippet = (  # record/1487640
         '<datafield tag="541" ind1=" " ind2=" ">'
         '  <subfield code="a">IOP</subfield>'
         '  <subfield code="c">batchupload</subfield>'
         '</datafield>'
-    )  # record/1487640
+    )
 
     expected = {
         'source': 'IOP',
@@ -63,7 +63,7 @@ def test_acquisition_source_from_541__double_a_b_c_e():
     schema = load_schema('hep')
     subschema = schema['properties']['acquisition_source']
 
-    snippet = (
+    snippet = (  # record/1416571
         '<datafield tag="541" ind1=" " ind2=" ">'
         '  <subfield code="a">inspire:uid:52524</subfield>'
         '  <subfield code="a">orcid:0000-0002-1048-661X</subfield>'
@@ -71,7 +71,7 @@ def test_acquisition_source_from_541__double_a_b_c_e():
         '  <subfield code="c">submission</subfield>'
         '  <subfield code="e">504296</subfield>'
         '</datafield>'
-    )  # record/1416571
+    )
 
     expected = {
         'email': 'oliver.schlotterer@web.de',
@@ -100,7 +100,7 @@ def test_acquisition_source_from_541__a_b_c_d_e_converts_dates_to_datetimes():
     schema = load_schema('authors')
     subschema = schema['properties']['acquisition_source']
 
-    snippet = (
+    snippet = (  # record/982806
         '<datafield tag="541" ind1=" " ind2=" ">'
         '  <subfield code="a">inspire:uid:51852</subfield>'
         '  <subfield code="b">jmyang@itp.ac.cn</subfield>'
@@ -108,7 +108,7 @@ def test_acquisition_source_from_541__a_b_c_d_e_converts_dates_to_datetimes():
         '  <subfield code="d">2016-05-24</subfield>'
         '  <subfield code="e">805819</subfield>'
         '</datafield>'
-    )  # record/982806
+    )
 
     expected = {
         'datetime': '2016-05-24T00:00:00',
@@ -137,7 +137,7 @@ def test_acquisition_source_from_541__a_b_c_d_e_handles_datetime():
     schema = load_schema('hep')
     subschema = schema['properties']['acquisition_source']
 
-    snippet = (
+    snippet = (  # record/1644748
         '<datafield tag="541" ind1=" " ind2=" ">'
         '  <subfield code="a">orcid:0000-0002-7307-0726</subfield>'
         '  <subfield code="b">ratra@phys.ksu.edu</subfield>'
@@ -145,7 +145,7 @@ def test_acquisition_source_from_541__a_b_c_d_e_handles_datetime():
         '  <subfield code="d">2017-12-23T18:39:38.751244</subfield>'
         '  <subfield code="e">832953</subfield>'
         '</datafield>'
-    )  # record/1644748
+    )
 
     expected = {
         'datetime': '2017-12-23T18:39:38.751244',
@@ -175,9 +175,7 @@ def test_self_from_001():
     schema = load_schema('hep')
     subschema = schema['properties']['self']
 
-    snippet = (
-        '<controlfield tag="001">1508668</controlfield>'
-    )  # record/1508668
+    snippet = '<controlfield tag="001">1508668</controlfield>'  # record/1508668
 
     expected = {'$ref': 'http://localhost:5000/api/literature/1508668'}
     result = hep.do(create_record(snippet))
@@ -190,9 +188,7 @@ def test_control_number_from_001():
     schema = load_schema('hep')
     subschema = schema['properties']['control_number']
 
-    snippet = (
-        '<controlfield tag="001">1508668</controlfield>'
-    )  # record/1508668
+    snippet = '<controlfield tag="001">1508668</controlfield>'  # record/1508668
 
     expected = 1508668
     result = hep.do(create_record(snippet))
@@ -210,7 +206,7 @@ def test_legacy_creation_date_from_961__x_and_961__c():
     schema = load_schema('hep')
     subschema = schema['properties']['legacy_creation_date']
 
-    snippet = (
+    snippet = (  # record/1124236
         '<record>'
         '  <datafield tag="961" ind1=" " ind2=" ">'
         '    <subfield code="x">2012-07-30</subfield>'
@@ -219,7 +215,7 @@ def test_legacy_creation_date_from_961__x_and_961__c():
         '    <subfield code="c">2012-11-20</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1124236
+    )
 
     expected = '2012-07-30'
     result = hep.do(create_record(snippet))
@@ -237,7 +233,7 @@ def test_legacy_creation_date_from_961__c_and_961__x():
     schema = load_schema('hep')
     subschema = schema['properties']['legacy_creation_date']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<record>'
         '  <datafield tag="961" ind1=" " ind2=" ">'
         '    <subfield code="c">2012-11-20</subfield>'
@@ -246,7 +242,7 @@ def test_legacy_creation_date_from_961__c_and_961__x():
         '    <subfield code="x">2012-07-30</subfield>'
         '  </datafield>'
         '</record>'
-    )  # synthetic data
+    )
 
     expected = '2012-07-30'
     result = hep.do(create_record(snippet))
@@ -261,11 +257,11 @@ def test_legacy_creation_date_from_961__c_and_961__x():
 
 
 def test_legacy_creation_date_from_961__c_does_not_raise():
-    snippet = (
+    snippet = (  # record/1501611
         '<datafield tag="961" ind1=" " ind2=" ">'
         '  <subfield code="c">2009-07-12</subfield>'
         '</datafield>'
-    )  # record/1501611
+    )
 
     assert 'legacy_creation_date' not in hep.do(create_record(snippet))
 
@@ -274,12 +270,12 @@ def test_legacy_creation_date_from_961__double_x_does_not_raise():
     schema = load_schema('authors')
     subschema = schema['properties']['legacy_creation_date']
 
-    snippet = (
+    snippet = (  # record/982164
         '<datafield tag="961" ind1=" " ind2=" ">'
         '  <subfield code="x">2006-04-21</subfield>'
         '  <subfield code="x">1996-09-01</subfield>'
         '</datafield>'
-    )  # record/982164
+    )
 
     expected = '1996-09-01'
     result = hepnames.do(create_record(snippet))
@@ -297,11 +293,11 @@ def test_external_system_identifiers_from_970__a():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/1297176
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="a">SPIRES-10325093</subfield>'
         '</datafield>'
-    )  # record/1297176
+    )
 
     expected = [
         {
@@ -326,12 +322,12 @@ def test_external_system_identifiers_from_970__double_a():
     schema = load_schema('hep')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/1217763
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="a">SPIRES-9663061</subfield>'
         '  <subfield code="a">SPIRES-9949933</subfield>'
         '</datafield>'
-    )  # record/1217763
+    )
 
     expected = [
         {
@@ -361,11 +357,11 @@ def test_external_system_identifiers_from_970__a_conferences():
     schema = load_schema('conferences')
     subschema = schema['properties']['external_system_identifiers']
 
-    snippet = (
+    snippet = (  # record/972464
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="a">CONF-461733</subfield>'
         '</datafield>'
-    )  # record/972464
+    )
 
     expected = [
         {
@@ -383,11 +379,11 @@ def test_new_record_from_970__d():
     schema = load_schema('hep')
     subschema = schema['properties']['new_record']
 
-    snippet = (
+    snippet = (  # record/37545
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="d">361769</subfield>'
         '</datafield>'
-    )  # record/37545
+    )
 
     expected = {'$ref': 'http://localhost:5000/api/literature/361769'}
     result = hep.do(create_record(snippet))
@@ -405,11 +401,11 @@ def test_deleted_records_from_981__a():
     schema = load_schema('hep')
     subschema = schema['properties']['deleted_records']
 
-    snippet = (
+    snippet = (  # record/1508886
         '<datafield tag="981" ind1=" " ind2=" ">'
         '  <subfield code="a">1508668</subfield>'
         '</datafield>'
-    )  # record/1508886
+    )
 
     expected = [{'$ref': 'http://localhost:5000/api/literature/1508668'}]
     result = hep.do(create_record(snippet))
@@ -429,12 +425,12 @@ def test_inspire_categories_from_65017a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['inspire_categories']
 
-    snippet = (
+    snippet = (  # record/1426196
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="2">Inspire</subfield>'
         '  <subfield code="a">Experiment-HEP</subfield>'
         '</datafield>'
-    )  # record/1426196
+    )
 
     expected = [
         {
@@ -461,13 +457,13 @@ def test_inspire_categories_from_65017a_2_9_discards_conference():
     schema = load_schema('hep')
     subschema = schema['properties']['inspire_categories']
 
-    snippet = (
+    snippet = (  # record/1479228
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="2">INSPIRE</subfield>'
         '  <subfield code="9">conference</subfield>'
         '  <subfield code="a">Accelerators</subfield>'
         '</datafield>'
-    )  # record/1479228
+    )
 
     expected = [
         {
@@ -494,13 +490,12 @@ def test_inspire_categories_from_65017a_2_9_converts_automatically_added():
     schema = load_schema('hep')
     subschema = schema['properties']['inspire_categories']
 
-    snippet = (
-        '<datafield tag="650" ind1="1" ind2="7">'
-        '  <subfield code="2">INSPIRE</subfield>'
-        '  <subfield code="a">Instrumentation</subfield>'
-        '  <subfield code="9">automatically added based on DCC, PPF, DK</subfield>'
-        '</datafield>'
-    )  # record/669400
+    snippet = (  # record/669400
+        '<datafield tag="650" ind1="1" ind2="7">  <subfield'
+        ' code="2">INSPIRE</subfield>  <subfield'
+        ' code="a">Instrumentation</subfield>  <subfield code="9">automatically'
+        ' added based on DCC, PPF, DK</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -529,13 +524,13 @@ def test_inspire_categories_from_65017a_2_9_converts_submitter():
     schema = load_schema('hep')
     subschema = schema['properties']['inspire_categories']
 
-    snippet = (
+    snippet = (  # record/1511089
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="a">Math and Math Physics</subfield>'
         '  <subfield code="9">submitter</subfield>'
         '  <subfield code="2">INSPIRE</subfield>'
         '</datafield>'
-    )  # record/1511089
+    )
 
     expected = [
         {
@@ -549,11 +544,7 @@ def test_inspire_categories_from_65017a_2_9_converts_submitter():
     assert expected == result['inspire_categories']
 
     expected = [
-        {
-            '2': 'INSPIRE',
-            '9': 'user',
-            'a': 'Math and Math Physics'
-        },
+        {'2': 'INSPIRE', '9': 'user', 'a': 'Math and Math Physics'},
     ]
     result = hep2marc.do(result)
 
@@ -561,12 +552,12 @@ def test_inspire_categories_from_65017a_2_9_converts_submitter():
 
 
 def test_inspire_categories_from_65017a_2_discards_arxiv():
-    snippet = (
+    snippet = (  # record/1511862
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="a">math-ph</subfield>'
         '  <subfield code="2">arXiv</subfield>'
         '</datafield>'
-    )  # record/1511862
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -577,12 +568,12 @@ def test_urls_from_8564_u_y():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
 
-    snippet = (
+    snippet = (  # record/1405358
         '<datafield tag="856" ind1="4" ind2=" ">'
         '  <subfield code="u">http://www-lib.kek.jp/ar/ar.html</subfield>'
         '  <subfield code="y">KEK</subfield>'
         '</datafield>'
-    )  # record/1405358
+    )
 
     expected = [
         {
@@ -607,12 +598,13 @@ def test_urls_from_8564_u_y():
 
 
 def test_urls_from_8564_ignores_internal_links():
-    snippet = (
+    snippet = (  # record/1610503
         '<datafield tag="856" ind1="4" ind2=" ">'
         '  <subfield code="s">1506142</subfield>'
-        '  <subfield code="u">http://inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
+        '  <subfield'
+        ' code="u">http://inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
         '</datafield>'
-    )  # record/1610503
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -620,12 +612,13 @@ def test_urls_from_8564_ignores_internal_links():
 
 
 def test_urls_from_8564_ignores_internal_links_with_subdomain():
-    snippet = (
+    snippet = (  # record/1610503
         '<datafield tag="856" ind1="4" ind2=" ">'
         '  <subfield code="s">1506142</subfield>'
-        '  <subfield code="u">http://old.inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
+        '  <subfield'
+        ' code="u">http://old.inspirehep.net/record/1610503/files/arXiv:1707.05770.pdf</subfield>'
         '</datafield>'
-    )  # record/1610503
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -633,13 +626,12 @@ def test_urls_from_8564_ignores_internal_links_with_subdomain():
 
 
 def test_urls_from_8564_ignores_internal_links_https():
-    snippet = (
-        '<datafield tag="856" ind1="4" ind2=" ">'
-        '  <subfield code="s">2392681</subfield>'
-        '  <subfield code="u">https://inspirehep.net/record/1508108/files/fermilab-pub-16-617-cms.pdf</subfield>'
-        '  <subfield code="y">Fulltext</subfield>'
-        '</datafield>'
-    )  # record/1508036
+    snippet = (  # record/1508036
+        '<datafield tag="856" ind1="4" ind2=" ">  <subfield code="s">2392681</subfield>'
+        '  <subfield'
+        ' code="u">https://inspirehep.net/record/1508108/files/fermilab-pub-16-617-cms.pdf</subfield>'
+        '  <subfield code="y">Fulltext</subfield></datafield>'
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -650,12 +642,13 @@ def test_urls_from_8564_s_u_ignores_s():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
 
-    snippet = (
+    snippet = (  # record/1511347
         '<datafield tag="856" ind1="4" ind2=" ">'
         '  <subfield code="s">443981</subfield>'
-        '  <subfield code="u">http://localhost:5000/record/1511347/files/HIG-16-034-pas.pdf</subfield>'
+        '  <subfield'
+        ' code="u">http://localhost:5000/record/1511347/files/HIG-16-034-pas.pdf</subfield>'
         '</datafield>'
-    )  # record/1511347
+    )
 
     expected = [
         {'value': 'http://localhost:5000/record/1511347/files/HIG-16-034-pas.pdf'},
@@ -677,13 +670,14 @@ def test_urls_from_8564_u_w_y_ignores_w_and_translates_weblinks():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
 
-    snippet = (
+    snippet = (  # record/1120360
         '<datafield tag="856" ind1="4" ind2=" ">'
         '  <subfield code="w">12-316</subfield>'
         '  <subfield code="y">FERMILABPUB</subfield>'
-        '  <subfield code="u">http://lss.fnal.gov/cgi-bin/find_paper.pl?pub-12-316</subfield>'
+        '  <subfield'
+        ' code="u">http://lss.fnal.gov/cgi-bin/find_paper.pl?pub-12-316</subfield>'
         '</datafield>'
-    )  # record/1120360
+    )
 
     expected = [
         {
@@ -711,18 +705,21 @@ def test_urls_from_8564_u_w_y_ignores_w_and_translates_weblinks_with_apostrophes
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
 
-    snippet = (
+    snippet = (  # record/417789
         '<datafield tag="856" ind1="4" ind2=" ">'
         '  <subfield code="w">Abstracts_2/Stanek.html</subfield>'
         '  <subfield code="y">C95-10-29</subfield>'
-        '  <subfield code="u">http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html</subfield>'
+        '  <subfield'
+        ' code="u">http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html</subfield>'
         '</datafield>'
-    )  # record/417789
+    )
 
     expected = [
         {
             'description': 'ICALEPCS\'95 Server',
-            'value': 'http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html',
+            'value': (
+                'http://www-bd.fnal.gov/icalepcs/abstracts/Abstracts_2/Stanek.html'
+            ),
         },
     ]
     result = hep.do(create_record(snippet))  # no roundtrip
@@ -745,13 +742,12 @@ def test_urls_from_8564_u_double_y_selects_the_first_y():
     schema = load_schema('hep')
     subschema = schema['properties']['urls']
 
-    snippet = (
-        '<datafield tag="856" ind1="4" ind2=" ">'
-        '  <subfield code="u">http://link.springer.com/journal/10909/176/5/page/1</subfield>'
-        '  <subfield code="y">Part II</subfield>'
-        '  <subfield code="y">Springer</subfield>'
-        '</datafield>'
-    )  # record/1312672
+    snippet = (  # record/1312672
+        '<datafield tag="856" ind1="4" ind2=" ">  <subfield'
+        ' code="u">http://link.springer.com/journal/10909/176/5/page/1</subfield>'
+        '  <subfield code="y">Part II</subfield>  <subfield'
+        ' code="y">Springer</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -776,11 +772,11 @@ def test_urls_from_8564_u_double_y_selects_the_first_y():
 
 
 def test_private_notes_from_595__9():
-    snippet = (
+    snippet = (  # record/1005469
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="9">SPIRES-HIDDEN</subfield>'
         '</datafield>'
-    )  # record/1005469
+    )
 
     assert '_private_notes' not in hepnames.do(create_record(snippet))
 
@@ -789,9 +785,9 @@ def test_legacy_version_from_005():
     schema = load_schema('hep')
     subschema = schema['properties']['legacy_version']
 
-    snippet = (
+    snippet = (  # record/1694560
         '<controlfield tag="005">20180919130452.0</controlfield>'
-    )  # record/1694560
+    )
 
     expected = '20180919130452.0'
     result = hep.do(create_record(snippet))

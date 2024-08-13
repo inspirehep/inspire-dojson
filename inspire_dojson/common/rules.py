@@ -27,29 +27,26 @@ from __future__ import absolute_import, division, print_function
 import re
 from datetime import datetime
 
-from flask import current_app
-from six.moves import urllib
-
 from dojson import utils
-
+from flask import current_app
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import classify_field
 from inspire_utils.date import PartialDate, earliest_date
 from inspire_utils.helpers import force_list, maybe_int
+from six.moves import urllib
 
-from ..conferences.model import conferences
-from ..data.model import data
-from ..experiments.model import experiments
-from ..hep.model import hep, hep2marc
-from ..hepnames.model import hepnames, hepnames2marc
-from ..institutions.model import institutions
-from ..journals.model import journals
-from ..utils import (
+from inspire_dojson.conferences.model import conferences
+from inspire_dojson.data.model import data
+from inspire_dojson.experiments.model import experiments
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.hepnames.model import hepnames, hepnames2marc
+from inspire_dojson.institutions.model import institutions
+from inspire_dojson.journals.model import journals
+from inspire_dojson.utils import (
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
 )
-
 
 IS_INTERNAL_UID = re.compile(r'^(inspire:uid:)?\d{5}$')
 IS_ORCID = re.compile(r'^(orcid:)?\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$')
@@ -346,7 +343,9 @@ WEBLINKS = {
     'HEPPDF': 'PDF Server',
     'HLTPA': 'Health Physics Server',
     'HSERVER': 'HTML_Version from a server',
-    'HTTP://POS.SISSA.IT/ARCHIVE/CONFERENCES/045/026/LHC07_026.PDF': 'HTTP://WWW-BD.FNAL.GOV/ICFABD/NEWSLETTER45.PDF',
+    'HTTP://POS.SISSA.IT/ARCHIVE/CONFERENCES/045/026/LHC07_026.PDF': (
+        'HTTP://WWW-BD.FNAL.GOV/ICFABD/NEWSLETTER45.PDF'
+    ),
     'ICTP': 'ICTP Trieste Preprint Server',
     'ICTP-LNS': 'ICTP Lecture Notes Server',
     'IEEE': 'IEEExplore Server',
@@ -587,6 +586,7 @@ def control_number(endpoint):
 
     Also populates the ``self`` key through side effects.
     """
+
     def _control_number(self, key, value):
         self['self'] = get_record_ref(int(value), endpoint)
         return int(value)
@@ -630,6 +630,7 @@ def legacy_version2marc(self, key, value):
 @hepnames.over('acquisition_source', '^541..')
 def acquisition_source(self, key, value):
     """Populate the ``acquisition_source`` key."""
+
     def _get_datetime(value):
         d_value = force_single_element(value.get('d', ''))
         if d_value:
@@ -646,15 +647,13 @@ def acquisition_source(self, key, value):
     a_values = force_list(value.get('a'))
     for a_value in a_values:
         if IS_INTERNAL_UID.match(a_value):
-            if a_value.startswith('inspire:uid:'):
-                internal_uid = int(a_value[12:])
-            else:
-                internal_uid = int(a_value)
+            internal_uid = (
+                int(a_value[12:])
+                if a_value.startswith('inspire:uid:')
+                else int(a_value)
+            )
         elif IS_ORCID.match(a_value):
-            if a_value.startswith('orcid:'):
-                orcid = a_value[6:]
-            else:
-                orcid = a_value
+            orcid = a_value[6:] if a_value.startswith('orcid:') else a_value
         else:
             source = a_value
 
@@ -718,7 +717,8 @@ def public_notes_500(self, key, value):
         {
             'source': value.get('9'),
             'value': public_note,
-        } for public_note in force_list(value.get('a'))
+        }
+        for public_note in force_list(value.get('a'))
     ]
 
 
@@ -745,7 +745,8 @@ def _private_notes_595(self, key, value):
         {
             'source': value.get('9'),
             'value': _private_note,
-        } for _private_note in force_list(value.get('a'))
+        }
+        for _private_note in force_list(value.get('a'))
     ]
 
 
@@ -771,7 +772,7 @@ def inspire_categories(self, key, value):
     inspire_categories = self.get('inspire_categories', [])
 
     scheme = force_single_element(value.get('2'))
-    if scheme == 'arXiv':          # XXX: we skip arXiv categories here because
+    if scheme == 'arXiv':  # XXX: we skip arXiv categories here because
         return inspire_categories  # we're going to add them later in a filter.
 
     source = force_single_element(value.get('9', '')).lower()
@@ -787,10 +788,12 @@ def inspire_categories(self, key, value):
     for _term in terms:
         term = classify_field(_term)
         if term:
-            inspire_categories.append({
-                'term': term,
-                'source': source,
-            })
+            inspire_categories.append(
+                {
+                    'term': term,
+                    'source': source,
+                }
+            )
 
     return inspire_categories
 
@@ -850,10 +853,12 @@ def urls(self, key, value):
     description = WEBLINKS.get(description, description)
     for url in force_list(value.get('u')):
         if not _is_internal_url(url):
-            urls.append({
-                'description': description,
-                'value': url,
-            })
+            urls.append(
+                {
+                    'description': description,
+                    'value': url,
+                }
+            )
 
     return urls
 
@@ -894,6 +899,7 @@ def external_system_identifiers(endpoint):
 
     Also populates the ``new_record`` key through side effects.
     """
+
     @utils.flatten
     @utils.for_each_value
     def _external_system_identifiers(self, key, value):
@@ -905,17 +911,28 @@ def external_system_identifiers(endpoint):
             {
                 'schema': 'SPIRES',
                 'value': ext_sys_id,
-            } for ext_sys_id in force_list(value.get('a'))
+            }
+            for ext_sys_id in force_list(value.get('a'))
         ]
 
     return _external_system_identifiers
 
 
-conferences.over('external_system_identifiers', '^970..')(external_system_identifiers('conferences'))
-experiments.over('external_system_identifiers', '^970..')(external_system_identifiers('experiments'))
-hep.over('external_system_identifiers', '^970..')(external_system_identifiers('literature'))
-institutions.over('external_system_identifiers', '^970..')(external_system_identifiers('institutions'))
-journals.over('external_system_identifiers', '^970..')(external_system_identifiers('journals'))
+conferences.over('external_system_identifiers', '^970..')(
+    external_system_identifiers('conferences')
+)
+experiments.over('external_system_identifiers', '^970..')(
+    external_system_identifiers('experiments')
+)
+hep.over('external_system_identifiers', '^970..')(
+    external_system_identifiers('literature')
+)
+institutions.over('external_system_identifiers', '^970..')(
+    external_system_identifiers('institutions')
+)
+journals.over('external_system_identifiers', '^970..')(
+    external_system_identifiers('journals')
+)
 
 
 @hep2marc.over('970', '^new_record$')
@@ -931,6 +948,7 @@ def deleted(self, key, value):
 
 def deleted_records(endpoint):
     """Populate the ``deleted_records`` key."""
+
     @utils.for_each_value
     def _deleted_records(self, key, value):
         deleted_recid = maybe_int(value.get('a'))

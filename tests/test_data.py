@@ -23,21 +23,21 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.data import data
-from inspire_schemas.api import load_schema, validate
 
 
 def test_dois_from_0247_2_a():
     schema = load_schema('data')
     subschema = schema['properties']['dois']
 
-    snippet = (
+    snippet = (  # record/1639676
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="a">10.17182/hepdata.77268.v1/t6</subfield>'
         '  <subfield code="2">DOI</subfield>'
         '</datafield>'
-    )  # record/1639676
+    )
 
     expected = [
         {
@@ -54,11 +54,11 @@ def test_new_record_from_970__d():
     schema = load_schema('data')
     subschema = schema['properties']['new_record']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="d">361769</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     expected = {'$ref': 'http://localhost:5000/api/data/361769'}
     result = data.do(create_record(snippet))

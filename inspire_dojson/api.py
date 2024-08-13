@@ -28,34 +28,34 @@ import os
 import re
 from itertools import chain
 
+from dojson.contrib.marc21.utils import create_record
+from inspire_utils.helpers import force_list
+from inspire_utils.record import get_value
 from lxml.builder import E
 from lxml.etree import tostring
 from six import iteritems, text_type, unichr
 from six.moves import urllib
 
-from dojson.contrib.marc21.utils import create_record
-
+from inspire_dojson.cds import cds2hep_marc
+from inspire_dojson.conferences import conferences
+from inspire_dojson.data import data
+from inspire_dojson.errors import NotSupportedError
+from inspire_dojson.experiments import experiments
+from inspire_dojson.hep import hep, hep2marc
+from inspire_dojson.hepnames import hepnames, hepnames2marc
+from inspire_dojson.institutions import institutions
+from inspire_dojson.journals import journals
 from inspire_dojson.utils import create_record_from_dict, force_single_element
-from inspire_utils.helpers import force_list
-from inspire_utils.record import get_value
-
-from .cds import cds2hep_marc
-from .conferences import conferences
-from .data import data
-from .errors import NotSupportedError
-from .experiments import experiments
-from .hep import hep, hep2marc
-from .hepnames import hepnames, hepnames2marc
-from .institutions import institutions
-from .journals import journals
 
 try:
     unichr(0x100000)
     RE_INVALID_CHARS_FOR_XML = re.compile(
-        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]+')
+        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]+'
+    )
 except ValueError:  # pragma: no cover
     RE_INVALID_CHARS_FOR_XML = re.compile(
-        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD]+')
+        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD]+'
+    )
 
 RECORD = E.record
 CONTROLFIELD = E.controlfield
@@ -107,7 +107,9 @@ def record2marcxml_etree(record):
     elif schema_name == 'authors':
         marcjson = hepnames2marc.do(record)
     else:
-        raise NotSupportedError(u'JSON -> MARC rules missing for "{}"'.format(schema_name))
+        raise NotSupportedError(
+            u'JSON -> MARC rules missing for "{}"'.format(schema_name)
+        )
 
     record = RECORD()
 
@@ -117,7 +119,9 @@ def record2marcxml_etree(record):
             value = force_single_element(values)
             if not isinstance(value, text_type):
                 value = text_type(value)
-            record.append(CONTROLFIELD(_strip_invalid_chars_for_xml(value), {'tag': tag}))
+            record.append(
+                CONTROLFIELD(_strip_invalid_chars_for_xml(value), {'tag': tag})
+            )
         else:
             for value in force_list(values):
                 datafield = DATAFIELD({'tag': tag, 'ind1': ind1, 'ind2': ind2})
@@ -125,7 +129,9 @@ def record2marcxml_etree(record):
                     for el in force_list(els):
                         if not isinstance(el, text_type):
                             el = text_type(el)
-                        datafield.append(SUBFIELD(_strip_invalid_chars_for_xml(el), {'code': code}))
+                        datafield.append(
+                            SUBFIELD(_strip_invalid_chars_for_xml(el), {'code': code})
+                        )
                 record.append(datafield)
 
     return record
@@ -155,7 +161,9 @@ def cds_marcxml2record(marcxml):
 
 
 def _get_collections(marcjson):
-    collections = chain.from_iterable([force_list(el) for el in force_list(get_value(marcjson, '980__.a'))])
+    collections = chain.from_iterable(
+        [force_list(el) for el in force_list(get_value(marcjson, '980__.a'))]
+    )
     normalized_collections = [el.lower() for el in collections]
 
     return normalized_collections

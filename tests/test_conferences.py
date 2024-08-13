@@ -23,16 +23,16 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.conferences import conferences
-from inspire_schemas.api import load_schema, validate
 
 
 def test_addresses_from_034__d_f_and_111__c():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/1707423
         '<record>'
         '  <datafield tag="034" ind1=" " ind2=" ">'
         '    <subfield code="d">11.3426162</subfield>'
@@ -42,14 +42,16 @@ def test_addresses_from_034__d_f_and_111__c():
         '    <subfield code="c">Bologna, Italy</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1707423
+    )
 
-    expected = [{
-        'cities': ['Bologna'],
-        'country_code': 'IT',
-        'latitude': 44.494887,
-        'longitude': 11.3426162
-    }]
+    expected = [
+        {
+            'cities': ['Bologna'],
+            'country_code': 'IT',
+            'latitude': 44.494887,
+            'longitude': 11.3426162,
+        }
+    ]
     result = conferences.do(create_record(snippet))
 
     assert validate(result['addresses'], subschema) is None
@@ -60,16 +62,14 @@ def test_acronyms_from_111__a_c_e_g_x_y():
     schema = load_schema('conferences')
     subschema = schema['properties']['acronyms']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '  <subfield code="a">16th Conference on Flavor Physics and CP Violation</subfield>'
-        '  <subfield code="c">Hyderabad, INDIA</subfield>'
-        '  <subfield code="e">FPCP 2018</subfield>'
-        '  <subfield code="g">C18-07-09</subfield>'
-        '  <subfield code="x">2018-07-09</subfield>'
-        '  <subfield code="y">2018-07-12</subfield>'
-        '</datafield>'
-    )  # record/1468357
+    snippet = (  # record/1468357
+        '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">16th'
+        ' Conference on Flavor Physics and CP Violation</subfield>  <subfield'
+        ' code="c">Hyderabad, INDIA</subfield>  <subfield code="e">FPCP'
+        ' 2018</subfield>  <subfield code="g">C18-07-09</subfield>  <subfield'
+        ' code="x">2018-07-09</subfield>  <subfield'
+        ' code="y">2018-07-12</subfield></datafield>'
+    )
 
     expected = [
         'FPCP 2018',
@@ -84,18 +84,16 @@ def test_acronyms_from_111__a_c_d_double_e_g_x_y():
     schema = load_schema('conferences')
     subschema = schema['properties']['acronyms']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '  <subfield code="a">11th international vacuum congress and 7th international conference on solid surfaces</subfield>'
-        '  <subfield code="c">Cologne, Germany</subfield>'
-        '  <subfield code="d">25 – 29 Sep 1989</subfield>'
-        '  <subfield code="e">IVC-11</subfield>'
-        '  <subfield code="e">ICSS-7</subfield>'
-        '  <subfield code="g">C89-09-25.3</subfield>'
-        '  <subfield code="x">1989-09-25</subfield>'
-        '  <subfield code="y">1989-09-29</subfield>'
-        '</datafield>'
-    )  # record/1308774
+    snippet = (  # record/1308774
+        '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">11th'
+        ' international vacuum congress and 7th international conference on'
+        ' solid surfaces</subfield>  <subfield code="c">Cologne,'
+        ' Germany</subfield>  <subfield code="d">25 – 29 Sep 1989</subfield> '
+        ' <subfield code="e">IVC-11</subfield>  <subfield'
+        ' code="e">ICSS-7</subfield>  <subfield code="g">C89-09-25.3</subfield>'
+        '  <subfield code="x">1989-09-25</subfield>  <subfield'
+        ' code="y">1989-09-29</subfield></datafield>'
+    )
 
     expected = [
         'IVC-11',
@@ -111,17 +109,16 @@ def test_acronyms_from_111__a_c_double_e_g_x_y():
     schema = load_schema('conferences')
     subschema = schema['properties']['acronyms']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '  <subfield code="a">2013 IEEE Nuclear Science Symposium and Medical Imaging Conference and Workshop on Room-Temperature Semiconductor Detectors</subfield>'
-        '  <subfield code="c">Seoul, Korea</subfield>'
-        '  <subfield code="e">NSS/MIC 2013</subfield>'
-        '  <subfield code="e">RTSD 2013</subfield>'
-        '  <subfield code="g">C13-10-26</subfield>'
-        '  <subfield code="x">2013-10-26</subfield>'
-        '  <subfield code="y">2013-11-02</subfield>'
-        '</datafield>'
-    )  # record/1218346
+    snippet = (  # record/1218346
+        '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">2013 IEEE'
+        ' Nuclear Science Symposium and Medical Imaging Conference and Workshop'
+        ' on Room-Temperature Semiconductor Detectors</subfield>  <subfield'
+        ' code="c">Seoul, Korea</subfield>  <subfield code="e">NSS/MIC'
+        ' 2013</subfield>  <subfield code="e">RTSD 2013</subfield>  <subfield'
+        ' code="g">C13-10-26</subfield>  <subfield'
+        ' code="x">2013-10-26</subfield>  <subfield'
+        ' code="y">2013-11-02</subfield></datafield>'
+    )
 
     expected = [
         'NSS/MIC 2013',
@@ -137,16 +134,14 @@ def test_addresses_from_111__a_c_d_g_x_y():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '  <subfield code="a">11th Texas Symposium on Relativistic Astrophysics</subfield>'
-        '  <subfield code="c">Austin, Tex.</subfield>'
-        '  <subfield code="d">13-17 Dec 1982</subfield>'
-        '  <subfield code="g">C82-12-13</subfield>'
-        '  <subfield code="x">1982-12-13</subfield>'
-        '  <subfield code="y">1982-12-17</subfield>'
-        '</datafield>'
-    )  # record/965081
+    snippet = (  # record/965081
+        '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">11th Texas'
+        ' Symposium on Relativistic Astrophysics</subfield>  <subfield'
+        ' code="c">Austin, Tex.</subfield>  <subfield code="d">13-17 Dec'
+        ' 1982</subfield>  <subfield code="g">C82-12-13</subfield>  <subfield'
+        ' code="x">1982-12-13</subfield>  <subfield'
+        ' code="y">1982-12-17</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -167,21 +162,17 @@ def test_addresses_from_111__a_c_d_g_x_y_and_111__c():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="111" ind1=" " ind2=" ">'
-        '    <subfield code="a">Low dimensional physics and gauge principles</subfield>'
-        '    <subfield code="c">Yerevan, Armenia</subfield>'
-        '    <subfield code="d">21-29 Sep 2011</subfield>'
-        '    <subfield code="g">C11-09-21.2</subfield>'
-        '    <subfield code="x">2011-09-21</subfield>'
-        '    <subfield code="y">2011-09-29</subfield>'
-        '  </datafield>'
-        '  <datafield tag="111" ind1=" " ind2=" ">'
-        '    <subfield code="c">Tbilisi, Georgia</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1220831
+    snippet = (  # record/1220831
+        '<record>  <datafield tag="111" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Low dimensional physics and gauge principles</subfield>   '
+        ' <subfield code="c">Yerevan, Armenia</subfield>    <subfield'
+        ' code="d">21-29 Sep 2011</subfield>    <subfield'
+        ' code="g">C11-09-21.2</subfield>    <subfield'
+        ' code="x">2011-09-21</subfield>    <subfield'
+        ' code="y">2011-09-29</subfield>  </datafield>  <datafield tag="111"'
+        ' ind1=" " ind2=" ">    <subfield code="c">Tbilisi, Georgia</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
         {
@@ -207,18 +198,16 @@ def test_addresses_from_111__a_double_c_d_e_g_x_y():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '  <subfield code="a">16th High-Energy Physics International Conference in Quantum Chromodynamics</subfield>'
-        '  <subfield code="c">QCD 12</subfield>'
-        '  <subfield code="c">Montpellier, France</subfield>'
-        '  <subfield code="d">2-7 Jul 2012</subfield>'
-        '  <subfield code="e">QCD 12</subfield>'
-        '  <subfield code="g">C12-07-02</subfield>'
-        '  <subfield code="x">2012-07-02</subfield>'
-        '  <subfield code="y">2012-07-07</subfield>'
-        '</datafield>'
-    )  # record/1085463
+    snippet = (  # record/1085463
+        '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">16th'
+        ' High-Energy Physics International Conference in Quantum'
+        ' Chromodynamics</subfield>  <subfield code="c">QCD 12</subfield> '
+        ' <subfield code="c">Montpellier, France</subfield>  <subfield'
+        ' code="d">2-7 Jul 2012</subfield>  <subfield code="e">QCD'
+        ' 12</subfield>  <subfield code="g">C12-07-02</subfield>  <subfield'
+        ' code="x">2012-07-02</subfield>  <subfield'
+        ' code="y">2012-07-07</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -241,16 +230,15 @@ def test_addresses_from_111__a_c_d_e_g_x_y_three_address_parts():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '   <subfield code="a">10th Int. Conf. DICE2020: Spacetime - Matter - Quantum Mechanics</subfield>'
-        '   <subfield code="e">DICE2020</subfield>'
-        '   <subfield code="x">2020-09-14</subfield>'
-        '   <subfield code="y">2020-09-18</subfield>'
-        '   <subfield code="c">Castiglioncello , Tuscany, Italy</subfield>'
-        '   <subfield code="g">C20-09-14.1</subfield>'
-        '</datafield>'
-    )  # record/1781388
+    snippet = (  # record/1781388
+        '<datafield tag="111" ind1=" " ind2=" ">   <subfield code="a">10th Int.'
+        ' Conf. DICE2020: Spacetime - Matter - Quantum Mechanics</subfield>  '
+        ' <subfield code="e">DICE2020</subfield>   <subfield'
+        ' code="x">2020-09-14</subfield>   <subfield'
+        ' code="y">2020-09-18</subfield>   <subfield code="c">Castiglioncello ,'
+        ' Tuscany, Italy</subfield>   <subfield'
+        ' code="g">C20-09-14.1</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -271,15 +259,14 @@ def test_addresses_from_111__a_c_d_e_g_x_y_many_address_parts():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
-        '<datafield tag="111" ind1=" " ind2=" ">'
-        '  <subfield code="a">Higher structures in Holomorphic and Topological Field Theory</subfield>'
-        '  <subfield code="x">2019-01-14</subfield>'
-        '  <subfield code="y">2019-01-18</subfield>'
-        '  <subfield code="c">IHES, Bures-sur-Yvette, Paris area, France</subfield>'
-        '  <subfield code="g">C19-01-14.1</subfield>'
-        '</datafield>'
-    )  # record/1699363
+    snippet = (  # record/1699363
+        '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">Higher'
+        ' structures in Holomorphic and Topological Field Theory</subfield> '
+        ' <subfield code="x">2019-01-14</subfield>  <subfield'
+        ' code="y">2019-01-18</subfield>  <subfield code="c">IHES,'
+        ' Bures-sur-Yvette, Paris area, France</subfield>  <subfield'
+        ' code="g">C19-01-14.1</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -301,11 +288,11 @@ def test_addresses_from_270__b():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
+    snippet = (  # record/1430104
         '<datafield tag="270" ind1=" " ind2=" ">'
         '  <subfield code="b">British Columbia</subfield>'
         '</datafield>'
-    )  # record/1430104
+    )
 
     expected = [
         {'place_name': 'British Columbia'},
@@ -320,21 +307,17 @@ def test_addresses_from_111__a_c_e_g_x_y_and_270__b():
     schema = load_schema('conferences')
     subschema = schema['properties']['addresses']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="111" ind1=" " ind2=" ">'
-        '    <subfield code="a">2017 International Workshop on Baryon and Lepton Number Violation: From the Cosmos to the LHC</subfield>'
-        '    <subfield code="c">Cleveland, Ohio, USA</subfield>'
-        '    <subfield code="e">BLV 2017</subfield>'
-        '    <subfield code="g">C17-05-15</subfield>'
-        '    <subfield code="x">2017-05-15</subfield>'
-        '    <subfield code="y">2017-05-18</subfield>'
-        '  </datafield>'
-        '  <datafield tag="270" ind1=" " ind2=" ">'
-        '    <subfield code="b">Case Western Reserve University</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1353313
+    snippet = (  # record/1353313
+        '<record>  <datafield tag="111" ind1=" " ind2=" ">    <subfield'
+        ' code="a">2017 International Workshop on Baryon and Lepton Number'
+        ' Violation: From the Cosmos to the LHC</subfield>    <subfield'
+        ' code="c">Cleveland, Ohio, USA</subfield>    <subfield code="e">BLV'
+        ' 2017</subfield>    <subfield code="g">C17-05-15</subfield>   '
+        ' <subfield code="x">2017-05-15</subfield>    <subfield'
+        ' code="y">2017-05-18</subfield>  </datafield>  <datafield tag="270"'
+        ' ind1=" " ind2=" ">    <subfield code="b">Case Western Reserve'
+        ' University</subfield>  </datafield></record>'
+    )
 
     expected = [
         {
@@ -408,11 +391,11 @@ def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month()
     schema = load_schema('conferences')
     subschema = schema['properties']['opening_date']
 
-    snippet = (
+    snippet = (  # record/1442284
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="x">2001-02-00</subfield>'
         '</datafield>'
-    )  # record/1442284
+    )
 
     expected = '2001-02'
     result = conferences.do(create_record(snippet))
@@ -421,15 +404,15 @@ def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month()
     assert expected == result['opening_date']
 
 
-def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month_without_padding():
+def test_opening_date_from_111__x_handles_incomplete_dates():
     schema = load_schema('conferences')
     subschema = schema['properties']['opening_date']
 
-    snippet = (
+    snippet = (  # record/1477158
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="x">1999-07</subfield>'
         '</datafield>'
-    )  # record/1477158
+    )
 
     expected = '1999-07'
     result = conferences.do(create_record(snippet))
@@ -442,11 +425,11 @@ def test_opening_date_from_111__x_handles_unseparated_dates():
     schema = load_schema('conferences')
     subschema = schema['properties']['opening_date']
 
-    snippet = (
+    snippet = (  # record/1280577
         '<datafield tag="111" ind1=" " ind2=" ">'
         '    <subfield code="x">20140518</subfield>'
         '</datafield>'
-    )  # record/1280577
+    )
 
     expected = '2014-05-18'
     result = conferences.do(create_record(snippet))
@@ -459,11 +442,11 @@ def test_closing_date_from_111__y_handles_incomplete_dates_with_only_year():
     schema = load_schema('conferences')
     subschema = schema['properties']['closing_date']
 
-    snippet = (
+    snippet = (  # record/1372837
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="y">1967-00-00</subfield>'
         '</datafield>'
-    )  # record/1372837
+    )
 
     expected = '1967'
     result = conferences.do(create_record(snippet))
@@ -476,12 +459,12 @@ def test_contact_details_from_270__m_p():
     schema = load_schema('conferences')
     subschema = schema['properties']['contact_details']
 
-    snippet = (
+    snippet = (  # record/1517305
         '<datafield tag="270" ind1=" " ind2=" ">'
         '  <subfield code="m">jonivar@thphys.nuim.ie</subfield>'
         '  <subfield code="p">Jon-Ivar Skullerud</subfield>'
         '</datafield>'
-    )  # record/1517305
+    )
 
     expected = [
         {
@@ -499,11 +482,11 @@ def test_series_from_411__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/1430017
         '<datafield tag="411" ind1=" " ind2=" ">'
         '  <subfield code="a">DPF Series</subfield>'
         '</datafield>'
-    )  # record/1430017
+    )
 
     expected = [
         {'name': 'DPF Series'},
@@ -515,11 +498,11 @@ def test_series_from_411__a():
 
 
 def test_series_from_411__n():
-    snippet = (
+    snippet = (  # record/1447029
         '<datafield tag="411" ind1=" " ind2=" ">'
         '  <subfield code="n">7</subfield>'
         '</datafield>'
-    )  # record/1447029
+    )
 
     result = conferences.do(create_record(snippet))
 
@@ -530,12 +513,12 @@ def test_series_from_411__a_n():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/1468357
         '<datafield tag="411" ind1=" " ind2=" ">'
         '  <subfield code="a">FPCP</subfield>'
         '  <subfield code="n">16</subfield>'
         '</datafield>'
-    )  # record/1468357
+    )
 
     expected = [
         {
@@ -553,7 +536,7 @@ def test_series_from_411__a_n_and_411__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/1404073
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">Rencontres de Moriond</subfield>'
@@ -563,7 +546,7 @@ def test_series_from_411__a_n_and_411__a():
         '    <subfield code="a">Moriond EW</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1404073
+    )
 
     expected = [
         {
@@ -584,7 +567,7 @@ def test_series_from_411__a_n_and_411__n():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/963769
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">SSI</subfield>'
@@ -594,7 +577,7 @@ def test_series_from_411__a_n_and_411__n():
         '    <subfield code="n">2</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/963769
+    )
 
     expected = [
         {
@@ -612,7 +595,7 @@ def test_series_from_double_411__a_n():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/974856
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">ICHEP</subfield>'
@@ -623,7 +606,7 @@ def test_series_from_double_411__a_n():
         '    <subfield code="n">5</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/974856
+    )
 
     expected = [
         {
@@ -645,7 +628,7 @@ def test_series_from_411__n_and_411__a_n():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/963914
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="n">3</subfield>'
@@ -655,7 +638,7 @@ def test_series_from_411__n_and_411__a_n():
         '    <subfield code="n">3</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/963914
+    )
 
     expected = [
         {
@@ -673,7 +656,7 @@ def test_series_from_411__n_and_411__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/972145
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="n">3</subfield>'
@@ -682,7 +665,7 @@ def test_series_from_411__n_and_411__a():
         '    <subfield code="a">Gordon</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/972145
+    )
 
     expected = [
         {
@@ -700,7 +683,7 @@ def test_series_from_double_411__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/964177
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">SNPS</subfield>'
@@ -709,7 +692,7 @@ def test_series_from_double_411__a():
         '    <subfield code="a">NSS</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/964177
+    )
 
     expected = [
         {
@@ -729,7 +712,7 @@ def test_series_from_411__a_and_411__a_n():
     schema = load_schema('conferences')
     subschema = schema['properties']['series']
 
-    snippet = (
+    snippet = (  # record/964448
         '<record>'
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">CEC</subfield>'
@@ -739,7 +722,7 @@ def test_series_from_411__a_and_411__a_n():
         '    <subfield code="n">2</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/964448
+    )
 
     expected = [
         {
@@ -760,11 +743,10 @@ def test_public_notes_from_500__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<datafield tag="500" ind1=" " ind2=" ">'
-        '  <subfield code="a">Same conf. as Kyoto 1975: none in intervening years</subfield>'
-        '</datafield>'
-    )  # record/963579
+    snippet = (  # record/963579
+        '<datafield tag="500" ind1=" " ind2=" ">  <subfield code="a">Same conf.'
+        ' as Kyoto 1975: none in intervening years</subfield></datafield>'
+    )
 
     expected = [
         {'value': 'Same conf. as Kyoto 1975: none in intervening years'},
@@ -779,19 +761,23 @@ def test_public_notes_from_double_500__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="500" ind1=" " ind2=" ">'
-        '    <subfield code="a">Marion White, PhD (Argonne) Conference Chair Vladimir Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power (Argonne) Conference Editor/Scientific Secretariat</subfield>'
-        '  </datafield>'
-        '  <datafield tag="500" ind1=" " ind2=" ">'
-        '    <subfield code="a">Will be published in: JACoW</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1445071
+    snippet = (  # record/1445071
+        '<record>  <datafield tag="500" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Marion White, PhD (Argonne) Conference Chair Vladimir'
+        ' Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power (Argonne)'
+        ' Conference Editor/Scientific Secretariat</subfield>  </datafield> '
+        ' <datafield tag="500" ind1=" " ind2=" ">    <subfield code="a">Will be'
+        ' published in: JACoW</subfield>  </datafield></record>'
+    )
 
     expected = [
-        {'value': 'Marion White, PhD (Argonne) Conference Chair Vladimir Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power (Argonne) Conference Editor/Scientific Secretariat'},
+        {
+            'value': (
+                'Marion White, PhD (Argonne) Conference Chair Vladimir'
+                ' Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power'
+                ' (Argonne) Conference Editor/Scientific Secretariat'
+            )
+        },
         {'value': 'Will be published in: JACoW'},
     ]
     result = conferences.do(create_record(snippet))
@@ -804,14 +790,36 @@ def test_short_description_from_520__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['short_description']
 
-    snippet = (
-        '<datafield tag="520" ind1=" " ind2=" ">'
-        '  <subfield code="a">QNP2015 is the Seventh International Conference on Quarks and Nuclear Physics. It is anticipated that QCD practitioners, both experimentalists and theorists, will gather at the Universidad Técnica Federico Santa María, in Valparaíso, Chile during the week of March 2, 2015 to present and discuss the latest advances in the field. The following topics will be covered: quarks and gluons content of nucleons and nuclei, hadron spectroscopy, non-perturbative methods in QCD (including lattice calculations), effective field theories, nuclear matter under extreme conditions and nuclear medium. Participants should register at the conference website https://indico.cern.ch/event/304663/</subfield>'
-        '</datafield>'
-    )  # record/1326067
+    snippet = (  # record/1326067
+        '<datafield tag="520" ind1=" " ind2=" ">  <subfield code="a">QNP2015 is'
+        ' the Seventh International Conference on Quarks and Nuclear Physics.'
+        ' It is anticipated that QCD practitioners, both experimentalists and'
+        ' theorists, will gather at the Universidad Técnica Federico Santa'
+        ' María, in Valparaíso, Chile during the week of March 2, 2015 to'
+        ' present and discuss the latest advances in the field. The following'
+        ' topics will be covered: quarks and gluons content of nucleons and'
+        ' nuclei, hadron spectroscopy, non-perturbative methods in QCD'
+        ' (including lattice calculations), effective field theories, nuclear'
+        ' matter under extreme conditions and nuclear medium. Participants'
+        ' should register at the conference website'
+        ' https://indico.cern.ch/event/304663/</subfield></datafield>'
+    )
 
     expected = {
-        'value': u'QNP2015 is the Seventh International Conference on Quarks and Nuclear Physics. It is anticipated that QCD practitioners, both experimentalists and theorists, will gather at the Universidad Técnica Federico Santa María, in Valparaíso, Chile during the week of March 2, 2015 to present and discuss the latest advances in the field. The following topics will be covered: quarks and gluons content of nucleons and nuclei, hadron spectroscopy, non-perturbative methods in QCD (including lattice calculations), effective field theories, nuclear matter under extreme conditions and nuclear medium. Participants should register at the conference website https://indico.cern.ch/event/304663/',
+        'value': (
+            u'QNP2015 is the Seventh International Conference on Quarks and'
+            u' Nuclear Physics. It is anticipated that QCD practitioners, both'
+            u' experimentalists and theorists, will gather at the Universidad'
+            u' Técnica Federico Santa María, in Valparaíso, Chile during the'
+            u' week of March 2, 2015 to present and discuss the latest advances'
+            u' in the field. The following topics will be covered: quarks and'
+            u' gluons content of nucleons and nuclei, hadron spectroscopy,'
+            u' non-perturbative methods in QCD (including lattice'
+            u' calculations), effective field theories, nuclear matter under'
+            u' extreme conditions and nuclear medium. Participants should'
+            u' register at the conference website'
+            u' https://indico.cern.ch/event/304663/'
+        ),
     }
     result = conferences.do(create_record(snippet))
 
@@ -823,25 +831,46 @@ def test_short_description_from_multiple_520__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['short_description']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="520" ind1=" " ind2=" ">'
-        '    <subfield code="a">The alliance "Physics at the Terascale" will host "Proton Structure in the LHC Era", from 29 September - 2 October, 2014 at DESY in Hamburg. The planned structure will be a 2 day SCHOOL (Monday-Tuesday) followed by a 2 day WORKSHOP (Wednesday-Thursday) devoted to the current problems of the LHC data interpretation, related to the particularities of QCD, factorization, proton structure and higher order calculations.</subfield>'
-        '  </datafield>'
-        '  <datafield tag="520" ind1=" " ind2=" ">'
-        '    <subfield code="a">SCHOOL: (Monday-Tuesday, September 29-30, 2014) The school will address mainly Ph.D. students and postdocs working at the LHC experiments. It includes introductory lectures, accompanied by tutorials in HERAFitter, FastNLO, Applgrid and further tools.</subfield>'
-        '  </datafield>'
-        '  <datafield tag="520" ind1=" " ind2=" ">'
-        '    <subfield code="a">WORKSHOP: (Wednesday-Thursday, October 1-2, 2014) The following workshop will encompass the open issues in theory and experiment concerning the determination of PDFs, heavy quark masses and strong coupling. The workshop will run as an open session and is more expert-oriented</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1288023
+    snippet = (  # record/1288023
+        '<record>  <datafield tag="520" ind1=" " ind2=" ">    <subfield'
+        ' code="a">The alliance "Physics at the Terascale" will host "Proton'
+        ' Structure in the LHC Era", from 29 September - 2 October, 2014 at'
+        ' DESY in Hamburg. The planned structure will be a 2 day SCHOOL'
+        ' (Monday-Tuesday) followed by a 2 day WORKSHOP (Wednesday-Thursday)'
+        ' devoted to the current problems of the LHC data interpretation,'
+        ' related to the particularities of QCD, factorization, proton'
+        ' structure and higher order calculations.</subfield>  </datafield> '
+        ' <datafield tag="520" ind1=" " ind2=" ">    <subfield code="a">SCHOOL:'
+        ' (Monday-Tuesday, September 29-30, 2014) The school will address'
+        ' mainly Ph.D. students and postdocs working at the LHC experiments. It'
+        ' includes introductory lectures, accompanied by tutorials in'
+        ' HERAFitter, FastNLO, Applgrid and further tools.</subfield> '
+        ' </datafield>  <datafield tag="520" ind1=" " ind2=" ">    <subfield'
+        ' code="a">WORKSHOP: (Wednesday-Thursday, October 1-2, 2014) The'
+        ' following workshop will encompass the open issues in theory and'
+        ' experiment concerning the determination of PDFs, heavy quark masses'
+        ' and strong coupling. The workshop will run as an open session and is'
+        ' more expert-oriented</subfield>  </datafield></record>'
+    )
 
     expected = {
         'value': (
-            'The alliance "Physics at the Terascale" will host "Proton Structure in the LHC Era", from 29 September - 2 October, 2014 at DESY in Hamburg. The planned structure will be a 2 day SCHOOL (Monday-Tuesday) followed by a 2 day WORKSHOP (Wednesday-Thursday) devoted to the current problems of the LHC data interpretation, related to the particularities of QCD, factorization, proton structure and higher order calculations.\n'
-            'SCHOOL: (Monday-Tuesday, September 29-30, 2014) The school will address mainly Ph.D. students and postdocs working at the LHC experiments. It includes introductory lectures, accompanied by tutorials in HERAFitter, FastNLO, Applgrid and further tools.\n'
-            'WORKSHOP: (Wednesday-Thursday, October 1-2, 2014) The following workshop will encompass the open issues in theory and experiment concerning the determination of PDFs, heavy quark masses and strong coupling. The workshop will run as an open session and is more expert-oriented'
+            'The alliance "Physics at the Terascale" will host "Proton'
+            ' Structure in the LHC Era", from 29 September - 2 October, 2014 at'
+            ' DESY in Hamburg. The planned structure will be a 2 day SCHOOL'
+            ' (Monday-Tuesday) followed by a 2 day WORKSHOP'
+            ' (Wednesday-Thursday) devoted to the current problems of the LHC'
+            ' data interpretation, related to the particularities of QCD,'
+            ' factorization, proton structure and higher order'
+            ' calculations.\nSCHOOL: (Monday-Tuesday, September 29-30, 2014)'
+            ' The school will address mainly Ph.D. students and postdocs'
+            ' working at the LHC experiments. It includes introductory'
+            ' lectures, accompanied by tutorials in HERAFitter, FastNLO,'
+            ' Applgrid and further tools.\nWORKSHOP: (Wednesday-Thursday,'
+            ' October 1-2, 2014) The following workshop will encompass the open'
+            ' issues in theory and experiment concerning the determination of'
+            ' PDFs, heavy quark masses and strong coupling. The workshop will'
+            ' run as an open session and is more expert-oriented'
         ),
     }
     result = conferences.do(create_record(snippet))
@@ -854,11 +883,11 @@ def test_alternative_titles_from_711__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['alternative_titles']
 
-    snippet = (
+    snippet = (  # record/1436454
         '<datafield tag="711" ind1=" " ind2=" ">'
         '  <subfield code="a">GCACSE16</subfield>'
         '</datafield>'
-    )  # record/1436454
+    )
 
     expected = [
         {'title': 'GCACSE16'},
@@ -873,7 +902,7 @@ def test_alternative_titles_from_double_711__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['alternative_titles']
 
-    snippet = (
+    snippet = (  # record/1436454
         '<record>'
         '  <datafield tag="711" ind1=" " ind2=" ">'
         '    <subfield code="a">GCACSE16</subfield>'
@@ -882,7 +911,7 @@ def test_alternative_titles_from_double_711__a():
         '    <subfield code="a">GCACSE 2016</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1436454
+    )
 
     expected = [
         {'title': 'GCACSE16'},
@@ -898,12 +927,11 @@ def test_alternative_titles_from_711__a_b():
     schema = load_schema('conferences')
     subschema = schema['properties']['alternative_titles']
 
-    snippet = (
-        '<datafield tag="711" ind1=" " ind2=" ">'
-        '  <subfield code="a">XX Riunione Nazionale di Elettromagnetismo</subfield>'
-        '  <subfield code="b">Padova</subfield>'
-        '</datafield>'
-    )  # record/1403856
+    snippet = (  # record/1403856
+        '<datafield tag="711" ind1=" " ind2=" ">  <subfield code="a">XX'
+        ' Riunione Nazionale di Elettromagnetismo</subfield>  <subfield'
+        ' code="b">Padova</subfield></datafield>'
+    )
 
     expected = [
         {'title': 'XX Riunione Nazionale di Elettromagnetismo'},
@@ -919,11 +947,11 @@ def test_core_from_980__a():
     schema = load_schema('conferences')
     subschema = schema['properties']['core']
 
-    snippet = (
+    snippet = (  # record/1707423
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">CORE</subfield>'
         '</datafield>'
-    )  # record/1707423
+    )
 
     expected = True
     result = conferences.do(create_record(snippet))
@@ -936,7 +964,7 @@ def test_core_from_980__a_b():
     schema = load_schema('conferences')
     subschema = schema['properties']['core']
 
-    snippet = (
+    snippet = (  # record/1726216
         '<record>'
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">CONFERENCES</subfield>'
@@ -945,7 +973,7 @@ def test_core_from_980__a_b():
         '    <subfield code="a">CORE</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1726216
+    )
 
     expected = True
     result = conferences.do(create_record(snippet))
@@ -975,7 +1003,7 @@ def test_keywords_from_6531_9_a():
     schema = load_schema('conferences')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1713483
         '<record>'
         '  <datafield tag="653" ind1="1" ind2=" ">'
         '    <subfield code="9">submitter</subfield>'
@@ -986,7 +1014,7 @@ def test_keywords_from_6531_9_a():
         '    <subfield code="a">standard model</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1713483
+    )
 
     expected = [
         {'source': 'submitter', 'value': 'electroweak'},

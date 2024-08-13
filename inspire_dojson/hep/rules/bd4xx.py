@@ -26,7 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 
-from ..model import hep, hep2marc
+from inspire_dojson.hep.model import hep, hep2marc
 
 
 @hep.over('book_series', '^490..')

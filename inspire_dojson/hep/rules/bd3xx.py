@@ -26,8 +26,8 @@ from __future__ import absolute_import, division, print_function
 
 from inspire_utils.helpers import maybe_int
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import force_single_element
 
 
 @hep.over('number_of_pages', '^300..')

@@ -26,78 +26,77 @@ from __future__ import absolute_import, division, print_function
 
 from dojson import utils
 from dojson.errors import IgnoreKey
-
 from inspire_utils.date import normalize_date
 from inspire_utils.helpers import force_list, maybe_int
 
-from .model import experiments
-from ..utils import force_single_element, get_record_ref
+from inspire_dojson.experiments.model import experiments
+from inspire_dojson.utils import force_single_element, get_record_ref
 
-
-EXPERIMENT_CATEGORIES_MAP = \
-    {'1': 'Collider Experiments',
-     '1.1': 'Collider Experiments|Hadrons',
-     '1.1.1': 'Collider Experiments|Hadrons|p anti-p',
-     '1.1.2': 'Collider Experiments|Hadrons|p p',
-     '1.2': 'Collider Experiments|e+ e-',
-     '1.3': 'Collider Experiments|e p',
-     '1.4': 'Collider Experiments|Heavy Flavor Factory',
-     '1.5': 'Collider Experiments|Heavy ion',
-     '1.6': 'Collider Experiments|Detector development',
-     '2': 'Fixed Target Experiments',
-     '2.1': 'Fixed Target Experiments|High-momentum transfer',
-     '2.2': 'Fixed Target Experiments|Hadron Spectroscopy',
-     '2.3': 'Fixed Target Experiments|Deep inelastic scattering',
-     '2.4': 'Fixed Target Experiments|Drell-Yan/Dilepton production',
-     '2.5': 'Fixed Target Experiments|Flavor physics',
-     '2.6': 'Fixed Target Experiments|Lepton precision experiments',
-     '2.7': 'Fixed Target Experiments|Neutron/proton precision experiments',
-     '3': 'Neutrino (flavor) experiments',
-     '3.1': 'Neutrino (flavor) experiments|Accelerator',
-     '3.1.1': 'Neutrino (flavor) experiments|Accelerator|short-baseline',
-     '3.1.2': 'Neutrino (flavor) experiments|Accelerator|long-baseline',
-     '3.2': 'Neutrino (flavor) experiments|Reactor',
-     '3.2.1': 'Neutrino (flavor) experiments|Reactor|ultra-short-baseline',
-     '3.2.2': 'Neutrino (flavor) experiments|Reactor|longer baselines',
-     '3.3': 'Neutrino (flavor) experiments|Non terrestrial',
-     '3.3.1': 'Neutrino (flavor) experiments|Non terrestrial|Atmospheric',
-     '3.3.2': 'Neutrino (flavor) experiments|Non terrestrial|Solar',
-     '3.3.3': 'Neutrino (flavor) experiments|Non terrestrial|Cosmic',
-     '3.4': 'Neutrino (flavor) experiments|Neutrinoless double beta decay',
-     '3.5': 'Neutrino (flavor) experiments|Neutrino mass',
-     '4': 'Dark matter search experiments',
-     '4.1': 'Dark matter search experiments|Non-accelerator',
-     '4.2': 'Dark matter search experiments|Axion search experiments',
-     '4.3': 'Dark matter search experiments|Dark Forces',
-     '5': 'Cosmic ray/Gamma ray experiments',
-     '5.1': 'Cosmic ray/Gamma ray experiments|Ground array',
-     '5.2': 'Cosmic ray/Gamma ray experiments|Cerenkov array',
-     '5.3': 'Cosmic ray/Gamma ray experiments|Satellite',
-     '5.4': 'Cosmic ray/Gamma ray experiments|Balloon',
-     '6': 'Other Rare-process/exotic experiments',
-     '6.1': 'Other Rare-process/exotic experiments|Proton decay',
-     '6.2': 'Other Rare-process/exotic experiments|Modified gravity and space-time',
-     '6.3': 'Other Rare-process/exotic experiments|Magnetic monopoles',
-     '6.4': 'Other Rare-process/exotic experiments|Fractionally charged particles',
-     '7': 'Accelerator Test Facility Experiments',
-     '7.1': 'Accelerator Test Facility Experiments|Electron and positron beams',
-     '7.2': 'Accelerator Test Facility Experiments|Muon beams',
-     '7.3': 'Accelerator Test Facility Experiments|Proton beams',
-     '7.4': 'Accelerator Test Facility Experiments|Neutrino beams',
-     '8': 'Astronomy experiments',
-     '8.1': 'Astronomy experiments|CMB',
-     '8.2': 'Astronomy experiments|Survey',
-     '8.3': 'Astronomy experiments|Supernovae',
-     '8.4': 'Astronomy experiments|Gravitational waves',
-     '8.5': 'Astronomy experiments|Gravitational lensing/Dark matter',
-     '9': 'Non-experimental',
-     '9.1': 'Non-experimental|Data Analysis',
-     '9.2': 'Non-experimental|Simulation tools',
-     '9.2.1': 'Non-experimental|Simulation tools|Detector Simulation',
-     '9.2.2': 'Non-experimental|Simulation tools|Event Simulation',
-     '9.3': 'Non-experimental|Parton Distribution Fits',
-     '9.4': 'Non-experimental|Lattice Gauge Theory',
-     '9.5': 'Non-experimental|Neutrino Physics'}
+EXPERIMENT_CATEGORIES_MAP = {
+    '1': 'Collider Experiments',
+    '1.1': 'Collider Experiments|Hadrons',
+    '1.1.1': 'Collider Experiments|Hadrons|p anti-p',
+    '1.1.2': 'Collider Experiments|Hadrons|p p',
+    '1.2': 'Collider Experiments|e+ e-',
+    '1.3': 'Collider Experiments|e p',
+    '1.4': 'Collider Experiments|Heavy Flavor Factory',
+    '1.5': 'Collider Experiments|Heavy ion',
+    '1.6': 'Collider Experiments|Detector development',
+    '2': 'Fixed Target Experiments',
+    '2.1': 'Fixed Target Experiments|High-momentum transfer',
+    '2.2': 'Fixed Target Experiments|Hadron Spectroscopy',
+    '2.3': 'Fixed Target Experiments|Deep inelastic scattering',
+    '2.4': 'Fixed Target Experiments|Drell-Yan/Dilepton production',
+    '2.5': 'Fixed Target Experiments|Flavor physics',
+    '2.6': 'Fixed Target Experiments|Lepton precision experiments',
+    '2.7': 'Fixed Target Experiments|Neutron/proton precision experiments',
+    '3': 'Neutrino (flavor) experiments',
+    '3.1': 'Neutrino (flavor) experiments|Accelerator',
+    '3.1.1': 'Neutrino (flavor) experiments|Accelerator|short-baseline',
+    '3.1.2': 'Neutrino (flavor) experiments|Accelerator|long-baseline',
+    '3.2': 'Neutrino (flavor) experiments|Reactor',
+    '3.2.1': 'Neutrino (flavor) experiments|Reactor|ultra-short-baseline',
+    '3.2.2': 'Neutrino (flavor) experiments|Reactor|longer baselines',
+    '3.3': 'Neutrino (flavor) experiments|Non terrestrial',
+    '3.3.1': 'Neutrino (flavor) experiments|Non terrestrial|Atmospheric',
+    '3.3.2': 'Neutrino (flavor) experiments|Non terrestrial|Solar',
+    '3.3.3': 'Neutrino (flavor) experiments|Non terrestrial|Cosmic',
+    '3.4': 'Neutrino (flavor) experiments|Neutrinoless double beta decay',
+    '3.5': 'Neutrino (flavor) experiments|Neutrino mass',
+    '4': 'Dark matter search experiments',
+    '4.1': 'Dark matter search experiments|Non-accelerator',
+    '4.2': 'Dark matter search experiments|Axion search experiments',
+    '4.3': 'Dark matter search experiments|Dark Forces',
+    '5': 'Cosmic ray/Gamma ray experiments',
+    '5.1': 'Cosmic ray/Gamma ray experiments|Ground array',
+    '5.2': 'Cosmic ray/Gamma ray experiments|Cerenkov array',
+    '5.3': 'Cosmic ray/Gamma ray experiments|Satellite',
+    '5.4': 'Cosmic ray/Gamma ray experiments|Balloon',
+    '6': 'Other Rare-process/exotic experiments',
+    '6.1': 'Other Rare-process/exotic experiments|Proton decay',
+    '6.2': 'Other Rare-process/exotic experiments|Modified gravity and space-time',
+    '6.3': 'Other Rare-process/exotic experiments|Magnetic monopoles',
+    '6.4': 'Other Rare-process/exotic experiments|Fractionally charged particles',
+    '7': 'Accelerator Test Facility Experiments',
+    '7.1': 'Accelerator Test Facility Experiments|Electron and positron beams',
+    '7.2': 'Accelerator Test Facility Experiments|Muon beams',
+    '7.3': 'Accelerator Test Facility Experiments|Proton beams',
+    '7.4': 'Accelerator Test Facility Experiments|Neutrino beams',
+    '8': 'Astronomy experiments',
+    '8.1': 'Astronomy experiments|CMB',
+    '8.2': 'Astronomy experiments|Survey',
+    '8.3': 'Astronomy experiments|Supernovae',
+    '8.4': 'Astronomy experiments|Gravitational waves',
+    '8.5': 'Astronomy experiments|Gravitational lensing/Dark matter',
+    '9': 'Non-experimental',
+    '9.1': 'Non-experimental|Data Analysis',
+    '9.2': 'Non-experimental|Simulation tools',
+    '9.2.1': 'Non-experimental|Simulation tools|Detector Simulation',
+    '9.2.2': 'Non-experimental|Simulation tools|Event Simulation',
+    '9.3': 'Non-experimental|Parton Distribution Fits',
+    '9.4': 'Non-experimental|Lattice Gauge Theory',
+    '9.5': 'Non-experimental|Neutrino Physics',
+}
 
 
 @experiments.over('_dates', '^046..')
@@ -173,6 +172,7 @@ def long_name(self, key, value):
 def inspire_classification(self, key, value):
     def _get_category(value):
         return EXPERIMENT_CATEGORIES_MAP.get(value.get('a'))
+
     return _get_category(value)
 
 
@@ -186,10 +186,7 @@ def name_variants(self, key, value):
 @utils.for_each_value
 def related_records(self, key, value):
     def _get_relation(value):
-        RELATIONS_MAP = {
-            'a': 'predecessor',
-            'b': 'successor'
-        }
+        RELATIONS_MAP = {'a': 'predecessor', 'b': 'successor'}
 
         return RELATIONS_MAP.get(value.get('w'))
 

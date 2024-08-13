@@ -25,13 +25,11 @@
 from __future__ import absolute_import, division, print_function
 
 import langdetect
-
 from dojson import utils
-
 from inspire_utils.helpers import force_list
 
-from ..model import hep, hep2marc
-from ...utils import normalize_date_aggressively
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import normalize_date_aggressively
 
 
 @hep.over('titles', '^(210|245|246|247)..')
@@ -53,11 +51,14 @@ def titles(self, key, value):
             'title': value.get('a'),
         }
 
-    self.setdefault('titles', []).insert(0, {
-        'source': value.get('9'),
-        'subtitle': value.get('b'),
-        'title': value.get('a'),
-    })
+    self.setdefault('titles', []).insert(
+        0,
+        {
+            'source': value.get('9'),
+            'subtitle': value.get('b'),
+            'title': value.get('a'),
+        },
+    )
 
 
 @hep.over('title_translations', '^242..')
@@ -88,18 +89,21 @@ def titles2marc(self, key, values):
     """
     first, rest = values[0], values[1:]
 
-    self.setdefault('245', []).append({
-        'a': first.get('title'),
-        'b': first.get('subtitle'),
-        '9': first.get('source'),
-    })
+    self.setdefault('245', []).append(
+        {
+            'a': first.get('title'),
+            'b': first.get('subtitle'),
+            '9': first.get('source'),
+        }
+    )
 
     return [
         {
             'a': value.get('title'),
             'b': value.get('subtitle'),
             '9': value.get('source'),
-        } for value in rest
+        }
+        for value in rest
     ]
 
 

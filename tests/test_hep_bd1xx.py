@@ -23,16 +23,16 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_authors_from_100__a_i_u_x_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/4328
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Glashow, S.L.</subfield>'
         '  <subfield code="i">INSPIRE-00085173</subfield>'
@@ -40,7 +40,7 @@ def test_authors_from_100__a_i_u_x_y():
         '  <subfield code="x">1008235</subfield>'
         '  <subfield code="y">1</subfield>'
         '</datafield>'
-    )  # record/4328
+    )
 
     expected = [
         {
@@ -85,7 +85,7 @@ def test_authors_from_100__a_u_w_y_and_700_a_u_w_x_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/81350
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Kobayashi, Makoto</subfield>'
@@ -101,7 +101,7 @@ def test_authors_from_100__a_u_w_y_and_700_a_u_w_x_y():
         '    <subfield code="y">1</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/81350
+    )
 
     expected = [
         {
@@ -166,7 +166,7 @@ def test_authors_from_100__a_and_700__a_orders_correctly():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<record>'
         '  <datafield tag="700" ind1=" " ind2=" ">'
         '    <subfield code="a">Author, Second</subfield>'
@@ -175,7 +175,7 @@ def test_authors_from_100__a_and_700__a_orders_correctly():
         '    <subfield code="a">Author, First</subfield>'
         '  </datafield>'
         '</record>'
-    )  # synthetic data
+    )
 
     expected = [
         {'full_name': 'Author, First'},
@@ -202,7 +202,7 @@ def test_authors_from_100__a_e_w_y_and_700_a_e_w_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1505338
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Vinokurov, Nikolay A.</subfield>'
@@ -217,7 +217,7 @@ def test_authors_from_100__a_e_w_y_and_700_a_e_w_y():
         '    <subfield code="y">0</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1505338
+    )
 
     expected = [
         {
@@ -243,7 +243,7 @@ def test_authors_from_100__a_e_w_y_and_700_a_e_w_y():
             'inspire_roles': [
                 'editor',
             ],
-        }
+        },
     ]
     result = hep.do(create_record(snippet))
 
@@ -274,7 +274,7 @@ def test_authors_from_100__a_i_u_x_y_z_and_double_700__a_u_w_x_y_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/712925
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Sjostrand, Torbjorn</subfield>'
@@ -301,7 +301,7 @@ def test_authors_from_100__a_i_u_x_y_z_and_double_700__a_u_w_x_y_z():
         '    <subfield code="z">902796</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/712925
+    )
 
     expected = [
         {
@@ -375,9 +375,7 @@ def test_authors_from_100__a_i_u_x_y_z_and_double_700__a_u_w_x_y_z():
 
     expected_100 = {
         'a': 'Sjostrand, Torbjorn',
-        'i': [
-            'INSPIRE-00126851'
-        ],
+        'i': ['INSPIRE-00126851'],
         'u': [
             'Lund U., Dept. Theor. Phys.',
         ],
@@ -406,15 +404,14 @@ def test_authors_from_100__a_v_m_w_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<datafield tag="100" ind1=" " ind2=" ">'
-        '  <subfield code="a">Gao, Xu</subfield>'
-        '  <subfield code="v">Chern Institute of Mathematics and LPMC, Nankai University, Tianjin, 300071, China</subfield>'
-        '  <subfield code="m">gausyu@gmail.com</subfield>'
-        '  <subfield code="w">X.Gao.11</subfield>'
-        '  <subfield code="y">0</subfield>'
-        '</datafield>'
-    )  # record/1475380
+    snippet = (  # record/1475380
+        '<datafield tag="100" ind1=" " ind2=" ">  <subfield code="a">Gao,'
+        ' Xu</subfield>  <subfield code="v">Chern Institute of Mathematics and'
+        ' LPMC, Nankai University, Tianjin, 300071, China</subfield>  <subfield'
+        ' code="m">gausyu@gmail.com</subfield>  <subfield'
+        ' code="w">X.Gao.11</subfield>  <subfield'
+        ' code="y">0</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -430,10 +427,12 @@ def test_authors_from_100__a_v_m_w_y():
             ],
             'raw_affiliations': [
                 {
-                    'value': 'Chern Institute of Mathematics and LPMC, Nankai University,'
-                             ' Tianjin, 300071, China',
+                    'value': (
+                        'Chern Institute of Mathematics and LPMC, Nankai'
+                        ' University, Tianjin, 300071, China'
+                    ),
                 }
-            ]
+            ],
         },
     ]
     result = hep.do(create_record(snippet))
@@ -444,7 +443,10 @@ def test_authors_from_100__a_v_m_w_y():
     expected = {
         'a': 'Gao, Xu',
         'v': [
-            'Chern Institute of Mathematics and LPMC, Nankai University, Tianjin, 300071, China',
+            (
+                'Chern Institute of Mathematics and LPMC, Nankai University,'
+                ' Tianjin, 300071, China'
+            ),
         ],
         'm': [
             'gausyu@gmail.com',
@@ -459,7 +461,7 @@ def test_authors_from_100__a_double_q_u_w_y_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/144579
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Dineykhan, M.</subfield>'
         '  <subfield code="q">Dineĭkhan, M.</subfield>'
@@ -470,7 +472,7 @@ def test_authors_from_100__a_double_q_u_w_y_z():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">902780</subfield>'
         '</datafield>'
-    )  # record/144579
+    )
 
     expected = [
         {
@@ -521,27 +523,23 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="100" ind1=" " ind2=" ">'
-        '    <subfield code="a">Gao, Xu</subfield>'
-        '    <subfield code="m">gausyu@gmail.com</subfield>'
-        '    <subfield code="u">Nankai U.</subfield>'
-        '    <subfield code="v">Chern Institute of Mathematics and LPMC, Nankai University, Tianjin, 300071, China</subfield>'
-        '    <subfield code="w">X.Gao.11</subfield>'
-        '    <subfield code="y">0</subfield>'
-        '    <subfield code="z">906082</subfield>'
-        '  </datafield>'
-        '  <datafield tag="700" ind1=" " ind2=" ">'
-        '    <subfield code="a">Liu, Ming</subfield>'
-        '    <subfield code="j">ORCID:0000-0002-3413-183X</subfield>'
-        '    <subfield code="v">School of Mathematics, South China University of Technology, Guangdong, Guangzhou, 510640, China</subfield>'
-        '    <subfield code="m">ming.l1984@gmail.com</subfield>'
-        '    <subfield code="w">M.Liu.16</subfield>'
-        '    <subfield code="y">0</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1475380
+    snippet = (  # record/1475380
+        '<record>  <datafield tag="100" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Gao, Xu</subfield>    <subfield'
+        ' code="m">gausyu@gmail.com</subfield>    <subfield code="u">Nankai'
+        ' U.</subfield>    <subfield code="v">Chern Institute of Mathematics'
+        ' and LPMC, Nankai University, Tianjin, 300071, China</subfield>   '
+        ' <subfield code="w">X.Gao.11</subfield>    <subfield'
+        ' code="y">0</subfield>    <subfield code="z">906082</subfield> '
+        ' </datafield>  <datafield tag="700" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Liu, Ming</subfield>    <subfield'
+        ' code="j">ORCID:0000-0002-3413-183X</subfield>    <subfield'
+        ' code="v">School of Mathematics, South China University of Technology,'
+        ' Guangdong, Guangzhou, 510640, China</subfield>    <subfield'
+        ' code="m">ming.l1984@gmail.com</subfield>    <subfield'
+        ' code="w">M.Liu.16</subfield>    <subfield code="y">0</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
         {
@@ -565,10 +563,12 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
             ],
             'raw_affiliations': [
                 {
-                    'value': 'Chern Institute of Mathematics and LPMC, Nankai University,'
-                             ' Tianjin, 300071, China',
+                    'value': (
+                        'Chern Institute of Mathematics and LPMC, Nankai'
+                        ' University, Tianjin, 300071, China'
+                    ),
                 }
-            ]
+            ],
         },
         {
             'emails': [
@@ -587,10 +587,12 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
             ],
             'raw_affiliations': [
                 {
-                    'value': 'School of Mathematics, South China University of Technology,'
-                             ' Guangdong, Guangzhou, 510640, China',
+                    'value': (
+                        'School of Mathematics, South China University of'
+                        ' Technology, Guangdong, Guangzhou, 510640, China'
+                    ),
                 }
-            ]
+            ],
         },
     ]
     result = hep.do(create_record(snippet))
@@ -607,9 +609,11 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
             'Nankai U.',
         ],
         'v': [
-            'Chern Institute of Mathematics and LPMC, Nankai University,'
-            ' Tianjin, 300071, China',
-        ]
+            (
+                'Chern Institute of Mathematics and LPMC, Nankai University,'
+                ' Tianjin, 300071, China'
+            ),
+        ],
     }
     expected_700 = [
         {
@@ -618,8 +622,10 @@ def test_authors_from_100__a_m_u_v_w_y_z_and_700__a_j_v_m_w_y():
                 'ORCID:0000-0002-3413-183X',
             ],
             'v': [
-                'School of Mathematics, South China University of '
-                'Technology, Guangdong, Guangzhou, 510640, China',
+                (
+                    'School of Mathematics, South China University of '
+                    'Technology, Guangdong, Guangzhou, 510640, China'
+                ),
             ],
             'm': [
                 'ming.l1984@gmail.com',
@@ -636,7 +642,7 @@ def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1345256
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Abe, K.</subfield>'
@@ -660,7 +666,7 @@ def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z
         '    <subfield code="z">903734</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1345256
+    )
 
     expected = [
         {
@@ -725,11 +731,7 @@ def test_authors_from_100__a_triple_u_w_x_y_triple_z_and_700__double_a_u_w_x_y_z
 
     expected_100 = {
         'a': 'Abe, K.',
-        'u': [
-            'Tokyo U., ICRR',
-            'Tokyo U.',
-            'Tokyo U., IPMU'
-        ],
+        'u': ['Tokyo U., ICRR', 'Tokyo U.', 'Tokyo U., IPMU'],
     }
     expected_700 = [
         {
@@ -755,7 +757,7 @@ def test_authors_from_100__a_j_m_u_w_y_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1475499
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Martins, Ricardo S.</subfield>'
         '  <subfield code="j">ORCID:</subfield>'
@@ -765,7 +767,7 @@ def test_authors_from_100__a_j_m_u_w_y_z():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">910325</subfield>'
         '</datafield>'
-    )  # record/1475499
+    )
 
     expected = [
         {
@@ -813,21 +815,16 @@ def test_authors_from_100__a_v_w_x_y_and_100__a_v_w_y():
     subschema = schema['properties']['authors']
 
     snippet = (
-        '<record>'
-        '  <datafield tag="100" ind1=" " ind2=" ">'
-        '    <subfield code="a">Tojyo, E.</subfield>'
-        '    <subfield code="v">University of Tokyo, Tokyo, Japan</subfield>'
-        '    <subfield code="w">Eiki.Tojyo.1</subfield>'
-        '    <subfield code="x">1477256</subfield>'
-        '    <subfield code="y">0</subfield>'
-        '  </datafield>'
-        '  <datafield tag="100" ind1=" " ind2=" ">'
-        '    <subfield code="a">Hattori, T.</subfield>'
-        '    <subfield code="v">Tokyo Institute of Technology, Tokyo, Japan</subfield>'
-        '    <subfield code="w">T.Hattori.1</subfield>'
-        '    <subfield code="y">0</subfield>'
-        '  </datafield>'
-        '</record>'
+        '<record>  <datafield tag="100" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Tojyo, E.</subfield>    <subfield code="v">University of'
+        ' Tokyo, Tokyo, Japan</subfield>    <subfield'
+        ' code="w">Eiki.Tojyo.1</subfield>    <subfield'
+        ' code="x">1477256</subfield>    <subfield code="y">0</subfield> '
+        ' </datafield>  <datafield tag="100" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Hattori, T.</subfield>    <subfield code="v">Tokyo Institute'
+        ' of Technology, Tokyo, Japan</subfield>    <subfield'
+        ' code="w">T.Hattori.1</subfield>    <subfield code="y">0</subfield> '
+        ' </datafield></record>'
     )
 
     expected = [
@@ -923,9 +920,7 @@ def test_authors_from_100__a_j_m_u_v_w_y():
                     'value': 'D.Macnair.2',
                 },
             ],
-            'raw_affiliations': [
-                {'value': 'SLAC, Menlo Park, California, USA'}
-            ],
+            'raw_affiliations': [{'value': 'SLAC, Menlo Park, California, USA'}],
         },
     ]
     result = hep.do(create_record(snippet))
@@ -957,7 +952,7 @@ def test_authors_from_100__a_u_x_w_y_z_with_malformed_x():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/931310
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Bakhrushin, Iu.P.</subfield>'
         '  <subfield code="u">NIIEFA, St. Petersburg</subfield>'
@@ -966,7 +961,7 @@ def test_authors_from_100__a_u_x_w_y_z_with_malformed_x():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">903073</subfield>'
         '</datafield>'
-    )  # record/931310
+    )
 
     expected = [
         {
@@ -1007,7 +1002,7 @@ def test_authors_from_100__a_double_m_double_u_w_y_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/413614
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Puy, Denis</subfield>'
         '  <subfield code="m">puy@tsmi19.sissa.it</subfield>'
@@ -1018,7 +1013,7 @@ def test_authors_from_100__a_double_m_double_u_w_y_z():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">903393</subfield>'
         '</datafield>'
-    )  # record/413614
+    )
 
     expected = [
         {
@@ -1064,7 +1059,7 @@ def test_authors_supervisors_from_100__a_i_j_u_v_x_y_z_and_multiple_701__u_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1462486
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Spannagel, Simon</subfield>'
@@ -1094,7 +1089,7 @@ def test_authors_supervisors_from_100__a_i_j_u_v_x_y_z_and_multiple_701__u_z():
         '    <subfield code="z">913279</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1462486
+    )
 
     expected = [
         {
@@ -1227,7 +1222,7 @@ def test_authors_supervisors_from_100_a_u_w_y_z_and_701__double_a_u_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/776962
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Lang, Brian W.</subfield>'
@@ -1243,7 +1238,7 @@ def test_authors_supervisors_from_100_a_u_w_y_z_and_701__double_a_u_z():
         '    <subfield code="z">903010</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/776962
+    )
 
     expected = [
         {
@@ -1267,9 +1262,7 @@ def test_authors_supervisors_from_100_a_u_w_y_z_and_701__double_a_u_z():
             'affiliations': [
                 {
                     'value': 'Minnesota U.',
-                    'record': {
-                        '$ref': 'http://localhost:5000/api/institutions/903010'
-                    }
+                    'record': {'$ref': 'http://localhost:5000/api/institutions/903010'},
                 }
             ],
             'full_name': 'Poling, Ron',
@@ -1290,7 +1283,7 @@ def test_authors_supervisors_from_100_a_u_w_y_z_and_701__double_a_u_z():
             'inspire_roles': [
                 'supervisor',
             ],
-        }
+        },
     ]
     result = hep.do(create_record(snippet))
 
@@ -1327,7 +1320,7 @@ def test_authors_supervisors_from_100_a_j_u_w_y_z_and_701__a_i_j_u_x_y_z():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1504133
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Teroerde, Marius</subfield>'
@@ -1347,7 +1340,7 @@ def test_authors_supervisors_from_100_a_j_u_w_y_z_and_701__a_i_j_u_x_y_z():
         '    <subfield code="z">902624</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1504133
+    )
 
     expected = [
         {
@@ -1392,9 +1385,7 @@ def test_authors_supervisors_from_100_a_j_u_w_y_z_and_701__a_i_j_u_x_y_z():
                     'value': 'CERN-456299',
                 },
             ],
-            'inspire_roles': [
-                'supervisor'
-            ],
+            'inspire_roles': ['supervisor'],
             'record': {
                 '$ref': 'http://localhost:5000/api/authors/1060887',
             },
@@ -1439,7 +1430,7 @@ def test_authors_from_100_a_double_u_w_z_y_double_z_and_700__a_double_u_w_y_doub
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1088610
         '<record>'
         '  <datafield tag="100" ind1=" " ind2=" ">'
         '    <subfield code="a">Billo, M.</subfield>'
@@ -1462,7 +1453,7 @@ def test_authors_from_100_a_double_u_w_z_y_double_z_and_700__a_double_u_w_y_doub
         '    <subfield code="z">903297</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1088610
+    )
 
     expected = [
         {
@@ -1528,7 +1519,7 @@ def test_authors_from_100_a_double_u_w_z_y_double_z_and_700__a_double_u_w_y_doub
         'u': [
             'INFN, Turin',
             'Turin U.',
-        ]
+        ],
     }
     expected_700 = [
         {
@@ -1549,18 +1540,16 @@ def test_author_from_100__a_i_m_u_v_x_y_z_strips_email_prefix():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<datafield tag="100" ind1=" " ind2=" ">'
-        '  <subfield code="a">Kuehn, S.</subfield>'
-        '  <subfield code="u">CERN</subfield>'
-        '  <subfield code="v">CERN, European Organization for Nuclear Research, Geneve, Switzerland</subfield>'
-        '  <subfield code="m">email:susanne.kuehn@cern.ch</subfield>'
-        '  <subfield code="i">INSPIRE-00218553</subfield>'
-        '  <subfield code="x">1066844</subfield>'
-        '  <subfield code="y">1</subfield>'
-        '  <subfield code="z">902725</subfield>'
-        '</datafield>'
-    )  # record/1634669
+    snippet = (  # record/1634669
+        '<datafield tag="100" ind1=" " ind2=" ">  <subfield code="a">Kuehn,'
+        ' S.</subfield>  <subfield code="u">CERN</subfield>  <subfield'
+        ' code="v">CERN, European Organization for Nuclear Research, Geneve,'
+        ' Switzerland</subfield>  <subfield'
+        ' code="m">email:susanne.kuehn@cern.ch</subfield>  <subfield'
+        ' code="i">INSPIRE-00218553</subfield>  <subfield'
+        ' code="x">1066844</subfield>  <subfield code="y">1</subfield> '
+        ' <subfield code="z">902725</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1584,7 +1573,12 @@ def test_author_from_100__a_i_m_u_v_x_y_z_strips_email_prefix():
                 },
             ],
             'raw_affiliations': [
-                {'value': 'CERN, European Organization for Nuclear Research, Geneve, Switzerland'},
+                {
+                    'value': (
+                        'CERN, European Organization for Nuclear Research,'
+                        ' Geneve, Switzerland'
+                    )
+                },
             ],
             'record': {
                 '$ref': 'http://localhost:5000/api/authors/1066844',
@@ -1620,17 +1614,16 @@ def test_author_from_700__strips_dot_from_orcid():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<datafield tag="700" ind1=" " ind2=" ">'
-        '  <subfield code="a">Gainutdinov, Azat M.</subfield>'
-        '  <subfield code="j">ORCID:0000-0003-3127-682X.</subfield>'
-        '  <subfield code="u">Tours U., CNRS</subfield>'
-        '  <subfield code="v">Laboratoire de Mathématiques et Physique Théorique CNRS - Université de Tours - Parc de Grammont - 37200 Tours - France</subfield>'
-        '  <subfield code="w">A.Gainutdinov.1</subfield>'
-        '  <subfield code="y">0</subfield>'
-        '  <subfield code="z">909619</subfield>'
-        '</datafield>'
-    )  # record/1600830
+    snippet = (  # record/1600830
+        '<datafield tag="700" ind1=" " ind2=" ">  <subfield'
+        ' code="a">Gainutdinov, Azat M.</subfield>  <subfield'
+        ' code="j">ORCID:0000-0003-3127-682X.</subfield>  <subfield'
+        ' code="u">Tours U., CNRS</subfield>  <subfield code="v">Laboratoire de'
+        ' Mathématiques et Physique Théorique CNRS - Université de Tours - Parc'
+        ' de Grammont - 37200 Tours - France</subfield>  <subfield'
+        ' code="w">A.Gainutdinov.1</subfield>  <subfield code="y">0</subfield> '
+        ' <subfield code="z">909619</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1652,7 +1645,13 @@ def test_author_from_700__strips_dot_from_orcid():
                 },
             ],
             'raw_affiliations': [
-                {'value': u'Laboratoire de Mathématiques et Physique Théorique CNRS - Université de Tours - Parc de Grammont - 37200 Tours - France'},
+                {
+                    'value': (
+                        u'Laboratoire de Mathématiques et Physique Théorique'
+                        u' CNRS - Université de Tours - Parc de Grammont -'
+                        u' 37200 Tours - France'
+                    )
+                },
             ],
         },
     ]
@@ -1670,7 +1669,11 @@ def test_author_from_700__strips_dot_from_orcid():
             'Tours U., CNRS',
         ],
         'v': [
-            u'Laboratoire de Mathématiques et Physique Théorique CNRS - Université de Tours - Parc de Grammont - 37200 Tours - France',
+            (
+                u'Laboratoire de Mathématiques et Physique Théorique CNRS -'
+                u' Université de Tours - Parc de Grammont - 37200 Tours -'
+                u' France'
+            ),
         ],
     }
     result = hep2marc.do(result)
@@ -1682,13 +1685,13 @@ def test_authors_from_700__a_double_e_handles_multiple_roles():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1264604
         '<datafield tag="700" ind1=" " ind2=" ">'
         '  <subfield code="a">Peskin, M.E.</subfield>'
         '  <subfield code="e">Convener</subfield>'
         '  <subfield code="e">ed.</subfield>'
         '</datafield>'
-    )  # record/1264604
+    )
 
     expected = [
         {
@@ -1708,11 +1711,11 @@ def test_authors_from_700__a_removes_trailing_comma():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1683590
         '<datafield tag="700" ind1=" " ind2=" ">'
         '  <subfield code="a">Lenske,</subfield>'
         '</datafield>'
-    )  # record/1683590
+    )
 
     expected = [
         {
@@ -1729,11 +1732,11 @@ def test_authors_from_100__a_removes_starting_comma_and_space():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1697210
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">, M.A.Valuyan</subfield>'
         '</datafield>'
-    )  # record/1697210
+    )
 
     expected = [
         {
@@ -1750,7 +1753,7 @@ def test_authors_from_700__a_w_x_y_repeated_author():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1684644
         '<record>'
         '  <datafield tag="700" ind1=" " ind2=" ">'
         '    <subfield code="a">Suzuki, K.</subfield>'
@@ -1765,7 +1768,7 @@ def test_authors_from_700__a_w_x_y_repeated_author():
         '    <subfield code="y">0</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1684644
+    )
 
     expected = [
         {
@@ -1818,11 +1821,11 @@ def test_corporate_author_from_110__a():
     schema = load_schema('hep')
     subschema = schema['properties']['corporate_author']
 
-    snippet = (
+    snippet = (  # record/1621218
         '<datafield tag="110" ind1=" " ind2=" ">'
         '  <subfield code="a">CMS Collaboration</subfield>'
         '</datafield>'
-    )  # record/1621218
+    )
 
     expected = [
         'CMS Collaboration',
@@ -1844,7 +1847,7 @@ def test_authors_from_100__a_with_q_w_y_z_duplicated_u():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/144579
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Dineykhan, M.</subfield>'
         '  <subfield code="q">Dineĭkhan, M.</subfield>'
@@ -1857,7 +1860,7 @@ def test_authors_from_100__a_with_q_w_y_z_duplicated_u():
         '  <subfield code="z">902780</subfield>'
         '  <subfield code="z">902780</subfield>'
         '</datafield>'
-    )  # record/144579
+    )
 
     expected = [
         {
@@ -1908,7 +1911,7 @@ def test_authors_from_100__a_with_q_v_w_y_z_duplicated_v():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/144579
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Dineykhan, M.</subfield>'
         '  <subfield code="q">Dineĭkhan, M.</subfield>'
@@ -1921,7 +1924,7 @@ def test_authors_from_100__a_with_q_v_w_y_z_duplicated_v():
         '  <subfield code="y">0</subfield>'
         '  <subfield code="z">902780</subfield>'
         '</datafield>'
-    )  # record/144579
+    )
 
     expected = [
         {
@@ -1949,7 +1952,7 @@ def test_authors_from_100__a_with_q_v_w_y_z_duplicated_v():
                 {
                     'value': 'Joint Institute for Nuclear Research',
                 }
-            ]
+            ],
         },
     ]
     result = hep.do(create_record(snippet))
@@ -1980,7 +1983,7 @@ def test_authors_from_700__a_v_x_y_repeated_author_duplicated_v():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1684644
         '<record>'
         '  <datafield tag="700" ind1=" " ind2=" ">'
         '    <subfield code="a">Suzuki, K.</subfield>'
@@ -1997,7 +2000,7 @@ def test_authors_from_700__a_v_x_y_repeated_author_duplicated_v():
         '    <subfield code="y">0</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1684644
+    )
 
     expected = [
         {
@@ -2054,7 +2057,7 @@ def test_authors_from_100__a_i_u_x_y_duplicated_i():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/4328
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Glashow, S.L.</subfield>'
         '  <subfield code="i">INSPIRE-00085173</subfield>'
@@ -2063,7 +2066,7 @@ def test_authors_from_100__a_i_u_x_y_duplicated_i():
         '  <subfield code="x">1008235</subfield>'
         '  <subfield code="y">1</subfield>'
         '</datafield>'
-    )  # record/4328
+    )
 
     expected = [
         {
@@ -2108,7 +2111,7 @@ def test_authors_from_700__a_i_x_y_repeated_author_duplicated_i():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
+    snippet = (  # record/1684644
         '<record>'
         '  <datafield tag="700" ind1=" " ind2=" ">'
         '    <subfield code="a">Suzuki, K.</subfield>'
@@ -2125,7 +2128,7 @@ def test_authors_from_700__a_i_x_y_repeated_author_duplicated_i():
         '    <subfield code="y">0</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1684644
+    )
 
     expected = [
         {
@@ -2184,34 +2187,38 @@ def test_authors_from_100__a_v_w_y_repeated_t():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<datafield tag="100" ind1=" " ind2=" ">'
-        '  <subfield code="a">Puertas-Centeno, David</subfield>'
-        '  <subfield code="t">GRID:grid.4489.1</subfield>'
-        '  <subfield code="t">GRID:grid.4489.1</subfield>'
-        '  <subfield code="v">Departamento de Física Atómica - Molecular y Nuclear - Universidad de Granada - Granada - 18071 - Spain</subfield>'
-        '  <subfield code="v">Instituto Carlos I de Física Teórica y Computacional - Universidad de Granada - Granada - 18071 - Spain</subfield>'
-        '  <subfield code="w">D.Puertas.Centeno.2</subfield>'
-        '  <subfield code="y">0</subfield>'
-        '</datafield>'
-    )  # record/1676659
+    snippet = (  # record/1676659
+        '<datafield tag="100" ind1=" " ind2=" ">  <subfield'
+        ' code="a">Puertas-Centeno, David</subfield>  <subfield'
+        ' code="t">GRID:grid.4489.1</subfield>  <subfield'
+        ' code="t">GRID:grid.4489.1</subfield>  <subfield code="v">Departamento'
+        ' de Física Atómica - Molecular y Nuclear - Universidad de Granada -'
+        ' Granada - 18071 - Spain</subfield>  <subfield code="v">Instituto'
+        ' Carlos I de Física Teórica y Computacional - Universidad de Granada -'
+        ' Granada - 18071 - Spain</subfield>  <subfield'
+        ' code="w">D.Puertas.Centeno.2</subfield>  <subfield'
+        ' code="y">0</subfield></datafield>'
+    )
 
     expected = [
         {
             'affiliations_identifiers': [
-                {
-                    'schema': 'GRID',
-                    'value': 'grid.4489.1'
-                },
+                {'schema': 'GRID', 'value': 'grid.4489.1'},
             ],
             'full_name': 'Puertas-Centeno, David',
             'raw_affiliations': [
                 {
-                    'value': u'Departamento de Física Atómica - Molecular y Nuclear - Universidad de Granada - Granada - 18071 - Spain',
+                    'value': (
+                        u'Departamento de Física Atómica - Molecular y Nuclear'
+                        u' - Universidad de Granada - Granada - 18071 - Spain'
+                    ),
                 },
                 {
-                    'value': u'Instituto Carlos I de Física Teórica y Computacional - Universidad de Granada - Granada - 18071 - Spain',
-                }
+                    'value': (
+                        u'Instituto Carlos I de Física Teórica y Computacional'
+                        u' - Universidad de Granada - Granada - 18071 - Spain'
+                    ),
+                },
             ],
             'ids': [
                 {
@@ -2228,12 +2235,16 @@ def test_authors_from_100__a_v_w_y_repeated_t():
 
     expected = {
         'a': 'Puertas-Centeno, David',
-        't': [
-            'GRID:grid.4489.1'
-        ],
+        't': ['GRID:grid.4489.1'],
         'v': [
-            u'Departamento de Física Atómica - Molecular y Nuclear - Universidad de Granada - Granada - 18071 - Spain',
-            u'Instituto Carlos I de Física Teórica y Computacional - Universidad de Granada - Granada - 18071 - Spain',
+            (
+                u'Departamento de Física Atómica - Molecular y Nuclear -'
+                u' Universidad de Granada - Granada - 18071 - Spain'
+            ),
+            (
+                u'Instituto Carlos I de Física Teórica y Computacional -'
+                u' Universidad de Granada - Granada - 18071 - Spain'
+            ),
         ],
     }
     result = hep2marc.do(result)
@@ -2245,17 +2256,17 @@ def test_authors_from_100__a_t_u_v():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<datafield tag="100" ind1=" " ind2=" ">'
-        '  <subfield code="a">Plumari, S.</subfield>'
-        '  <subfield code="v">Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy</subfield>'
-        '  <subfield code="u">Catania U.</subfield>'
-        '  <subfield code="t">GRID:grid.8158.4</subfield>'
-        '  <subfield code="v">Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy</subfield>'
-        '  <subfield code="u">INFN, LNS</subfield>'
-        '  <subfield code="t">GRID:grid.466880.4</subfield>'
-        '</datafield>'
-    )  # record/1712320
+    snippet = (  # record/1712320
+        '<datafield tag="100" ind1=" " ind2=" ">  <subfield code="a">Plumari,'
+        ' S.</subfield>  <subfield code="v">Department of Physics U. and'
+        ' Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 -'
+        ' Catania - Italy</subfield>  <subfield code="u">Catania U.</subfield> '
+        ' <subfield code="t">GRID:grid.8158.4</subfield>  <subfield'
+        ' code="v">Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 -'
+        ' 95123 - Catania - Italy</subfield>  <subfield code="u">INFN,'
+        ' LNS</subfield>  <subfield'
+        ' code="t">GRID:grid.466880.4</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -2263,29 +2274,28 @@ def test_authors_from_100__a_t_u_v():
                 {
                     'value': 'Catania U.',
                 },
-                {
-                    'value': 'INFN, LNS'
-                }
+                {'value': 'INFN, LNS'},
             ],
             'affiliations_identifiers': [
-                {
-                    'schema': 'GRID',
-                    'value': 'grid.8158.4'
-                },
-                {
-                    'schema': 'GRID',
-                    'value': 'grid.466880.4'
-                },
+                {'schema': 'GRID', 'value': 'grid.8158.4'},
+                {'schema': 'GRID', 'value': 'grid.466880.4'},
             ],
             'full_name': 'Plumari, S.',
             'raw_affiliations': [
                 {
-                    'value': u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
+                    'value': (
+                        u'Department of Physics U. and Astronomy ‘Ettore'
+                        u' Majorana’ - Catania - Via S. Sofia 64 - 95125 -'
+                        u' Catania - Italy'
+                    ),
                 },
                 {
-                    'value': u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy',
-                }
-            ]
+                    'value': (
+                        u'Laboratori Nazionali del Sud - INFN-LNS - Via S.'
+                        u' Sofia 62 - 95123 - Catania - Italy'
+                    ),
+                },
+            ],
         },
     ]
     result = hep.do(create_record(snippet))
@@ -2295,18 +2305,21 @@ def test_authors_from_100__a_t_u_v():
 
     expected = {
         'a': 'Plumari, S.',
-        't': [
-            'GRID:grid.8158.4',
-            'GRID:grid.466880.4'
-        ],
+        't': ['GRID:grid.8158.4', 'GRID:grid.466880.4'],
         'u': [
             'Catania U.',
             'INFN, LNS',
         ],
         'v': [
-            u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
-            u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy'
-        ]
+            (
+                u'Department of Physics U. and Astronomy ‘Ettore Majorana’ -'
+                u' Catania - Via S. Sofia 64 - 95125 - Catania - Italy'
+            ),
+            (
+                u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 -'
+                u' 95123 - Catania - Italy'
+            ),
+        ],
     }
     result = hep2marc.do(result)
 
@@ -2317,17 +2330,17 @@ def test_authors_from_100__a_t_u_v_ROR():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<datafield tag="100" ind1=" " ind2=" ">'
-        '  <subfield code="a">Plumari, S.</subfield>'
-        '  <subfield code="v">Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy</subfield>'
-        '  <subfield code="u">Catania U.</subfield>'
-        '  <subfield code="t">ROR:https://ror.org/03a64bh57</subfield>'
-        '  <subfield code="v">Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy</subfield>'
-        '  <subfield code="u">INFN, LNS</subfield>'
-        '  <subfield code="t">ROR:https://ror.org/02k1zhm92</subfield>'
-        '</datafield>'
-    )  # synthetic data
+    snippet = (  # synthetic data
+        '<datafield tag="100" ind1=" " ind2=" ">  <subfield code="a">Plumari,'
+        ' S.</subfield>  <subfield code="v">Department of Physics U. and'
+        ' Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 -'
+        ' Catania - Italy</subfield>  <subfield code="u">Catania U.</subfield> '
+        ' <subfield code="t">ROR:https://ror.org/03a64bh57</subfield> '
+        ' <subfield code="v">Laboratori Nazionali del Sud - INFN-LNS - Via S.'
+        ' Sofia 62 - 95123 - Catania - Italy</subfield>  <subfield'
+        ' code="u">INFN, LNS</subfield>  <subfield'
+        ' code="t">ROR:https://ror.org/02k1zhm92</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -2335,29 +2348,28 @@ def test_authors_from_100__a_t_u_v_ROR():
                 {
                     'value': 'Catania U.',
                 },
-                {
-                    'value': 'INFN, LNS'
-                }
+                {'value': 'INFN, LNS'},
             ],
             'affiliations_identifiers': [
-                {
-                    'schema': 'ROR',
-                    'value': 'https://ror.org/03a64bh57'
-                },
-                {
-                    'schema': 'ROR',
-                    'value': 'https://ror.org/02k1zhm92'
-                },
+                {'schema': 'ROR', 'value': 'https://ror.org/03a64bh57'},
+                {'schema': 'ROR', 'value': 'https://ror.org/02k1zhm92'},
             ],
             'full_name': 'Plumari, S.',
             'raw_affiliations': [
                 {
-                    'value': u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
+                    'value': (
+                        u'Department of Physics U. and Astronomy ‘Ettore'
+                        u' Majorana’ - Catania - Via S. Sofia 64 - 95125 -'
+                        u' Catania - Italy'
+                    ),
                 },
                 {
-                    'value': u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy',
-                }
-            ]
+                    'value': (
+                        u'Laboratori Nazionali del Sud - INFN-LNS - Via S.'
+                        u' Sofia 62 - 95123 - Catania - Italy'
+                    ),
+                },
+            ],
         },
     ]
     result = hep.do(create_record(snippet))
@@ -2367,18 +2379,21 @@ def test_authors_from_100__a_t_u_v_ROR():
 
     expected = {
         'a': 'Plumari, S.',
-        't': [
-            'ROR:https://ror.org/03a64bh57',
-            'ROR:https://ror.org/02k1zhm92'
-        ],
+        't': ['ROR:https://ror.org/03a64bh57', 'ROR:https://ror.org/02k1zhm92'],
         'u': [
             'Catania U.',
             'INFN, LNS',
         ],
         'v': [
-            u'Department of Physics U. and Astronomy ‘Ettore Majorana’ - Catania - Via S. Sofia 64 - 95125 - Catania - Italy',
-            u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 - 95123 - Catania - Italy'
-        ]
+            (
+                u'Department of Physics U. and Astronomy ‘Ettore Majorana’ -'
+                u' Catania - Via S. Sofia 64 - 95125 - Catania - Italy'
+            ),
+            (
+                u'Laboratori Nazionali del Sud - INFN-LNS - Via S. Sofia 62 -'
+                u' 95123 - Catania - Italy'
+            ),
+        ],
     }
     result = hep2marc.do(result)
 
@@ -2389,47 +2404,41 @@ def test_authors_from_100__a_t_v_and_700_a_t_v():
     schema = load_schema('hep')
     subschema = schema['properties']['authors']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="100" ind1=" " ind2=" ">'
-        '    <subfield code="a">Hosseini, M.</subfield>'
-        '    <subfield code="v">Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran</subfield>'
-        '    <subfield code="t">GRID:grid.440804.c</subfield>'
-        '  </datafield>'
-        '  <datafield tag="700" ind1=" " ind2=" ">'
-        '    <subfield code="a">Hassanabadi, H.</subfield>'
-        '    <subfield code="v">Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran</subfield>'
-        '    <subfield code="t">GRID:grid.440804.c</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1712798
+    snippet = (  # record/1712798
+        '<record>  <datafield tag="100" ind1=" " ind2=" ">    <subfield'
+        ' code="a">Hosseini, M.</subfield>    <subfield code="v">Faculty of'
+        ' Physics - Shahrood Technology U. - P. O. Box 3619995161-316 -'
+        ' Shahrood - Iran</subfield>    <subfield'
+        ' code="t">GRID:grid.440804.c</subfield>  </datafield>  <datafield'
+        ' tag="700" ind1=" " ind2=" ">    <subfield code="a">Hassanabadi,'
+        ' H.</subfield>    <subfield code="v">Faculty of Physics - Shahrood'
+        ' Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran</subfield>'
+        '    <subfield code="t">GRID:grid.440804.c</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
         {
-            'affiliations_identifiers': [
-                {
-                    'schema': 'GRID',
-                    'value': 'grid.440804.c'
-                }
-            ],
+            'affiliations_identifiers': [{'schema': 'GRID', 'value': 'grid.440804.c'}],
             'full_name': 'Hosseini, M.',
             'raw_affiliations': [
                 {
-                    'value': 'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran'
+                    'value': (
+                        'Faculty of Physics - Shahrood Technology U. - P. O.'
+                        ' Box 3619995161-316 - Shahrood - Iran'
+                    )
                 }
             ],
         },
         {
-            'affiliations_identifiers': [
-                {
-                    'schema': 'GRID',
-                    'value': 'grid.440804.c'
-                }
-            ],
+            'affiliations_identifiers': [{'schema': 'GRID', 'value': 'grid.440804.c'}],
             'full_name': 'Hassanabadi, H.',
             'raw_affiliations': [
                 {
-                    'value': 'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran'
+                    'value': (
+                        'Faculty of Physics - Shahrood Technology U. - P. O.'
+                        ' Box 3619995161-316 - Shahrood - Iran'
+                    )
                 }
             ],
         },
@@ -2443,7 +2452,10 @@ def test_authors_from_100__a_t_v_and_700_a_t_v():
         'a': 'Hosseini, M.',
         't': ['GRID:grid.440804.c'],
         'v': [
-            'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran',
+            (
+                'Faculty of Physics - Shahrood Technology U. - P. O. Box'
+                ' 3619995161-316 - Shahrood - Iran'
+            ),
         ],
     }
     expected_700 = [
@@ -2451,7 +2463,10 @@ def test_authors_from_100__a_t_v_and_700_a_t_v():
             'a': 'Hassanabadi, H.',
             't': ['GRID:grid.440804.c'],
             'v': [
-                'Faculty of Physics - Shahrood Technology U. - P. O. Box 3619995161-316 - Shahrood - Iran',
+                (
+                    'Faculty of Physics - Shahrood Technology U. - P. O. Box'
+                    ' 3619995161-316 - Shahrood - Iran'
+                ),
             ],
         }
     ]

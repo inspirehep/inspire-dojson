@@ -24,8 +24,13 @@
 
 from __future__ import absolute_import, division, print_function
 
-from ..model import FilterOverdo, add_schema, add_collection, clean_marc, clean_record
-
+from inspire_dojson.model import (
+    FilterOverdo,
+    add_collection,
+    add_schema,
+    clean_marc,
+    clean_record,
+)
 
 hepnames_filters = [
     add_schema('authors.json'),

@@ -24,6 +24,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import contextlib
 import os
 import re
 from itertools import chain
@@ -31,17 +32,14 @@ from itertools import chain
 import pycountry
 import rfc3987
 import six
-
-from idutils import is_arxiv
 from dojson import utils
-
-from six.moves import urllib
-
+from idutils import is_arxiv
 from inspire_utils.helpers import force_list
 from inspire_utils.name import normalize_name
+from six.moves import urllib
 
-from .model import cds2hep_marc
-from ..utils import force_single_element, quote_url
+from inspire_dojson.cds.model import cds2hep_marc
+from inspire_dojson.utils import force_single_element, quote_url
 
 CATEGORIES = {
     'Accelerators and Storage Rings': 'Accelerators',
@@ -54,7 +52,6 @@ CATEGORIES = {
     'Detectors and Experimental Techniques': 'Instrumentation',
     'Engineering': 'Instrumentation',
     'General Relativity and Cosmology': 'Gravitation and Cosmology',
-    'General Theoretical Physics': 'General Physics',
     'General Theoretical Physics': 'General Physics',
     'Information Transfer and Management': 'Other',
     'Mathematical Physics and Mathematics': 'Math and Math Physics',
@@ -123,7 +120,7 @@ def escape_url(url):
         else:
             scheme = ''
 
-        url = quote_url(url[len(scheme):])
+        url = quote_url(url[len(scheme) :])
         return scheme + url
 
 
@@ -138,8 +135,19 @@ def persistent_identifiers(self, key, value):
 @cds2hep_marc.over('035__', '^035..')
 @utils.for_each_value
 def external_sytem_identifiers(self, key, value):
-    ignored = {'cercer', 'inspire', 'xx', 'cern annual report', 'cmscms', 'wai01', 'spires'}
-    if any(val.lower() in ignored for val in chain(force_list(value.get('9')), force_list(value.get('a')))):
+    ignored = {
+        'cercer',
+        'inspire',
+        'xx',
+        'cern annual report',
+        'cmscms',
+        'wai01',
+        'spires',
+    }
+    if any(
+        val.lower() in ignored
+        for val in chain(force_list(value.get('9')), force_list(value.get('a')))
+    ):
         return
     if any(val.lower().endswith('cercer') for val in force_list(value.get('a'))):
         return
@@ -153,8 +161,21 @@ def secondary_report_numbers(self, key, value):
 
     Also populates the ``500``, ``595`` and ``980`` MARC field through side effects.
     """
-    preliminary_results_prefixes = ['ATLAS-CONF-', 'CMS-PAS-', 'CMS-DP-', 'LHCB-CONF-']
-    note_prefixes = ['ALICE-INT-', 'ATL-', 'ATLAS-CONF-', 'CMS-DP-', 'CMS-PAS-', 'LHCB-CONF-', 'LHCB-PUB-']
+    preliminary_results_prefixes = [
+        'ATLAS-CONF-',
+        'CMS-PAS-',
+        'CMS-DP-',
+        'LHCB-CONF-',
+    ]
+    note_prefixes = [
+        'ALICE-INT-',
+        'ATL-',
+        'ATLAS-CONF-',
+        'CMS-DP-',
+        'CMS-PAS-',
+        'LHCB-CONF-',
+        'LHCB-PUB-',
+    ]
 
     result_037 = self.get('037__', [])
     result_500 = self.get('500__', [])
@@ -168,17 +189,21 @@ def secondary_report_numbers(self, key, value):
     if any(report.upper().startswith(prefix) for prefix in note_prefixes):
         result_980.append({'a': 'NOTE'})
 
-    if any(report.upper().startswith(prefix) for prefix in preliminary_results_prefixes):
+    if any(
+        report.upper().startswith(prefix) for prefix in preliminary_results_prefixes
+    ):
         result_500.append({'9': 'CDS', 'a': 'Preliminary results'})
 
     is_barcode = hidden_report.startswith('P0') or hidden_report.startswith('CM-P0')
     if not report.startswith('SIS-') and not is_barcode:
-        result_037.append({
-            '9': source,
-            'a': report,
-            'c': value.get('c'),
-            'z': hidden_report if source == 'CDS' else None,
-        })
+        result_037.append(
+            {
+                '9': source,
+                'a': report,
+                'c': value.get('c'),
+                'z': hidden_report if source == 'CDS' else None,
+            }
+        )
 
     self['500__'] = result_500
     self['595__'] = result_595
@@ -198,10 +223,10 @@ def languages(self, key, value):
         try:
             languages.append({'a': pycountry.languages.get(alpha_3=alpha_3).name})
         except KeyError:
-            try:
-                languages.append({'a': pycountry.languages.get(bibliographic=alpha_3).name})
-            except KeyError:
-                pass
+            with contextlib.suppress(KeyError):
+                languages.append(
+                    {'a': pycountry.languages.get(bibliographic=alpha_3).name}
+                )
 
     return languages
 
@@ -267,7 +292,9 @@ def nonfirst_authors(self, key, value):
     field_700 = self.get('700__', [])
     field_701 = self.get('701__', [])
 
-    is_supervisor = any(el.lower().startswith('dir') for el in force_list(value.get('e', '')))
+    is_supervisor = any(
+        el.lower().startswith('dir') for el in force_list(value.get('e', ''))
+    )
     if is_supervisor:
         field_701.append(_converted_author(value))
     else:
@@ -351,7 +378,7 @@ def categories(self, key, value):
         result = {
             '2': 'INSPIRE',
             # XXX: will fail validation and be logged if invalid category
-            'a': CATEGORIES.get(value.get('a'), value.get('a'))
+            'a': CATEGORIES.get(value.get('a'), value.get('a')),
         }
     else:
         result = vanilla_dict(value)
@@ -410,20 +437,28 @@ def urls(self, key, value):
 
     Also populate the ``FFT`` field through side effects.
     """
+
     def _is_preprint(value):
         return value.get('y', '').lower() == 'preprint'
 
     def _is_fulltext(value):
-        return value['u'].endswith('.pdf') and value['u'].startswith('http://cds.cern.ch')
+        return value['u'].endswith('.pdf') and value['u'].startswith(
+            'http://cds.cern.ch'
+        )
 
     def _is_local_copy(value):
         return 'local copy' in value.get('y', '')
 
     def _is_ignored_domain(value):
-        ignored_domains = ['http://cdsweb.cern.ch', 'http://cms.cern.ch',
-                           'http://cmsdoc.cern.ch', 'http://documents.cern.ch',
-                           'http://preprints.cern.ch', 'http://cds.cern.ch',
-                           'http://arxiv.org']
+        ignored_domains = [
+            'http://cdsweb.cern.ch',
+            'http://cms.cern.ch',
+            'http://cmsdoc.cern.ch',
+            'http://documents.cern.ch',
+            'http://preprints.cern.ch',
+            'http://cds.cern.ch',
+            'http://arxiv.org',
+        ]
         return any(value['u'].startswith(domain) for domain in ignored_domains)
 
     field_8564 = self.get('8564_', [])
@@ -436,26 +471,34 @@ def urls(self, key, value):
 
     if _is_fulltext(value) and not _is_preprint(value):
         if _is_local_copy(value):
-            description = value.get('y', '').replace('local copy', 'on CERN Document Server')
-            field_8564.append({
-                'u': url,
-                'y': description,
-            })
+            description = value.get('y', '').replace(
+                'local copy', 'on CERN Document Server'
+            )
+            field_8564.append(
+                {
+                    'u': url,
+                    'y': description,
+                }
+            )
         else:
             _, file_name = os.path.split(urllib.parse.urlparse(value['u']).path)
             _, extension = os.path.splitext(file_name)
-            field_FFT.append({
-                't': 'CDS',
-                'a': url,
-                'd': value.get('y', ''),
-                'n': file_name,
-                'f': extension,
-            })
+            field_FFT.append(
+                {
+                    't': 'CDS',
+                    'a': url,
+                    'd': value.get('y', ''),
+                    'n': file_name,
+                    'f': extension,
+                }
+            )
     elif not _is_ignored_domain(value):
-        field_8564.append({
-            'u': url,
-            'y': value.get('y'),
-        })
+        field_8564.append(
+            {
+                'u': url,
+                'y': value.get('y'),
+            }
+        )
 
     self['FFT__'] = field_FFT
     return field_8564

@@ -24,8 +24,8 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
-from inspire_dojson.model import FilterOverdo, add_schema
 from inspire_dojson import DoJsonError, marcxml2record, record2marcxml
+from inspire_dojson.model import FilterOverdo, add_schema
 
 
 def test_filteroverdo_works_without_filters():
@@ -38,7 +38,7 @@ def test_filteroverdo_works_without_filters():
 
 
 def test_filteroverdo_wraps_exceptions():
-    record = (
+    record = (  # synthetic data
         '<record>'
         '  <datafield tag="269" ind1=" " ind2=" ">'
         '    <subfield code="c">Ceci n’est pas une dâte</subfield>'
@@ -47,7 +47,7 @@ def test_filteroverdo_wraps_exceptions():
         '    <subfield code="a">HEP</subfield>'
         '  </datafield>'
         '</record>'
-    )  # synthetic data
+    )
 
     with pytest.raises(DoJsonError) as exc:
         marcxml2record(record)

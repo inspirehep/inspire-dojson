@@ -23,21 +23,21 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_public_notes_from_500__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/1450044
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="a">5 pages</subfield>'
         '</datafield>'
-    )  # record/1450044
+    )
 
     expected = [
         {
@@ -65,17 +65,21 @@ def test_public_notes_from_500__a_9_presented_on():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<datafield tag="500" ind1=" " ind2=" ">'
-        '  <subfield code="a">presented on the 11th International Conference on Modification of Materials with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september 2012)</subfield>'
-        '  <subfield code="9">arXiv</subfield>'
-        '</datafield>'
-    )  # record/1185462
+    snippet = (  # record/1185462
+        '<datafield tag="500" ind1=" " ind2=" ">  <subfield code="a">presented'
+        ' on the 11th International Conference on Modification of Materials'
+        ' with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september'
+        ' 2012)</subfield>  <subfield code="9">arXiv</subfield></datafield>'
+    )
 
     expected = [
         {
             'source': 'arXiv',
-            'value': 'presented on the 11th International Conference on Modification of Materials with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september 2012)',
+            'value': (
+                'presented on the 11th International Conference on Modification'
+                ' of Materials with Particle Beams and Plasma Flows (Tomsk,'
+                ' Russia, 17-21 september 2012)'
+            ),
         },
     ]
     result = hep.do(create_record(snippet))
@@ -86,7 +90,11 @@ def test_public_notes_from_500__a_9_presented_on():
     expected = [
         {
             '9': 'arXiv',
-            'a': 'presented on the 11th International Conference on Modification of Materials with Particle Beams and Plasma Flows (Tomsk, Russia, 17-21 september 2012)',
+            'a': (
+                'presented on the 11th International Conference on Modification'
+                ' of Materials with Particle Beams and Plasma Flows (Tomsk,'
+                ' Russia, 17-21 september 2012)'
+            ),
         },
     ]
     result = hep2marc.do(result)
@@ -98,13 +106,12 @@ def test_public_notes_from_500__double_a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<datafield tag="500" ind1=" " ind2=" ">'
-        '  <subfield code="9">arXiv</subfield>'
-        '  <subfield code="a">11 pages, 8 figures. Submitted to MNRAS</subfield>'
-        '  <subfield code="a">preliminary entry</subfield>'
-        '</datafield>'
-    )  # record/1380257
+    snippet = (  # record/1380257
+        '<datafield tag="500" ind1=" " ind2=" ">  <subfield'
+        ' code="9">arXiv</subfield>  <subfield code="a">11 pages, 8 figures.'
+        ' Submitted to MNRAS</subfield>  <subfield code="a">preliminary'
+        ' entry</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -141,7 +148,7 @@ def test_curated_and_public_notes_from_500__a_and_500__a_9():
     curated_schema = schema['properties']['curated']
     public_notes_schema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/1450045
         '<record>'
         '  <datafield tag="500" ind1=" " ind2=" ">'
         '    <subfield code="a">*Brief entry*</subfield>'
@@ -151,7 +158,7 @@ def test_curated_and_public_notes_from_500__a_and_500__a_9():
         '    <subfield code="9">arXiv</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1450045
+    )
 
     expected_curated = False
     expected_public_notes = [
@@ -186,11 +193,11 @@ def test_curated_from_500__a():
     schema = load_schema('hep')
     subschema = schema['properties']['curated']
 
-    snippet = (
+    snippet = (  # record/1184775
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="a">* Brief entry *</subfield>'
         '</datafield>'
-    )  # record/1184775
+    )
 
     expected = False
     result = hep.do(create_record(snippet))
@@ -212,7 +219,7 @@ def test_core_and_curated_and_public_notes_from_500__a_and_500__a_9_and_980__a()
     curated_schema = schema['properties']['curated']
     public_notes_schema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/1217749
         '<record>'
         '  <datafield tag="500" ind1=" " ind2=" ">'
         '    <subfield code="a">* Temporary entry *</subfield>'
@@ -228,7 +235,7 @@ def test_core_and_curated_and_public_notes_from_500__a_and_500__a_9_and_980__a()
         '    <subfield code="a">CORE</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1217749
+    )
 
     expected_core = True
     expected_curated = False
@@ -267,11 +274,11 @@ def test_thesis_info_defense_date_from_500__a():
     schema = load_schema('hep')
     subschema = schema['properties']['thesis_info']
 
-    snippet = (
+    snippet = (  # record/1517362
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="a">Presented on 2016-09-30</subfield>'
         '</datafield>'
-    )  # record/1517362
+    )
 
     expected = {'defense_date': '2016-09-30'}
     result = hep.do(create_record(snippet))
@@ -291,11 +298,11 @@ def test_thesis_info_defense_date_from_500__a_incomplete_date():
     schema = load_schema('hep')
     subschema = schema['properties']['thesis_info']
 
-    snippet = (
+    snippet = (  # record/1509061
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="a">Presented on 2016</subfield>'
         '</datafield>'
-    )  # record/1509061
+    )
 
     expected = {'defense_date': '2016'}
     result = hep.do(create_record(snippet))
@@ -315,17 +322,17 @@ def test_thesis_info_defense_date_from_500__a_incomplete_human_date():
     schema = load_schema('hep')
     subschema = schema['properties']['thesis_info']
 
-    snippet = (
+    snippet = (  # record/887715
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="a">Presented on Dec 1992</subfield>'
         '</datafield>'
-    )  # record/887715
+    )
 
     expected = {'defense_date': '1992-12'}
     result = hep.do(create_record(snippet))
 
     assert validate(result['thesis_info'], subschema) is None
-    expected == result['thesis_info']
+    assert expected == result['thesis_info']
 
     expected = [
         {'a': 'Presented on 1992-12'},
@@ -339,14 +346,14 @@ def test_thesis_from_502__b_c_d_z():
     schema = load_schema('hep')
     subschema = schema['properties']['thesis_info']
 
-    snippet = (
+    snippet = (  # record/897773
         '<datafield tag="502" ind1=" " ind2=" ">'
         '  <subfield code="b">PhD</subfield>'
         '  <subfield code="c">IIT, Roorkee</subfield>'
         '  <subfield code="d">2011</subfield>'
         '  <subfield code="z">909554</subfield>'
         '</datafield>'
-    )  # record/897773
+    )
 
     expected = {
         'date': '2011',
@@ -382,7 +389,7 @@ def test_thesis_from_502_b_double_c_d_double_z():
     schema = load_schema('hep')
     subschema = schema['properties']['thesis_info']
 
-    snippet = (
+    snippet = (  # record/1385648
         '<datafield tag="502" ind1=" " ind2=" ">'
         '  <subfield code="b">Thesis</subfield>'
         '  <subfield code="c">Nice U.</subfield>'
@@ -391,7 +398,7 @@ def test_thesis_from_502_b_double_c_d_double_z():
         '  <subfield code="z">903069</subfield>'
         '  <subfield code="z">904125</subfield>'
         '</datafield>'
-    )  # record/1385648
+    )
 
     expected = {
         'date': '2014',
@@ -435,7 +442,7 @@ def test_thesis_info_from_500__a_and_502__b_c_d():
     schema = load_schema('hep')
     subschema = schema['properties']['thesis_info']
 
-    snippet = (
+    snippet = (  # record/1517362
         '<record>'
         '  <datafield tag="500" ind1=" " ind2=" ">'
         '    <subfield code="a">Presented on 2015-11-27</subfield>'
@@ -446,7 +453,7 @@ def test_thesis_info_from_500__a_and_502__b_c_d():
         '    <subfield code="d">2017</subfield>'
         '  </datafield>'
         '<record>'
-    )  # record/1517362
+    )
 
     expected = {
         'date': '2017',
@@ -481,17 +488,42 @@ def test_abstracts_from_520__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['abstracts']
 
-    snippet = (
-        '<datafield tag="520" ind1=" " ind2=" ">'
-        '  <subfield code="9">Springer</subfield>'
-        '  <subfield code="a">We study a notion of non-commutative integration, in the spirit of modular spectral triples, for the quantum group SU$_{q}$ (2). In particular we define the non-commutative integral as the residue at the spectral dimension of a zeta function, which is constructed using a Dirac operator and a weight. We consider the Dirac operator introduced by Kaad and Senior and a family of weights depending on two parameters, which are related to the diagonal automorphisms of SU$_{q}$ (2). We show that, after fixing one of the parameters, the non-commutative integral coincides with the Haar state of SU$_{q}$ (2). Moreover we can impose an additional condition on the zeta function, which also fixes the second parameter. For this unique choice the spectral dimension coincides with the classical dimension.</subfield>'
-        '</datafield>'
-    )  # record/1346798
+    snippet = (  # record/1346798
+        '<datafield tag="520" ind1=" " ind2=" ">  <subfield'
+        ' code="9">Springer</subfield>  <subfield code="a">We study a notion of'
+        ' non-commutative integration, in the spirit of modular spectral'
+        ' triples, for the quantum group SU$_{q}$ (2). In particular we define'
+        ' the non-commutative integral as the residue at the spectral dimension'
+        ' of a zeta function, which is constructed using a Dirac operator and a'
+        ' weight. We consider the Dirac operator introduced by Kaad and Senior'
+        ' and a family of weights depending on two parameters, which are'
+        ' related to the diagonal automorphisms of SU$_{q}$ (2). We show that,'
+        ' after fixing one of the parameters, the non-commutative integral'
+        ' coincides with the Haar state of SU$_{q}$ (2). Moreover we can impose'
+        ' an additional condition on the zeta function, which also fixes the'
+        ' second parameter. For this unique choice the spectral dimension'
+        ' coincides with the classical dimension.</subfield></datafield>'
+    )
 
     expected = [
         {
             'source': 'Springer',
-            'value': 'We study a notion of non-commutative integration, in the spirit of modular spectral triples, for the quantum group SU$_{q}$ (2). In particular we define the non-commutative integral as the residue at the spectral dimension of a zeta function, which is constructed using a Dirac operator and a weight. We consider the Dirac operator introduced by Kaad and Senior and a family of weights depending on two parameters, which are related to the diagonal automorphisms of SU$_{q}$ (2). We show that, after fixing one of the parameters, the non-commutative integral coincides with the Haar state of SU$_{q}$ (2). Moreover we can impose an additional condition on the zeta function, which also fixes the second parameter. For this unique choice the spectral dimension coincides with the classical dimension.',
+            'value': (
+                'We study a notion of non-commutative integration, in the'
+                ' spirit of modular spectral triples, for the quantum group'
+                ' SU$_{q}$ (2). In particular we define the non-commutative'
+                ' integral as the residue at the spectral dimension of a zeta'
+                ' function, which is constructed using a Dirac operator and a'
+                ' weight. We consider the Dirac operator introduced by Kaad and'
+                ' Senior and a family of weights depending on two parameters,'
+                ' which are related to the diagonal automorphisms of SU$_{q}$'
+                ' (2). We show that, after fixing one of the parameters, the'
+                ' non-commutative integral coincides with the Haar state of'
+                ' SU$_{q}$ (2). Moreover we can impose an additional condition'
+                ' on the zeta function, which also fixes the second parameter.'
+                ' For this unique choice the spectral dimension coincides with'
+                ' the classical dimension.'
+            ),
         },
     ]
     result = hep.do(create_record(snippet))
@@ -502,7 +534,22 @@ def test_abstracts_from_520__a_9():
     expected = [
         {
             '9': 'Springer',
-            'a': 'We study a notion of non-commutative integration, in the spirit of modular spectral triples, for the quantum group SU$_{q}$ (2). In particular we define the non-commutative integral as the residue at the spectral dimension of a zeta function, which is constructed using a Dirac operator and a weight. We consider the Dirac operator introduced by Kaad and Senior and a family of weights depending on two parameters, which are related to the diagonal automorphisms of SU$_{q}$ (2). We show that, after fixing one of the parameters, the non-commutative integral coincides with the Haar state of SU$_{q}$ (2). Moreover we can impose an additional condition on the zeta function, which also fixes the second parameter. For this unique choice the spectral dimension coincides with the classical dimension.',
+            'a': (
+                'We study a notion of non-commutative integration, in the'
+                ' spirit of modular spectral triples, for the quantum group'
+                ' SU$_{q}$ (2). In particular we define the non-commutative'
+                ' integral as the residue at the spectral dimension of a zeta'
+                ' function, which is constructed using a Dirac operator and a'
+                ' weight. We consider the Dirac operator introduced by Kaad and'
+                ' Senior and a family of weights depending on two parameters,'
+                ' which are related to the diagonal automorphisms of SU$_{q}$'
+                ' (2). We show that, after fixing one of the parameters, the'
+                ' non-commutative integral coincides with the Haar state of'
+                ' SU$_{q}$ (2). Moreover we can impose an additional condition'
+                ' on the zeta function, which also fixes the second parameter.'
+                ' For this unique choice the spectral dimension coincides with'
+                ' the classical dimension.'
+            ),
         },
     ]
     result = hep2marc.do(result)
@@ -514,16 +561,36 @@ def test_abstracts_from_520__double_a():
     schema = load_schema('hep')
     subschema = schema['properties']['abstracts']
 
-    snippet = (
-        '<datafield tag="520" ind1=" " ind2=" ">'
-        '  <subfield code="a">$D$ $K$ scattering and the $D_s$ spectrum from lattice QCD 520__</subfield>'
-        '  <subfield code="a">We present results from Lattice QCD calculations of the low-lying charmed-strange meson spectrum using two types of Clover-Wilson lattices. In addition to quark-antiquark interpolating fields we also consider meson-meson interpolators corresponding to D-meson kaon scattering states. To calculate the all-to-all propagation necessary for the backtracking loops we use the (stochastic) distillation technique. For the charm quark we use the Fermilab method. Results for the $J^P=0^+$ $D_{s0}^*(2317)$ charmed-strange meson are presented.</subfield>'
-        '</datafield>'
-    )  # record/1297699
+    snippet = (  # record/1297699
+        '<datafield tag="520" ind1=" " ind2=" ">  <subfield code="a">$D$ $K$'
+        ' scattering and the $D_s$ spectrum from lattice QCD 520__</subfield> '
+        ' <subfield code="a">We present results from Lattice QCD calculations'
+        ' of the low-lying charmed-strange meson spectrum using two types of'
+        ' Clover-Wilson lattices. In addition to quark-antiquark interpolating'
+        ' fields we also consider meson-meson interpolators corresponding to'
+        ' D-meson kaon scattering states. To calculate the all-to-all'
+        ' propagation necessary for the backtracking loops we use the'
+        ' (stochastic) distillation technique. For the charm quark we use the'
+        ' Fermilab method. Results for the $J^P=0^+$ $D_{s0}^*(2317)$'
+        ' charmed-strange meson are presented.</subfield></datafield>'
+    )
 
     expected = [
         {'value': '$D$ $K$ scattering and the $D_s$ spectrum from lattice QCD 520__'},
-        {'value': 'We present results from Lattice QCD calculations of the low-lying charmed-strange meson spectrum using two types of Clover-Wilson lattices. In addition to quark-antiquark interpolating fields we also consider meson-meson interpolators corresponding to D-meson kaon scattering states. To calculate the all-to-all propagation necessary for the backtracking loops we use the (stochastic) distillation technique. For the charm quark we use the Fermilab method. Results for the $J^P=0^+$ $D_{s0}^*(2317)$ charmed-strange meson are presented.'},
+        {
+            'value': (
+                'We present results from Lattice QCD calculations of the'
+                ' low-lying charmed-strange meson spectrum using two types of'
+                ' Clover-Wilson lattices. In addition to quark-antiquark'
+                ' interpolating fields we also consider meson-meson'
+                ' interpolators corresponding to D-meson kaon scattering'
+                ' states. To calculate the all-to-all propagation necessary for'
+                ' the backtracking loops we use the (stochastic) distillation'
+                ' technique. For the charm quark we use the Fermilab method.'
+                ' Results for the $J^P=0^+$ $D_{s0}^*(2317)$ charmed-strange'
+                ' meson are presented.'
+            )
+        },
     ]
     result = hep.do(create_record(snippet))
 
@@ -532,7 +599,20 @@ def test_abstracts_from_520__double_a():
 
     expected = [
         {'a': '$D$ $K$ scattering and the $D_s$ spectrum from lattice QCD 520__'},
-        {'a': 'We present results from Lattice QCD calculations of the low-lying charmed-strange meson spectrum using two types of Clover-Wilson lattices. In addition to quark-antiquark interpolating fields we also consider meson-meson interpolators corresponding to D-meson kaon scattering states. To calculate the all-to-all propagation necessary for the backtracking loops we use the (stochastic) distillation technique. For the charm quark we use the Fermilab method. Results for the $J^P=0^+$ $D_{s0}^*(2317)$ charmed-strange meson are presented.'},
+        {
+            'a': (
+                'We present results from Lattice QCD calculations of the'
+                ' low-lying charmed-strange meson spectrum using two types of'
+                ' Clover-Wilson lattices. In addition to quark-antiquark'
+                ' interpolating fields we also consider meson-meson'
+                ' interpolators corresponding to D-meson kaon scattering'
+                ' states. To calculate the all-to-all propagation necessary for'
+                ' the backtracking loops we use the (stochastic) distillation'
+                ' technique. For the charm quark we use the Fermilab method.'
+                ' Results for the $J^P=0^+$ $D_{s0}^*(2317)$ charmed-strange'
+                ' meson are presented.'
+            )
+        },
     ]
     result = hep2marc.do(result)
 
@@ -540,12 +620,16 @@ def test_abstracts_from_520__double_a():
 
 
 def test_abstracts_from_520__h_9():
-    snippet = (
-        '<datafield tag="520" ind1=" " ind2=" ">'
-        '  <subfield code="9">HEPDATA</subfield>'
-        '  <subfield code="h">CERN-SPS. Measurements of the spectra of positively charged kaons in proton-carbon interactions at a beam momentum of 31 GeV/c. The analysis is based on the full set of data collected in 2007 using a 4% nuclear interaction length graphite target. Charged pion spectra taken using the same data set are compared with the kaon spectra.</subfield>'
-        '</datafield>'
-    )  # record/1079585
+    snippet = (  # record/1079585
+        '<datafield tag="520" ind1=" " ind2=" ">  <subfield'
+        ' code="9">HEPDATA</subfield>  <subfield code="h">CERN-SPS.'
+        ' Measurements of the spectra of positively charged kaons in'
+        ' proton-carbon interactions at a beam momentum of 31 GeV/c. The'
+        ' analysis is based on the full set of data collected in 2007 using a'
+        ' 4% nuclear interaction length graphite target. Charged pion spectra'
+        ' taken using the same data set are compared with the kaon'
+        ' spectra.</subfield></datafield>'
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -556,27 +640,112 @@ def test_abstracts_from_double_520__a_9_reorders_fields():
     schema = load_schema('hep')
     subschema = schema['properties']['abstracts']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="520" ind1=" " ind2=" ">'
-        '    <subfield code="a">The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday Rotation, in the propagation of Ultra High Energy Cosmic Rays, in the polarized signal from Fast Radio Bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (&lt;nG) uniform seed fields result more homogeneous and relatively easier to observe magnetic fields than than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday Rotation observed at the periphery of large-scale structures.</subfield>'
-        '    <subfield code="9">arXiv</subfield>'
-        '  </datafield>'
-        '  <datafield tag="520" ind1=" " ind2=" ">'
-        '    <subfield code="a">The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday rotation, in the propagation of ultra high energy cosmic rays, in the polarized signal from fast radio bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous and relatively easier to observe magnetic fields than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday rotation observed at the periphery of large-scale structures.</subfield>'
-        '    <subfield code="9">IOP</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1634941
+    snippet = (  # record/1634941
+        '<record>  <datafield tag="520" ind1=" " ind2=" ">    <subfield'
+        ' code="a">The origin of extragalactic magnetic fields is still poorly'
+        ' understood. Based on a dedicated suite of cosmological'
+        ' magneto-hydrodynamical simulations with the ENZO code we have'
+        ' performed a survey of different models that may have caused'
+        ' present-day magnetic fields in galaxies and galaxy clusters. The'
+        ' outcomes of these models differ in cluster outskirts, filaments,'
+        ' sheets and voids and we use these simulations to find observational'
+        ' signatures of magnetogenesis. With these simulations, we predict the'
+        ' signal of extragalactic magnetic fields in radio observations of'
+        ' synchrotron emission from the cosmic web, in Faraday Rotation, in the'
+        ' propagation of Ultra High Energy Cosmic Rays, in the polarized signal'
+        ' from Fast Radio Bursts at cosmological distance and in spectra of'
+        ' distant blazars. In general, primordial scenarios in which'
+        ' present-day magnetic fields originate from the amplification of weak'
+        ' (&lt;nG) uniform seed fields result more homogeneous and relatively'
+        ' easier to observe magnetic fields than than astrophysical scenarios,'
+        ' in which present-day fields are the product of feedback processes'
+        ' triggered by stars and active galaxies. In the near future the best'
+        ' evidence for the origin of cosmic magnetic fields will most likely'
+        ' come from a combination of synchrotron emission and Faraday Rotation'
+        ' observed at the periphery of large-scale structures.</subfield>   '
+        ' <subfield code="9">arXiv</subfield>  </datafield>  <datafield'
+        ' tag="520" ind1=" " ind2=" ">    <subfield code="a">The origin of'
+        ' extragalactic magnetic fields is still poorly understood. Based on a'
+        ' dedicated suite of cosmological magneto-hydrodynamical simulations'
+        ' with the ENZO code we have performed a survey of different models'
+        ' that may have caused present-day magnetic fields in galaxies and'
+        ' galaxy clusters. The outcomes of these models differ in cluster'
+        ' outskirts, filaments, sheets and voids and we use these simulations'
+        ' to find observational signatures of magnetogenesis. With these'
+        ' simulations, we predict the signal of extragalactic magnetic fields'
+        ' in radio observations of synchrotron emission from the cosmic web, in'
+        ' Faraday rotation, in the propagation of ultra high energy cosmic'
+        ' rays, in the polarized signal from fast radio bursts at cosmological'
+        ' distance and in spectra of distant blazars. In general, primordial'
+        ' scenarios in which present-day magnetic fields originate from the'
+        ' amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in'
+        ' more homogeneous and relatively easier to observe magnetic fields'
+        ' than astrophysical scenarios, in which present-day fields are the'
+        ' product of feedback processes triggered by stars and active galaxies.'
+        ' In the near future the best evidence for the origin of cosmic'
+        ' magnetic fields will most likely come from a combination of'
+        ' synchrotron emission and Faraday rotation observed at the periphery'
+        ' of large-scale structures.</subfield>    <subfield'
+        ' code="9">IOP</subfield>  </datafield></record>'
+    )
 
     expected = [
         {
             'source': 'IOP',
-            'value': u'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday rotation, in the propagation of ultra high energy cosmic rays, in the polarized signal from fast radio bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous and relatively easier to observe magnetic fields than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday rotation observed at the periphery of large-scale structures.',
+            'value': (
+                u'The origin of extragalactic magnetic fields is still poorly'
+                u' understood. Based on a dedicated suite of cosmological'
+                u' magneto-hydrodynamical simulations with the ENZO code we'
+                u' have performed a survey of different models that may have'
+                u' caused present-day magnetic fields in galaxies and galaxy'
+                u' clusters. The outcomes of these models differ in cluster'
+                u' outskirts, filaments, sheets and voids and we use these'
+                u' simulations to find observational signatures of'
+                u' magnetogenesis. With these simulations, we predict the'
+                u' signal of extragalactic magnetic fields in radio'
+                u' observations of synchrotron emission from the cosmic web, in'
+                u' Faraday rotation, in the propagation of ultra high energy'
+                u' cosmic rays, in the polarized signal from fast radio bursts'
+                u' at cosmological distance and in spectra of distant blazars.'
+                u' In general, primordial scenarios in which present-day'
+                u' magnetic fields originate from the amplification of weak'
+                u' (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous'
+                u' and relatively easier to observe magnetic fields than'
+                u' astrophysical scenarios, in which present-day fields are the'
+                u' product of feedback processes triggered by stars and active'
+                u' galaxies. In the near future the best evidence for the'
+                u' origin of cosmic magnetic fields will most likely come from'
+                u' a combination of synchrotron emission and Faraday rotation'
+                u' observed at the periphery of large-scale structures.'
+            ),
         },
         {
             'source': 'arXiv',
-            'value': 'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday Rotation, in the propagation of Ultra High Energy Cosmic Rays, in the polarized signal from Fast Radio Bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (<nG) uniform seed fields result more homogeneous and relatively easier to observe magnetic fields than than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday Rotation observed at the periphery of large-scale structures.',
+            'value': (
+                'The origin of extragalactic magnetic fields is still poorly'
+                ' understood. Based on a dedicated suite of cosmological'
+                ' magneto-hydrodynamical simulations with the ENZO code we have'
+                ' performed a survey of different models that may have caused'
+                ' present-day magnetic fields in galaxies and galaxy clusters.'
+                ' The outcomes of these models differ in cluster outskirts,'
+                ' filaments, sheets and voids and we use these simulations to'
+                ' find observational signatures of magnetogenesis. With these'
+                ' simulations, we predict the signal of extragalactic magnetic'
+                ' fields in radio observations of synchrotron emission from the'
+                ' cosmic web, in Faraday Rotation, in the propagation of Ultra'
+                ' High Energy Cosmic Rays, in the polarized signal from Fast'
+                ' Radio Bursts at cosmological distance and in spectra of'
+                ' distant blazars. In general, primordial scenarios in which'
+                ' present-day magnetic fields originate from the amplification'
+                ' of weak (<nG) uniform seed fields result more homogeneous and'
+                ' relatively easier to observe magnetic fields than than'
+                ' astrophysical scenarios, in which present-day fields are the'
+                ' product of feedback processes triggered by stars and active'
+                ' galaxies. In the near future the best evidence for the origin'
+                ' of cosmic magnetic fields will most likely come from a'
+                ' combination of synchrotron emission and Faraday Rotation'
+                ' observed at the periphery of large-scale structures.'
+            ),
         },
     ]
     result = hep.do(create_record(snippet))
@@ -587,11 +756,60 @@ def test_abstracts_from_double_520__a_9_reorders_fields():
     expected = [
         {
             '9': 'IOP',
-            'a': u'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday rotation, in the propagation of ultra high energy cosmic rays, in the polarized signal from fast radio bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous and relatively easier to observe magnetic fields than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday rotation observed at the periphery of large-scale structures.',
+            'a': (
+                u'The origin of extragalactic magnetic fields is still poorly'
+                u' understood. Based on a dedicated suite of cosmological'
+                u' magneto-hydrodynamical simulations with the ENZO code we'
+                u' have performed a survey of different models that may have'
+                u' caused present-day magnetic fields in galaxies and galaxy'
+                u' clusters. The outcomes of these models differ in cluster'
+                u' outskirts, filaments, sheets and voids and we use these'
+                u' simulations to find observational signatures of'
+                u' magnetogenesis. With these simulations, we predict the'
+                u' signal of extragalactic magnetic fields in radio'
+                u' observations of synchrotron emission from the cosmic web, in'
+                u' Faraday rotation, in the propagation of ultra high energy'
+                u' cosmic rays, in the polarized signal from fast radio bursts'
+                u' at cosmological distance and in spectra of distant blazars.'
+                u' In general, primordial scenarios in which present-day'
+                u' magnetic fields originate from the amplification of weak'
+                u' (⩽$\\rm nG$ ) uniform seed fields result in more homogeneous'
+                u' and relatively easier to observe magnetic fields than'
+                u' astrophysical scenarios, in which present-day fields are the'
+                u' product of feedback processes triggered by stars and active'
+                u' galaxies. In the near future the best evidence for the'
+                u' origin of cosmic magnetic fields will most likely come from'
+                u' a combination of synchrotron emission and Faraday rotation'
+                u' observed at the periphery of large-scale structures.'
+            ),
         },
         {
             '9': 'arXiv',
-            'a': 'The origin of extragalactic magnetic fields is still poorly understood. Based on a dedicated suite of cosmological magneto-hydrodynamical simulations with the ENZO code we have performed a survey of different models that may have caused present-day magnetic fields in galaxies and galaxy clusters. The outcomes of these models differ in cluster outskirts, filaments, sheets and voids and we use these simulations to find observational signatures of magnetogenesis. With these simulations, we predict the signal of extragalactic magnetic fields in radio observations of synchrotron emission from the cosmic web, in Faraday Rotation, in the propagation of Ultra High Energy Cosmic Rays, in the polarized signal from Fast Radio Bursts at cosmological distance and in spectra of distant blazars. In general, primordial scenarios in which present-day magnetic fields originate from the amplification of weak (<nG) uniform seed fields result more homogeneous and relatively easier to observe magnetic fields than than astrophysical scenarios, in which present-day fields are the product of feedback processes triggered by stars and active galaxies. In the near future the best evidence for the origin of cosmic magnetic fields will most likely come from a combination of synchrotron emission and Faraday Rotation observed at the periphery of large-scale structures.',
+            'a': (
+                'The origin of extragalactic magnetic fields is still poorly'
+                ' understood. Based on a dedicated suite of cosmological'
+                ' magneto-hydrodynamical simulations with the ENZO code we have'
+                ' performed a survey of different models that may have caused'
+                ' present-day magnetic fields in galaxies and galaxy clusters.'
+                ' The outcomes of these models differ in cluster outskirts,'
+                ' filaments, sheets and voids and we use these simulations to'
+                ' find observational signatures of magnetogenesis. With these'
+                ' simulations, we predict the signal of extragalactic magnetic'
+                ' fields in radio observations of synchrotron emission from the'
+                ' cosmic web, in Faraday Rotation, in the propagation of Ultra'
+                ' High Energy Cosmic Rays, in the polarized signal from Fast'
+                ' Radio Bursts at cosmological distance and in spectra of'
+                ' distant blazars. In general, primordial scenarios in which'
+                ' present-day magnetic fields originate from the amplification'
+                ' of weak (<nG) uniform seed fields result more homogeneous and'
+                ' relatively easier to observe magnetic fields than than'
+                ' astrophysical scenarios, in which present-day fields are the'
+                ' product of feedback processes triggered by stars and active'
+                ' galaxies. In the near future the best evidence for the origin'
+                ' of cosmic magnetic fields will most likely come from a'
+                ' combination of synchrotron emission and Faraday Rotation'
+                ' observed at the periphery of large-scale structures.'
+            ),
         },
     ]
     result = hep2marc.do(result)
@@ -603,14 +821,13 @@ def test_funding_info_from_536__a_c_f_0():
     schema = load_schema('hep')
     subschema = schema['properties']['funding_info']
 
-    snippet = (
-        '<datafield tag="536" ind1=" " ind2=" ">'
-        '  <subfield code="0">G:(EU-Grant)317089</subfield>'
-        '  <subfield code="a">GATIS - Gauge Theory as an Integrable System (317089)</subfield>'
-        '  <subfield code="c">317089</subfield>'
-        '  <subfield code="f">FP7-PEOPLE-2012-ITN</subfield>'
-        '</datafield>'
-    )  # record/1508869
+    snippet = (  # record/1508869
+        '<datafield tag="536" ind1=" " ind2=" ">  <subfield'
+        ' code="0">G:(EU-Grant)317089</subfield>  <subfield code="a">GATIS -'
+        ' Gauge Theory as an Integrable System (317089)</subfield>  <subfield'
+        ' code="c">317089</subfield>  <subfield'
+        ' code="f">FP7-PEOPLE-2012-ITN</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -640,12 +857,12 @@ def test_license_from_540__a_3():
     schema = load_schema('hep')
     subschema = schema['properties']['license']
 
-    snippet = (
+    snippet = (  # record/120203
         '<datafield tag="540" ind1=" " ind2=" ">'
         '  <subfield code="3">Article</subfield>'
         '  <subfield code="a">OA</subfield>'
         '</datafield>'
-    )  # record/120203
+    )
 
     expected = [
         {
@@ -673,13 +890,14 @@ def test_license_from_540__a_u_3():
     schema = load_schema('hep')
     subschema = schema['properties']['license']
 
-    snippet = (
+    snippet = (  # record/1184984
         '<datafield tag="540" ind1=" " ind2=" ">'
         '  <subfield code="3">Publication</subfield>'
         '  <subfield code="a">CC-BY-3.0</subfield>'
-        '  <subfield code="u">http://creativecommons.org/licenses/by/3.0/</subfield>'
+        '  <subfield'
+        ' code="u">http://creativecommons.org/licenses/by/3.0/</subfield>'
         '</datafield>'
-    )  # record/1184984
+    )
 
     expected = [
         {
@@ -709,13 +927,14 @@ def test_license_from_540__a_u_3_handles_preprint():
     schema = load_schema('hep')
     subschema = schema['properties']['license']
 
-    snippet = (
+    snippet = (  # record/1682011
         '<datafield tag="540" ind1=" " ind2=" ">'
         '  <subfield code="3">preprint</subfield>'
         '  <subfield code="a">arXiv nonexclusive-distrib 1.0</subfield>'
-        '  <subfield code="u">http://arxiv.org/licenses/nonexclusive-distrib/1.0/</subfield>'
+        '  <subfield'
+        ' code="u">http://arxiv.org/licenses/nonexclusive-distrib/1.0/</subfield>'
         '</datafield>'
-    )  # record/1682011
+    )
 
     expected = [
         {
@@ -745,13 +964,14 @@ def test_license_from_540__double_a_u():
     schema = load_schema('hep')
     subschema = schema['properties']['license']
 
-    snippet = (
+    snippet = (  # record/1414671
         '<datafield tag="540" ind1=" " ind2=" ">'
         '  <subfield code="a">Open Access</subfield>'
         '  <subfield code="a">CC-BY-3.0</subfield>'
-        '  <subfield code="u">http://creativecommons.org/licenses/by/3.0/</subfield>'
+        '  <subfield'
+        ' code="u">http://creativecommons.org/licenses/by/3.0/</subfield>'
         '</datafield>'
-    )  # record/1414671
+    )
 
     expected = [
         {
@@ -779,13 +999,13 @@ def test_copyright_from_542__d_e_g():
     schema = load_schema('hep')
     subschema = schema['properties']['copyright']
 
-    snippet = (
+    snippet = (  # record/1511489
         '<datafield tag="542" ind1=" " ind2=" ">'
         '  <subfield code="d">American Physical Society</subfield>'
         '  <subfield code="g">2017</subfield>'
         '  <subfield code="e">Article</subfield>'
         '</datafield>'
-    )  # record/1511489
+    )
 
     expected = [
         {
@@ -815,13 +1035,13 @@ def test_copyright_from_542__d_g_3():
     schema = load_schema('hep')
     subschema = schema['properties']['copyright']
 
-    snippet = (
+    snippet = (  # record/1255327
         '<datafield tag="542" ind1=" " ind2=" ">'
         '  <subfield code="3">Article</subfield>'
         '  <subfield code="d">American Physical Society</subfield>'
         '  <subfield code="g">2014</subfield>'
         '</datafield>'
-    )  # record/1255327
+    )
 
     expected = [
         {
@@ -851,13 +1071,13 @@ def test_copyright_from_542__d_g_3_with_weird_material():
     schema = load_schema('hep')
     subschema = schema['properties']['copyright']
 
-    snippet = (
+    snippet = (  # record/773620
         '<datafield tag="542" ind1=" " ind2=" ">'
         '  <subfield code="3">Published thesis as a book</subfield>'
         '  <subfield code="d">Shaker Verlag</subfield>'
         '  <subfield code="g">2007</subfield>'
         '</datafield>'
-    )  # record/773620
+    )
 
     expected = [
         {
@@ -887,12 +1107,12 @@ def test_private_notes_from_595__a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
+    snippet = (  # record/109310
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="9">SPIRES-HIDDEN</subfield>'
         '  <subfield code="a">Title changed from ALLCAPS</subfield>'
         '</datafield>'
-    )  # record/109310
+    )
 
     expected = [
         {
@@ -920,13 +1140,12 @@ def test_private_notes_from_595__double_a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<datafield tag="595" ind1=" " ind2=" ">'
-        '  <subfield code="9">SPIRES-HIDDEN</subfield>'
-        '  <subfield code="a">TeXtitle from script</subfield>'
-        '  <subfield code="a">no affiliation (not clear pn the fulltext)</subfield>'
-        '</datafield>'
-    )  # record/109310
+    snippet = (  # record/109310
+        '<datafield tag="595" ind1=" " ind2=" ">  <subfield'
+        ' code="9">SPIRES-HIDDEN</subfield>  <subfield code="a">TeXtitle from'
+        ' script</subfield>  <subfield code="a">no affiliation (not clear pn'
+        ' the fulltext)</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -962,19 +1181,15 @@ def test_private_notes_from_595__a_9_and_595__double_a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="595" ind1=" " ind2=" ">'
-        '    <subfield code="9">SPIRES-HIDDEN</subfield>'
-        '    <subfield code="a">Title changed from ALLCAPS</subfield>'
-        '  </datafield>'
-        '  <datafield tag="595" ind1=" " ind2=" ">'
-        '    <subfield code="9">SPIRES-HIDDEN</subfield>'
-        '    <subfield code="a">TeXtitle from script</subfield>'
-        '    <subfield code="a">no affiliation (not clear pn the fulltext)</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/109310
+    snippet = (  # record/109310
+        '<record>  <datafield tag="595" ind1=" " ind2=" ">    <subfield'
+        ' code="9">SPIRES-HIDDEN</subfield>    <subfield code="a">Title changed'
+        ' from ALLCAPS</subfield>  </datafield>  <datafield tag="595" ind1=" "'
+        ' ind2=" ">    <subfield code="9">SPIRES-HIDDEN</subfield>    <subfield'
+        ' code="a">TeXtitle from script</subfield>    <subfield code="a">no'
+        ' affiliation (not clear pn the fulltext)</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
         {
@@ -1018,11 +1233,11 @@ def test_private_notes_from_595_Ha():
     schema = load_schema('hep')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<datafield tag="595" ind1=" " ind2="H">'
-        '  <subfield code="a">affiliations à corriger, voir avec Mathieu - Dominique</subfield>'
-        '</datafield>'
-    )  # record/1514389
+    snippet = (  # record/1514389
+        '<datafield tag="595" ind1=" " ind2="H">  <subfield'
+        ' code="a">affiliations à corriger, voir avec Mathieu -'
+        ' Dominique</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -1047,7 +1262,7 @@ def test_desy_bookkeeping_from_multiple_595_Da_d_s():
     schema = load_schema('hep')
     subschema = schema['properties']['_desy_bookkeeping']
 
-    snippet = (
+    snippet = (  # record/1513161
         '<record>'
         '  <datafield tag="595" ind1=" " ind2="D">'
         '    <subfield code="a">8</subfield>'
@@ -1060,19 +1275,11 @@ def test_desy_bookkeeping_from_multiple_595_Da_d_s():
         '    <subfield code="s">printed</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1513161
+    )
 
     expected = [
-        {
-            'expert': '8',
-            'date': '2017-02-17',
-            'status': 'abs'
-        },
-        {
-            'expert': '8',
-            'date': '2017-02-19',
-            'status': 'printed'
-        }
+        {'expert': '8', 'date': '2017-02-17', 'status': 'abs'},
+        {'expert': '8', 'date': '2017-02-19', 'status': 'printed'},
     ]
     result = hep.do(create_record(snippet))
 
@@ -1080,16 +1287,8 @@ def test_desy_bookkeeping_from_multiple_595_Da_d_s():
     assert expected == result['_desy_bookkeeping']
 
     expected = [
-        {
-            'a': '8',
-            'd': '2017-02-17',
-            's': 'abs'
-        },
-        {
-            'a': '8',
-            'd': '2017-02-19',
-            's': 'printed'
-        }
+        {'a': '8', 'd': '2017-02-17', 's': 'abs'},
+        {'a': '8', 'd': '2017-02-19', 's': 'printed'},
     ]
     result = hep2marc.do(result)
 
@@ -1100,14 +1299,14 @@ def test_desy_bookkeeping_from_595_D_double_a_d_s():
     schema = load_schema('hep')
     subschema = schema['properties']['_desy_bookkeeping']
 
-    snippet = (
+    snippet = (  # record/558693
         '<datafield tag="595" ind1=" " ind2="D">'
         '  <subfield code="d">2016-07-23</subfield>'
         '  <subfield code="a">E</subfield>'
         '  <subfield code="s">final</subfield>'
         '  <subfield code="a">E</subfield>'
         '</datafield>'
-    )  # record/558693
+    )
 
     expected = [
         {
@@ -1137,11 +1336,11 @@ def test_export_to_from_595__c_cds():
     schema = load_schema('hep')
     subschema = schema['properties']['_export_to']
 
-    snippet = (
+    snippet = (  # record/1513006
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="c">CDS</subfield>'
         '</datafield>'
-    )  # record/1513006
+    )
 
     expected = {'CDS': True}
     result = hep.do(create_record(snippet))
@@ -1149,9 +1348,7 @@ def test_export_to_from_595__c_cds():
     assert validate(result['_export_to'], subschema) is None
     assert expected == result['_export_to']
 
-    expected = [
-        {'c': 'CDS'}
-    ]
+    expected = [{'c': 'CDS'}]
     result = hep2marc.do(result)
 
     assert expected == result['595']
@@ -1161,11 +1358,11 @@ def test_export_to_from_595__c_hal():
     schema = load_schema('hep')
     subschema = schema['properties']['_export_to']
 
-    snippet = (
+    snippet = (  # record/1623281
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="c">HAL</subfield>'
         '</datafield>'
-    )  # record/1623281
+    )
 
     expected = {'HAL': True}
     result = hep.do(create_record(snippet))
@@ -1185,11 +1382,11 @@ def test_export_to_from_595__c_not_hal():
     schema = load_schema('hep')
     subschema = schema['properties']['_export_to']
 
-    snippet = (
+    snippet = (  # record/1512891
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="c">not HAL</subfield>'
         '</datafield>'
-    )  # record/1512891
+    )
 
     expected = {'HAL': False}
     result = hep.do(create_record(snippet))
@@ -1197,9 +1394,7 @@ def test_export_to_from_595__c_not_hal():
     assert validate(result['_export_to'], subschema) is None
     assert expected == result['_export_to']
 
-    expected = [
-        {'c': 'not HAL'}
-    ]
+    expected = [{'c': 'not HAL'}]
     result = hep2marc.do(result)
 
     assert expected == result['595']
@@ -1209,12 +1404,12 @@ def test_export_to_from_595__double_c():
     schema = load_schema('hep')
     subschema = schema['properties']['_export_to']
 
-    snippet = (
+    snippet = (  # record/1512843
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="c">CDS</subfield>'
         '  <subfield code="c">not HAL</subfield>'
         '</datafield>'
-    )  # record/1512843
+    )
 
     expected = {
         'CDS': True,

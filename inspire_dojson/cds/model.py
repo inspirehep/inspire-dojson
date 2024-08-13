@@ -25,28 +25,35 @@
 from __future__ import absolute_import, division, print_function
 
 from itertools import chain
-from inspire_utils.record import get_value
-from inspire_utils.helpers import force_list
 
-from ..model import FilterOverdo, clean_record
+from inspire_utils.helpers import force_list
+from inspire_utils.record import get_value
+
+from inspire_dojson.model import FilterOverdo, clean_record
 
 
 def add_control_number(record, blob):
     if '001' not in blob:
         return record
 
-    collections = (value.lower() for value in chain(force_list(get_value(blob, '980__.a', default=[])),
-                                                    force_list(get_value(blob, '980__.c', default=[]))))
+    collections = (
+        value.lower()
+        for value in chain(
+            force_list(get_value(blob, '980__.a', default=[])),
+            force_list(get_value(blob, '980__.c', default=[])),
+        )
+    )
     if 'hidden' in collections:
-        record.setdefault('595__', []).append({
-            '9': 'CDS',
-            'a': u'CDS-{}'.format(blob['001'])
-        })
+        record.setdefault('595__', []).append(
+            {'9': 'CDS', 'a': u'CDS-{}'.format(blob['001'])}
+        )
     else:
-        record.setdefault('035__', []).append({
-            '9': 'CDS',
-            'a': blob['001'],
-        })
+        record.setdefault('035__', []).append(
+            {
+                '9': 'CDS',
+                'a': blob['001'],
+            }
+        )
 
     return record
 

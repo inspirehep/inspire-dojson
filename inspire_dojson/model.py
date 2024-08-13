@@ -32,15 +32,13 @@ from functools import wraps
 
 from dojson import Overdo
 from dojson.errors import IgnoreKey
-
 from six import raise_from
 
-from .errors import DoJsonError
-from .utils import dedupe_all_lists, strip_empty_values
+from inspire_dojson.errors import DoJsonError
+from inspire_dojson.utils import dedupe_all_lists, strip_empty_values
 
 
 class FilterOverdo(Overdo):
-
     def __init__(self, filters=None, *args, **kwargs):
         super(FilterOverdo, self).__init__(*args, **kwargs)
         self.filters = filters or []
@@ -55,7 +53,9 @@ class FilterOverdo(Overdo):
 
     def over(self, name, *source_tags):
         def decorator(creator):
-            return super(FilterOverdo, self).over(name, *source_tags)(self._wrap_exception(creator, name))
+            return super(FilterOverdo, self).over(name, *source_tags)(
+                self._wrap_exception(creator, name)
+            )
 
         return decorator
 
@@ -68,9 +68,16 @@ class FilterOverdo(Overdo):
             except Exception as exc:
                 if type(exc) is IgnoreKey:
                     raise exc
-                raise_from(DoJsonError(
-                    u'Error in rule "{name}" for field "{key}"'.format(name=name, key=key), exc.args, value
-                ), exc)
+                raise_from(
+                    DoJsonError(
+                        u'Error in rule "{name}" for field "{key}"'.format(
+                            name=name, key=key
+                        ),
+                        exc.args,
+                        value,
+                    ),
+                    exc,
+                )
 
         return func
 
@@ -98,4 +105,5 @@ def clean_marc(record, blob):
 def clean_record(exclude_keys=()):
     def _clean_record(record, blob):
         return dedupe_all_lists(strip_empty_values(record), exclude_keys=exclude_keys)
+
     return _clean_record

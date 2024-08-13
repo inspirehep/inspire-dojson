@@ -23,20 +23,20 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_book_series_from_490__a():
     schema = load_schema('hep')
     subschema = schema['properties']['book_series']
 
-    snippet = (
+    snippet = (  # record/1508903
         '<datafield tag="490" ind1=" " ind2=" ">'
         '  <subfield code="a">Graduate Texts in Physics</subfield>'
         '</datafield>'
-    )  # record/1508903
+    )
 
     expected = [
         {'title': 'Graduate Texts in Physics'},

@@ -22,9 +22,8 @@
 from __future__ import absolute_import, division, print_function
 
 import pytest
-from langdetect import DetectorFactory
 from flask import Flask
-
+from langdetect import DetectorFactory
 
 CONFIG = {
     'SERVER_NAME': 'localhost:5000',
@@ -40,8 +39,8 @@ def app():
         yield app
 
 
-@pytest.fixture(scope='function')
-def stable_langdetect(app):
+@pytest.fixture()
+def _stable_langdetect(app):
     """Ensure that ``langdetect`` always returns the same thing.
 
     See: https://github.com/Mimino666/langdetect#basic-usage.

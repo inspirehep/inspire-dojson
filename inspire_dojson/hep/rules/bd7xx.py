@@ -25,7 +25,6 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson import utils
-
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import (
     convert_new_publication_info_to_old,
@@ -34,8 +33,8 @@ from inspire_schemas.utils import (
 )
 from inspire_utils.helpers import force_list, maybe_int
 
-from ..model import hep, hep2marc
-from ...utils import (
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import (
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
@@ -53,10 +52,12 @@ def collaborations(self, key, value):
     for g_value in force_list(value.get('g')):
         collaborations = normalize_collaboration(g_value)
         if len(collaborations) == 1:
-            result.append({
-                'record': get_record_ref(maybe_int(value.get('0')), 'experiments'),
-                'value': collaborations[0],
-            })
+            result.append(
+                {
+                    'record': get_record_ref(maybe_int(value.get('0')), 'experiments'),
+                    'value': collaborations[0],
+                }
+            )
         else:
             result.extend({'value': collaboration} for collaboration in collaborations)
 
@@ -74,6 +75,7 @@ def collaborations2marc(self, key, value):
 @utils.for_each_value
 def publication_info(self, key, value):
     """Populate the ``publication_info`` key."""
+
     def _get_cnum(value):
         w_value = force_single_element(value.get('w', ''))
         normalized_w_value = w_value.replace('/', '-').upper()
@@ -226,14 +228,20 @@ def related_records2marc(self, key, value):
             'w': get_recid_from_ref(value.get('record')),
         }
     elif value.get('relation') == 'successor':
-        self.setdefault('78502', []).append({
-            'i': 'superseded by',
-            'w': get_recid_from_ref(value.get('record')),
-        })
+        self.setdefault('78502', []).append(
+            {
+                'i': 'superseded by',
+                'w': get_recid_from_ref(value.get('record')),
+            }
+        )
     elif value.get('relation') == 'predecessor':
-        self.setdefault('78002', []).append({
-            'i': 'supersedes',
-            'w': get_recid_from_ref(value.get('record')),
-        })
+        self.setdefault('78002', []).append(
+            {
+                'i': 'supersedes',
+                'w': get_recid_from_ref(value.get('record')),
+            }
+        )
     else:
-        raise NotImplementedError(u"Unhandled relation in related_records: {}".format(value.get('relation')))
+        raise NotImplementedError(
+            u"Unhandled relation in related_records: {}".format(value.get('relation'))
+        )

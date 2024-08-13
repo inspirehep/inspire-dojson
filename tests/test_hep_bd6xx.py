@@ -23,21 +23,21 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_keywords_from_084__a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1590395
         '<datafield tag="084" ind1=" " ind2=" ">'
         '  <subfield code="a">02.20.Sv</subfield>'
         '  <subfield code="2">PACS</subfield>'
         '</datafield>'
-    )  # record/1590395
+    )
 
     expected = [
         {
@@ -65,13 +65,13 @@ def test_keywords_from_084__a_2():
 
 
 def test_keywords_from_084__double_2_does_not_raise():
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="084" ind1=" " ind2=" ">'
         '  <subfield code="a">02.20.Sv</subfield>'
         '  <subfield code="2">PACS</subfield>'
         '  <subfield code="2">PACS</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     hep.do(create_record(snippet))
 
@@ -80,13 +80,13 @@ def test_keywords_from_084__a_2_9():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1421100
         '<datafield tag="084" ind1=" " ind2=" ">'
         '  <subfield code="2">PDG</subfield>'
         '  <subfield code="9">PDG</subfield>'
         '  <subfield code="a">G033M</subfield>'
         '</datafield>'
-    )  # record/1421100
+    )
 
     expected = [
         {
@@ -119,13 +119,13 @@ def test_keywords_from_084__double_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1376406
         '<datafield tag="084" ind1=" " ind2=" ">'
         '  <subfield code="2">PACS</subfield>'
         '  <subfield code="a">04.80.N</subfield>'
         '  <subfield code="a">07.10.Y</subfield>'
         '</datafield>'
-    )  # record/1376406
+    )
 
     expected = [
         {
@@ -164,12 +164,12 @@ def test_keywords_from_6531_a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1473380
         '<datafield tag="653" ind1="1" ind2=" ">'
         '  <subfield code="2">JACoW</subfield>'
         '  <subfield code="a">experiment</subfield>'
         '</datafield>'
-    )  # record/1473380
+    )
 
     expected = [
         {
@@ -200,12 +200,12 @@ def test_keywords_from_6531_a_9():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1260876
         '<datafield tag="653" ind1="1" ind2=" ">'
         '  <subfield code="9">author</subfield>'
         '  <subfield code="a">Data</subfield>'
         '</datafield>'
-    )  # record/1260876
+    )
 
     expected = [
         {
@@ -233,13 +233,13 @@ def test_keywords_from_6531_a_9():
 
 
 def test_keywords_from_6531_a_double_9_ignores_values_from_conference():
-    snippet = (
+    snippet = (  # record/1498175
         '<datafield tag="653" ind1="1" ind2=" ">'
         '  <subfield code="9">submitter</subfield>'
         '  <subfield code="9">conference</subfield>'
         '  <subfield code="a">Track reconstruction</subfield>'
         '</datafield>'
-    )  # record/1498175
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -248,11 +248,11 @@ def test_keywords_from_6531_a_double_9_ignores_values_from_conference():
 
 
 def test_keywords_from_6531_9_ignores_lone_sources():
-    snippet = (
+    snippet = (  # record/1382933
         '<datafield tag="653" ind1="1" ind2=" ">'
         '  <subfield code="9">author</subfield>'
         '</datafield>'
-    )  # record/1382933
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -279,11 +279,11 @@ def test_accelerator_experiments_from_693__a():
     schema = load_schema('hep')
     subschema = schema['properties']['accelerator_experiments']
 
-    snippet = (
+    snippet = (  # record/1623303
         '<datafield tag="693" ind1=" " ind2=" ">'
         '  <subfield code="a">BATSE</subfield>'
         '</datafield>'
-    )  # record/1623303
+    )
 
     expected = [
         {'accelerator': 'BATSE'},
@@ -305,13 +305,13 @@ def test_accelerator_experiments_from_693__a_e():
     schema = load_schema('hep')
     subschema = schema['properties']['accelerator_experiments']
 
-    snippet = (
+    snippet = (  # record/1517829
         '<datafield tag="693" ind1=" " ind2=" ">'
         '  <subfield code="a">CERN LHC</subfield>'
         '  <subfield code="e">CERN-LHC-CMS</subfield>'
         '  <subfield code="0">1108642</subfield>'
         '</datafield>'
-    )  # record/1517829
+    )
 
     expected = [
         {
@@ -338,7 +338,7 @@ def test_accelerator_experiments_from_693__e_0_and_693__e_discards_single_dashes
     schema = load_schema('hep')
     subschema = schema['properties']['accelerator_experiments']
 
-    snippet = (
+    snippet = (  # record/1503527
         '<record>'
         '  <datafield tag="693" ind1=" " ind2=" ">'
         '    <subfield code="e">CERN-LHC-ATLAS</subfield>'
@@ -348,7 +348,7 @@ def test_accelerator_experiments_from_693__e_0_and_693__e_discards_single_dashes
         '    <subfield code="e">-</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1503527
+    )
 
     expected = [
         {
@@ -375,12 +375,12 @@ def test_keywords_from_695__a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/200123
         '<datafield tag="695" ind1=" " ind2=" ">'
         '  <subfield code="a">REVIEW</subfield>'
         '  <subfield code="2">INSPIRE</subfield>'
         '</datafield>'
-    )  # record/200123
+    )
 
     expected = [
         {
@@ -411,12 +411,12 @@ def test_keywords_from_695__a_2_inis():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1493738
         '<datafield tag="695" ind1=" " ind2=" ">'
         '  <subfield code="a">Accelerators</subfield>'
         '  <subfield code="2">INIS</subfield>'
         '</datafield>'
-    )  # record/1493738
+    )
 
     expected = [
         {
@@ -447,12 +447,12 @@ def test_energy_ranges_from_695__e_2():
     schema = load_schema('hep')
     subschema = schema['properties']['energy_ranges']
 
-    snippet = (
+    snippet = (  # record/1124337
         '<datafield tag="695" ind1=" " ind2=" ">'
         '  <subfield code="2">INSPIRE</subfield>'
         '  <subfield code="e">7</subfield>'
         '</datafield>'
-    )  # record/1124337
+    )
 
     expected = [
         '1-10 TeV',
@@ -480,7 +480,7 @@ def test_keywords_from_multiple_695__a_2():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/363605
         '<record>'
         '  <datafield tag="695" ind1=" " ind2=" ">'
         '    <subfield code="a">programming: Monte Carlo</subfield>'
@@ -491,7 +491,7 @@ def test_keywords_from_multiple_695__a_2():
         '    <subfield code="2">INSPIRE</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/363605
+    )
 
     expected = [
         {
@@ -531,7 +531,7 @@ def test_keywords_from_695__a_2_9_automatic_keywords():
     schema = load_schema('hep')
     subschema = schema['properties']['keywords']
 
-    snippet = (
+    snippet = (  # record/1859815
         '<record>'
         '  <datafield tag="695" ind1=" " ind2=" ">'
         '    <subfield code="2">INSPIRE</subfield>'
@@ -548,7 +548,7 @@ def test_keywords_from_695__a_2_9_automatic_keywords():
         '    <subfield code="9">bibclassify</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1859815
+    )
 
     expected = [
         {

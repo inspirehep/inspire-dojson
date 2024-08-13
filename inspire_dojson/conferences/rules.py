@@ -25,12 +25,11 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson import utils
+from inspire_utils.helpers import force_list, maybe_float, maybe_int
 
-from inspire_utils.helpers import force_list, maybe_int, maybe_float
-
-from .model import conferences
-from ..utils import force_single_element
-from ..utils.geo import parse_conference_address
+from inspire_dojson.conferences.model import conferences
+from inspire_dojson.utils import force_single_element
+from inspire_dojson.utils.geo import parse_conference_address
 
 
 def _trim_date(date):
@@ -108,10 +107,12 @@ def contact_details(self, key, value):
     #      we might match an email with the wrong name.
     if len(m_values) == len(p_values):
         for m_value, p_value in zip(m_values, p_values):
-            result.append({
-                'email': m_value,
-                'name': p_value,
-            })
+            result.append(
+                {
+                    'email': m_value,
+                    'name': p_value,
+                }
+            )
     else:
         for m_value in m_values:
             result.append({'email': m_value})
@@ -140,10 +141,12 @@ def series(self, key, value):
     elif number and name is None and _last_is_incomplete(series, 'number'):
         series[-1]['number'] = number
     else:
-        series.append({
-            'name': name,
-            'number': number,
-        })
+        series.append(
+            {
+                'name': name,
+                'number': number,
+            }
+        )
 
     return series
 
@@ -209,8 +212,10 @@ def keywords(self, key, values):
             a_values = force_list(value.get('a'))
 
             for a_value in a_values:
-                keywords.append({
-                    'source': force_single_element(sources),
-                    'value': a_value,
-                })
+                keywords.append(
+                    {
+                        'source': force_single_element(sources),
+                        'value': a_value,
+                    }
+                )
     return keywords

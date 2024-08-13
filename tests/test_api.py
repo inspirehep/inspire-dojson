@@ -24,7 +24,11 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
-from inspire_dojson.api import marcxml2record, record2marcxml, cds_marcxml2record
+from inspire_dojson.api import (
+    cds_marcxml2record,
+    marcxml2record,
+    record2marcxml,
+)
 from inspire_dojson.errors import NotSupportedError
 
 
@@ -142,7 +146,7 @@ def test_marcxml2record_handles_journalsnew():
 
 
 def test_marcxml2record_handles_multiple_as_in_the_same_980():
-    snippet = (
+    snippet = (  # record/1247377
         '<record>'
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">Published</subfield>'
@@ -155,7 +159,7 @@ def test_marcxml2record_handles_multiple_as_in_the_same_980():
         '    <subfield code="a">NONCORE</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1247377
+    )
 
     expected = 'hep.json'
     result = marcxml2record(snippet)
@@ -177,12 +181,12 @@ def test_marcxml2record_falls_back_to_hep():
 
 
 def test_cds_marcxml2record_handles_cds():
-    snippet = (
+    snippet = (  # cds.cern.ch/record/2270264
         '<record>'
         '  <controlfield tag="001">2270264</controlfield>'
         '  <controlfield tag="003">SzGeCERN</controlfield>'
         '</record>'
-    )  # cds.cern.ch/record/2270264
+    )
 
     expected = [
         {
@@ -201,11 +205,7 @@ def test_record2marcxml_generates_controlfields():
         'control_number': 4328,
     }
 
-    expected = (
-        b'<record>\n'
-        b'  <controlfield tag="001">4328</controlfield>\n'
-        b'</record>\n'
-    )
+    expected = b'<record>\n  <controlfield tag="001">4328</controlfield>\n</record>\n'
     result = record2marcxml(record)
 
     assert expected == result
@@ -259,9 +259,7 @@ def test_record2marcxml_supports_authors():
     }
 
     expected = (
-        b'<record>\n'
-        b'  <controlfield tag="001">1010819</controlfield>\n'
-        b'</record>\n'
+        b'<record>\n  <controlfield tag="001">1010819</controlfield>\n</record>\n'
     )
     result = record2marcxml(record)
 
@@ -274,11 +272,7 @@ def test_record2marcxml_supports_relative_urls():
         'control_number': 4328,
     }
 
-    expected = (
-        b'<record>\n'
-        b'  <controlfield tag="001">4328</controlfield>\n'
-        b'</record>\n'
-    )
+    expected = b'<record>\n  <controlfield tag="001">4328</controlfield>\n</record>\n'
     result = record2marcxml(record)
 
     assert expected == result
@@ -382,18 +376,21 @@ def test_record2marcxml_strips_control_characters():
         'abstracts': [
             {
                 'source': 'submitter',
-                'value': u'A common feature shared by many quantum gravity models is modi\u001Ccations of two-point functions at energy scales around the Planck scale.',
+                'value': (
+                    u'A common feature shared by many quantum gravity models is'
+                    u' modi\u001Ccations of two-point functions at energy'
+                    u' scales around the Planck scale.'
+                ),
             },
         ],
     }  # holdingpen/812647
 
     expected = (
-        b'<record>\n'
-        b'  <datafield tag="520" ind1=" " ind2=" ">\n'
-        b'    <subfield code="9">submitter</subfield>\n'
-        b'    <subfield code="a">A common feature shared by many quantum gravity models is modications of two-point functions at energy scales around the Planck scale.</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b'<record>\n  <datafield tag="520" ind1=" " ind2=" ">\n    <subfield'
+        b' code="9">submitter</subfield>\n    <subfield code="a">A common'
+        b' feature shared by many quantum gravity models is modications of'
+        b' two-point functions at energy scales around the Planck'
+        b' scale.</subfield>\n  </datafield>\n</record>\n'
     )
     result = record2marcxml(record)
 

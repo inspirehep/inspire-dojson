@@ -23,20 +23,20 @@
 from __future__ import absolute_import, division, print_function
 
 from dojson.contrib.marc21.utils import create_record
+from inspire_schemas.api import load_schema, validate
 
 from inspire_dojson.hep import hep, hep2marc
-from inspire_schemas.api import load_schema, validate
 
 
 def test_collaborations_from_710__g():
     schema = load_schema('hep')
     subschema = schema['properties']['collaborations']
 
-    snippet = (
+    snippet = (  # record/1510404
         '<datafield tag="710" ind1=" " ind2=" ">'
         '  <subfield code="g">Pierre Auger</subfield>'
         '</datafield>'
-    )  # record/1510404
+    )
 
     expected = [
         {'value': 'Pierre Auger'},
@@ -58,11 +58,11 @@ def test_collaborations_from_710__g_normalizes_value():
     schema = load_schema('hep')
     subschema = schema['properties']['collaborations']
 
-    snippet = (
+    snippet = (  # http://cds.cern.ch/record/2293683
         '<datafield tag="710" ind1=" " ind2=" ">'
         '  <subfield code="g">on behalf of the CMS Collaboration</subfield>'
         '</datafield>'
-    )  # http://cds.cern.ch/record/2293683
+    )
 
     expected = [
         {'value': 'CMS'},
@@ -84,12 +84,12 @@ def test_collaborations_from_710__g_0():
     schema = load_schema('hep')
     subschema = schema['properties']['collaborations']
 
-    snippet = (
+    snippet = (  # record/1422032
         '<datafield tag="710" ind1=" " ind2=" ">'
         '  <subfield code="g">ANTARES</subfield>'
         '  <subfield code="0">1110619</subfield>'
         '</datafield>'
-    )  # record/1422032
+    )
 
     expected = [
         {
@@ -116,7 +116,7 @@ def test_collaborations_from_multiple_710__g_0_and_710__g():
     schema = load_schema('hep')
     subschema = schema['properties']['collaborations']
 
-    snippet = (
+    snippet = (  # record/1422032
         '<record>'
         '  <datafield tag="710" ind1=" " ind2=" ">'
         '    <subfield code="g">ANTARES</subfield>'
@@ -134,7 +134,7 @@ def test_collaborations_from_multiple_710__g_0_and_710__g():
         '    <subfield code="0">1110601</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1422032
+    )
 
     expected = [
         {
@@ -179,12 +179,12 @@ def test_collaborations_from_710__double_g_does_not_raise():
     schema = load_schema('hep')
     subschema = schema['properties']['collaborations']
 
-    snippet = (
+    snippet = (  # record/1665755
         '<datafield tag="710" ind1=" " ind2=" ">'
         '  <subfield code="g">ATLAS</subfield>'
         '  <subfield code="g">CMS</subfield>'
         '</datafield>'
-    )  # record/1665755
+    )
 
     expected = [
         {'value': 'ATLAS'},
@@ -208,7 +208,7 @@ def test_publication_info_from_773_c_m_p_v_y_1():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1104
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="m">Erratum</subfield>'
         '  <subfield code="p">Phys.Rev.Lett.</subfield>'
@@ -217,7 +217,7 @@ def test_publication_info_from_773_c_m_p_v_y_1():
         '  <subfield code="y">1975</subfield>'
         '  <subfield code="1">1214495</subfield>'
         '</datafield>'
-    )  # record/1104
+    )
 
     expected = [
         {
@@ -257,7 +257,7 @@ def test_publication_info_from_773_c_p_w_double_v_double_y_0_1_2():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/820763
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="p">IAU Symp.</subfield>'
         '  <subfield code="w">C08-06-09</subfield>'
@@ -270,7 +270,7 @@ def test_publication_info_from_773_c_p_w_double_v_double_y_0_1_2():
         '  <subfield code="2">978924</subfield>'
         '  <subfield code="0">1408366</subfield>'
         '</datafield>'
-    )  # record/820763
+    )
 
     expected = [
         {
@@ -317,7 +317,7 @@ def test_publication_info_from_773__c_w_y_z_0_2():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1501319
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="c">95-104</subfield>'
         '  <subfield code="w">C16-03-17</subfield>'
@@ -326,7 +326,7 @@ def test_publication_info_from_773__c_w_y_z_0_2():
         '  <subfield code="2">1407887</subfield>'
         '  <subfield code="0">1500425</subfield>'
         '</datafield>'
-    )  # record/1501319
+    )
 
     expected = [
         {
@@ -368,7 +368,7 @@ def test_publication_info_from_773__c_r_w_triple_0_2():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1513005
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="0">1512294</subfield>'
         '  <subfield code="c">122-127</subfield>'
@@ -378,7 +378,7 @@ def test_publication_info_from_773__c_r_w_triple_0_2():
         '  <subfield code="2">1484403</subfield>'
         '  <subfield code="0">1512294</subfield>'
         '</datafield>'
-    )  # record/1513005
+    )
 
     expected = [
         {
@@ -418,12 +418,11 @@ def test_publication_info_from_773__q_t():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
-        '<datafield tag="773" ind1=" " ind2=" ">'
-        '  <subfield code="q">LENPIC2017</subfield>'
-        '  <subfield code="t">Chiral Forces in Low Energy Nuclear Physics</subfield>'
-        '</datafield>'
-    )  # record/1598069
+    snippet = (  # record/1598069
+        '<datafield tag="773" ind1=" " ind2=" ">  <subfield'
+        ' code="q">LENPIC2017</subfield>  <subfield code="t">Chiral Forces in'
+        ' Low Energy Nuclear Physics</subfield></datafield>'
+    )
 
     expected = [
         {'conf_acronym': 'LENPIC2017'},
@@ -445,14 +444,14 @@ def test_publication_info_from_773__w_x_0_2_handles_lowercase_cnums():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
-        '<datafield tag="773" ind1=" " ind2=" ">'
-        '  <subfield code="w">c12-07-09.10</subfield>'
-        '  <subfield code="x">Proceedings of the 57th Annual Conference of the South African Institute of Physics, edited by Johan Janse van Rensburg (2014), pp. 362 - 367</subfield>'
-        '  <subfield code="2">1423475</subfield>'
-        '  <subfield code="0">1424370</subfield>'
-        '</datafield>'
-    )  # record/1264637
+    snippet = (  # record/1264637
+        '<datafield tag="773" ind1=" " ind2=" ">  <subfield'
+        ' code="w">c12-07-09.10</subfield>  <subfield code="x">Proceedings of'
+        ' the 57th Annual Conference of the South African Institute of Physics,'
+        ' edited by Johan Janse van Rensburg (2014), pp. 362 - 367</subfield> '
+        ' <subfield code="2">1423475</subfield>  <subfield'
+        ' code="0">1424370</subfield></datafield>'
+    )
 
     expected = [
         {
@@ -463,7 +462,11 @@ def test_publication_info_from_773__w_x_0_2_handles_lowercase_cnums():
             'parent_record': {
                 '$ref': 'http://localhost:5000/api/literature/1424370',
             },
-            'pubinfo_freetext': 'Proceedings of the 57th Annual Conference of the South African Institute of Physics, edited by Johan Janse van Rensburg (2014), pp. 362 - 367',
+            'pubinfo_freetext': (
+                'Proceedings of the 57th Annual Conference of the South African'
+                ' Institute of Physics, edited by Johan Janse van Rensburg'
+                ' (2014), pp. 362 - 367'
+            ),
         },
     ]
     result = hep.do(create_record(snippet))
@@ -474,7 +477,11 @@ def test_publication_info_from_773__w_x_0_2_handles_lowercase_cnums():
     expected = [
         {
             'w': 'C12-07-09.10',
-            'x': 'Proceedings of the 57th Annual Conference of the South African Institute of Physics, edited by Johan Janse van Rensburg (2014), pp. 362 - 367',
+            'x': (
+                'Proceedings of the 57th Annual Conference of the South African'
+                ' Institute of Physics, edited by Johan Janse van Rensburg'
+                ' (2014), pp. 362 - 367'
+            ),
             '0': 1424370,
         },
     ]
@@ -487,11 +494,11 @@ def test_publication_info_from_773__w_handles_slashes_in_cnums():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1622968
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="w">C17/05/14</subfield>'
         '</datafield>'
-    )  # record/1622968
+    )
 
     expected = [
         {'cnum': 'C17-05-14'},
@@ -513,12 +520,12 @@ def test_publication_info_from_773__c_z_handles_dashes_in_isbns():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1334853
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="c">110-125</subfield>'
         '  <subfield code="z">978-1-4684-7552-4</subfield>'
         '</datafield>'
-    )  # record/1334853
+    )
 
     expected = [
         {
@@ -549,11 +556,11 @@ def test_publication_info_from_773__p_populates_public_notes():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/1631620
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="p">Phys.Rev.D</subfield>'
         '</datafield>'
-    )  # record/1631620
+    )
 
     expected = [
         {'value': 'Submitted to Phys.Rev.D'},
@@ -569,12 +576,12 @@ def test_publication_info_from_773__p_1_populates_public_notes():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/1470899
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="p">Phys.Rev.Lett.</subfield>'
         '  <subfield code="1">1214495</subfield>'
         '</datafield>'
-    )  # record/1470899
+    )
 
     expected = [
         {'value': 'Submitted to Phys.Rev.Lett.'},
@@ -587,11 +594,10 @@ def test_publication_info_from_773__p_1_populates_public_notes():
 
 
 def test_publication_info_from_773__t_doesnt_populate_public_notes():
-    snippet = (
-        '<datafield tag="773" ind1=" " ind2=" ">'
-        '  <subfield code="t">Indian Particle Accelerator Conference (InPAC)</subfield>'
-        '</datafield>'
-    )  # record/1763998
+    snippet = (  # record/1763998
+        '<datafield tag="773" ind1=" " ind2=" ">  <subfield code="t">Indian'
+        ' Particle Accelerator Conference (InPAC)</subfield></datafield>'
+    )
 
     result = hep.do(create_record(snippet))
 
@@ -604,7 +610,7 @@ def test_publication_info_from_773__p_and_773__c_p_v_y_1_also_populates_public_n
     publication_info_schema = schema['properties']['publication_info']
     public_notes_schema = schema['properties']['public_notes']
 
-    snippet = (
+    snippet = (  # record/769448
         '<record>'
         '  <datafield tag="773" ind1=" " ind2=" ">'
         '    <subfield code="p">Eur.Phys.J.A</subfield>'
@@ -617,11 +623,9 @@ def test_publication_info_from_773__p_and_773__c_p_v_y_1_also_populates_public_n
         '    <subfield code="1">1212905</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/769448
+    )
 
-    expected_public_notes = [
-        {'value': 'Submitted to Eur.Phys.J.A'}
-    ]
+    expected_public_notes = [{'value': 'Submitted to Eur.Phys.J.A'}]
     expected_publication_info = [
         {
             'artid': '615',
@@ -644,16 +648,13 @@ def test_publication_info_from_double_773__p():
     schema = load_schema('hep')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="773" ind1=" " ind2=" ">'
-        '    <subfield code="p">Proc.HELAS Workshop on `New insights into the Sun\'</subfield>'
-        '  </datafield>'
-        '  <datafield tag="773" ind1=" " ind2=" ">'
-        '    <subfield code="p">&amp; M.J.Thompson (2009)</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/920292
+    snippet = (  # record/920292
+        '<record>  <datafield tag="773" ind1=" " ind2=" ">    <subfield'
+        ' code="p">Proc.HELAS Workshop on `New insights into the'
+        ' Sun\'</subfield>  </datafield>  <datafield tag="773" ind1=" " ind2="'
+        ' ">    <subfield code="p">&amp; M.J.Thompson (2009)</subfield> '
+        ' </datafield></record>'
+    )
 
     expected = [
         {'value': 'Submitted to Proc.HELAS Workshop on `New insights into the Sun\''},
@@ -671,7 +672,7 @@ def test_publication_info_from_773__c_p_v_x_y_1_discards_done_x():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1479030
         '<datafield tag="773" ind1=" " ind2=" ">'
         '  <subfield code="c">134516</subfield>'
         '  <subfield code="p">Phys.Rev.</subfield>'
@@ -680,7 +681,7 @@ def test_publication_info_from_773__c_p_v_x_y_1_discards_done_x():
         '  <subfield code="y">2016</subfield>'
         '  <subfield code="1">1214516</subfield>'
         '</datafield>'
-    )  # record/1479030
+    )
 
     expected = [
         {
@@ -714,14 +715,14 @@ def test_publication_info_from_7731_c_p_v_y():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/697133
         '<datafield tag="773" ind1="1" ind2=" ">'
         '  <subfield code="c">948-979</subfield>'
         '  <subfield code="p">Adv.Theor.Math.Phys.</subfield>'
         '  <subfield code="v">12</subfield>'
         '  <subfield code="y">2008</subfield>'
         '</datafield>'
-    )  # record/697133
+    )
 
     expected = [
         {
@@ -757,7 +758,7 @@ def test_publication_info_from_7731_c_p_v_y_and_773__c_p_v_y_1():
     schema = load_schema('hep')
     subschema = schema['properties']['publication_info']
 
-    snippet = (
+    snippet = (  # record/1439897
         '<record>'
         '  <datafield tag="773" ind1="1" ind2=" ">'
         '    <subfield code="c">602-604</subfield>'
@@ -773,7 +774,7 @@ def test_publication_info_from_7731_c_p_v_y_and_773__c_p_v_y_1():
         '    <subfield code="1">1214521</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1439897
+    )
 
     expected = [
         {
@@ -852,13 +853,13 @@ def test_related_records_from_78002i_r_w():
     schema = load_schema('hep')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1510564
         '<datafield tag="780" ind1="0" ind2="2">'
         '  <subfield code="i">supersedes</subfield>'
         '  <subfield code="r">ATLAS-CONF-2016-113</subfield>'
         '  <subfield code="w">1503270</subfield>'
         '</datafield>'
-    )  # record/1510564
+    )
 
     expected = [
         {
@@ -888,13 +889,13 @@ def test_related_records_from_78002i_r_w():
 def test_related_superseding_records_78502r_w_z():
     schema = load_schema('hep')
     subschema = schema['properties']['related_records']
-    snippet = (
+    snippet = (  # record/1503270
         '<datafield tag="785" ind1="0" ind2="2">'
         '<subfield code="i">superseded by</subfield>'
         '<subfield code="r">CERN-EP-2016-305</subfield>'
         '<subfield code="w">1510564</subfield>'
         '</datafield>'
-    )  # record/1503270
+    )
 
     expected = [
         {
@@ -924,12 +925,12 @@ def test_related_records_from_78708i_w():
     schema = load_schema('hep')
     subschema = schema['properties']['related_records']
 
-    snippet = (
+    snippet = (  # record/1415979
         '<datafield tag="787" ind1="0" ind2="8">'
         '  <subfield code="i">Addendum</subfield>'
         '  <subfield code="w">1474710</subfield>'
         '</datafield>'
-    )  # record/1415979
+    )
 
     expected = [
         {

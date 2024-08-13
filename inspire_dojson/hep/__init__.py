@@ -24,7 +24,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from .rules import (  # noqa: F401
+from inspire_dojson.hep.model import hep, hep2marc  # noqa: F401
+from inspire_dojson.hep.rules import (  # noqa: F401
     bd0xx,
     bd1xx,
     bd2xx,
@@ -36,4 +37,3 @@ from .rules import (  # noqa: F401
     bd9xx,
     bdFFT,
 )
-from .model import hep, hep2marc  # noqa: F401

@@ -23,12 +23,10 @@
 from __future__ import absolute_import, division, print_function
 
 import pytest
-
 from dojson.contrib.marc21.utils import create_record
-
-from inspire_dojson.hepnames import hepnames2marc, hepnames
 from inspire_schemas.api import load_schema, validate
 
+from inspire_dojson.hepnames import hepnames, hepnames2marc
 
 EXPERIMENTS_DATA = [
     [
@@ -42,23 +40,27 @@ EXPERIMENTS_DATA = [
             <subfield code="z">current</subfield>
         </datafield>
         ''',
-        [{
-            'curated_relation': True,
-            'current': True,
-            'end_date': '2020',
-            'name': 'CERN-ALPHA',
-            'record': {
-                '$ref': 'http://localhost:5000/api/experiments/1',
-            },
-            'start_date': '2014',
-        }],
-        [{
-            '0': 1,
-            'd': '2020',
-            'e': 'CERN-ALPHA',
-            's': '2014',
-            'z': 'current',
-        }],
+        [
+            {
+                'curated_relation': True,
+                'current': True,
+                'end_date': '2020',
+                'name': 'CERN-ALPHA',
+                'record': {
+                    '$ref': 'http://localhost:5000/api/experiments/1',
+                },
+                'start_date': '2014',
+            }
+        ],
+        [
+            {
+                '0': 1,
+                'd': '2020',
+                'e': 'CERN-ALPHA',
+                's': '2014',
+                'z': 'current',
+            }
+        ],
     ],
     [
         'current_curated_hidden',
@@ -72,25 +74,29 @@ EXPERIMENTS_DATA = [
             <subfield code="h">HIDDEN</subfield>
         </datafield>
         ''',
-        [{
-            'curated_relation': True,
-            'current': True,
-            'end_date': '2020',
-            'name': 'CERN-ALPHA',
-            'record': {
-                '$ref': 'http://localhost:5000/api/experiments/1',
-            },
-            'start_date': '2014',
-            'hidden': True
-        }],
-        [{
-            '0': 1,
-            'd': '2020',
-            'e': 'CERN-ALPHA',
-            's': '2014',
-            'z': 'current',
-            'h': 'HIDDEN',
-        }],
+        [
+            {
+                'curated_relation': True,
+                'current': True,
+                'end_date': '2020',
+                'name': 'CERN-ALPHA',
+                'record': {
+                    '$ref': 'http://localhost:5000/api/experiments/1',
+                },
+                'start_date': '2014',
+                'hidden': True,
+            }
+        ],
+        [
+            {
+                '0': 1,
+                'd': '2020',
+                'e': 'CERN-ALPHA',
+                's': '2014',
+                'z': 'current',
+                'h': 'HIDDEN',
+            }
+        ],
     ],
     [
         'notcurrent_curated',
@@ -100,18 +106,22 @@ EXPERIMENTS_DATA = [
             <subfield code="0">3</subfield>
         </datafield>
         ''',
-        [{
-            'curated_relation': True,
-            'current': False,
-            'name': 'SDSS',
-            'record': {
-                '$ref': 'http://localhost:5000/api/experiments/3',
-            },
-        }],
-        [{
-            '0': 3,
-            'e': 'SDSS',
-        }],
+        [
+            {
+                'curated_relation': True,
+                'current': False,
+                'name': 'SDSS',
+                'record': {
+                    '$ref': 'http://localhost:5000/api/experiments/3',
+                },
+            }
+        ],
+        [
+            {
+                '0': 3,
+                'e': 'SDSS',
+            }
+        ],
     ],
     [
         'notcurrent_notcurated',
@@ -120,14 +130,18 @@ EXPERIMENTS_DATA = [
             <subfield code="e">NOTCURATED</subfield>
         </datafield>
         ''',
-        [{
-            'name': 'NOTCURATED',
-            'curated_relation': False,
-            'current': False,
-        }],
-        [{
-            'e': 'NOTCURATED',
-        }],
+        [
+            {
+                'name': 'NOTCURATED',
+                'curated_relation': False,
+                'current': False,
+            }
+        ],
+        [
+            {
+                'e': 'NOTCURATED',
+            }
+        ],
     ],
     [
         'repeated_experiment',
@@ -215,7 +229,7 @@ EXPERIMENTS_DATA = [
                 'record': {
                     '$ref': 'http://localhost:5000/api/experiments/2',
                 },
-                'start_date': '2015'
+                'start_date': '2015',
             },
         ],
         [
@@ -237,7 +251,7 @@ EXPERIMENTS_DATA = [
 
 
 @pytest.mark.parametrize(
-    'test_name,xml_snippet,expected_json,expected_marc',
+    ('test_name', 'xml_snippet', 'expected_json', 'expected_marc'),
     EXPERIMENTS_DATA,
     ids=[test_data[0] for test_data in EXPERIMENTS_DATA],
 )
@@ -261,7 +275,7 @@ def test_ids_from_double_035__a_9():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/984519
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="a">INSPIRE-00134135</subfield>'
@@ -272,7 +286,7 @@ def test_ids_from_double_035__a_9():
         '    <subfield code="9">BAI</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/984519
+    )
 
     expected = [
         {
@@ -290,14 +304,8 @@ def test_ids_from_double_035__a_9():
     assert expected == result['ids']
 
     expected = [
-        {
-            'a': 'H.Vogel.1',
-            '9': 'BAI'
-        },
-        {
-            'a': 'INSPIRE-00134135',
-            '9': 'INSPIRE'
-        },
+        {'a': 'H.Vogel.1', '9': 'BAI'},
+        {'a': 'INSPIRE-00134135', '9': 'INSPIRE'},
     ]
     result = hepnames2marc.do(result)
 
@@ -344,12 +352,12 @@ def test_ids_from_035__a_9_with_cern():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1064570
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">CERN</subfield>'
         '  <subfield code="a">CERN-622961</subfield>'
         '</datafield>'
-    )  # record/1064570
+    )
 
     expected = [
         {
@@ -362,12 +370,7 @@ def test_ids_from_035__a_9_with_cern():
     assert validate(result['ids'], subschema) is None
     assert expected == result['ids']
 
-    expected = [
-        {
-            '9': 'CERN',
-            'a': 'CERN-622961'
-        }
-    ]
+    expected = [{'9': 'CERN', 'a': 'CERN-622961'}]
     result = hepnames2marc.do(result)
 
     assert expected == result['035']
@@ -460,12 +463,12 @@ def test_ids_from_035__a_9_with_desy():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/993224
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="a">DESY-1001805</subfield>'
         '  <subfield code="9">DESY</subfield>'
         '</datafield>'
-    )  # record/993224
+    )
 
     expected = [
         {
@@ -493,12 +496,12 @@ def test_ids_from_035__a_9_with_wikipedia():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/985898
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">Wikipedia</subfield>'
         '  <subfield code="a">Guido_Tonelli</subfield>'
         '</datafield>'
-    )  # record/985898
+    )
 
     expected = [
         {
@@ -526,12 +529,12 @@ def test_ids_from_035__a_9_with_slac():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1028379
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">SLAC</subfield>'
         '  <subfield code="a">SLAC-218626</subfield>'
         '</datafield>'
-    )  # record/1028379
+    )
 
     expected = [
         {
@@ -559,11 +562,11 @@ def test_ids_from_035__a_with_bai():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1464894
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="a">Jian.Long.Han.1</subfield>'
         '</datafield>'
-    )  # record/1464894
+    )
 
     expected = [
         {
@@ -591,7 +594,7 @@ def test_ids_from_double_035__a_9_with_kaken():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1474271
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">BAI</subfield>'
@@ -602,7 +605,7 @@ def test_ids_from_double_035__a_9_with_kaken():
         '    <subfield code="a">70139070</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1474271
+    )
 
     expected = [
         {
@@ -638,12 +641,12 @@ def test_ids_from_035__a_9_with_googlescholar():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1467553
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">GoogleScholar</subfield>'
         '  <subfield code="a">Tnl-9KoAAAAJ</subfield>'
         '</datafield>'
-    )  # record/1467553
+    )
 
     expected = [
         {
@@ -671,12 +674,12 @@ def test_ids_from_035__a_9_with_viaf():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1008109
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">VIAF</subfield>'
         '  <subfield code="a">34517183</subfield>'
         '</datafield>'
-    )  # record/1008109
+    )
 
     expected = [
         {
@@ -704,12 +707,12 @@ def test_ids_from_035__a_9_with_researcherid():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1051026
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">RESEARCHERID</subfield>'
         '  <subfield code="a">B-4717-2008</subfield>'
         '</datafield>'
-    )  # record/1051026
+    )
 
     expected = [
         {
@@ -737,12 +740,12 @@ def test_ids_from_035__a_9_with_scopus():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1017182
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">SCOPUS</subfield>'
         '  <subfield code="a">7103280792</subfield>'
         '</datafield>'
-    )  # record/1017182
+    )
 
     expected = [
         {
@@ -768,10 +771,11 @@ def test_ids_from_035__a_9_with_scopus():
 
 def test_ids_from_035__9():
     snippet = (
+        # record/edit/?ln=en#state=edit&recid=1474355&recrev=20160707223728
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">INSPIRE</subfield>'
-        '  </datafield>'  # record/edit/?ln=en#state=edit&recid=1474355&recrev=20160707223728
+        '  </datafield>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">CERN</subfield>'
         '  </datafield>'  # record/1364570
@@ -790,7 +794,7 @@ def test_ids_from_035__a_z_same_field_9():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1709705
         '<record>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
         '    <subfield code="9">INSPIRE</subfield>'
@@ -806,7 +810,7 @@ def test_ids_from_035__a_z_same_field_9():
         '    <subfield code="a">Yen.Chen.Pan.1</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1709705
+    )
 
     expected = [
         {
@@ -858,7 +862,7 @@ def test_ids_from_035__a_z_different_fields_9():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1357501
         '<record>'
         '  <controlfield tag="001">1357501</controlfield>'
         '  <datafield tag="035" ind1=" " ind2=" ">'
@@ -878,7 +882,7 @@ def test_ids_from_035__a_z_different_fields_9():
         '    <subfield code="a">0000-0001-5010-7517</subfield>'
         '  </datafield>'
         '</record>'
-    )  # record/1357501
+    )
 
     expected = [
         {
@@ -930,13 +934,13 @@ def test_name_from_100__a_g_q():
     schema = load_schema('authors')
     subschema = schema['properties']['name']
 
-    snippet = (
+    snippet = (  # record/1019100
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Abarbanel, Henry D.I.</subfield>'
         '  <subfield code="q">Henry D.I. Abarbanel</subfield>'
         '  <subfield code="g">ACTIVE</subfield>'
         '</datafield>'
-    )  # record/1019100
+    )
 
     expected = {
         'value': 'Abarbanel, Henry D.I.',
@@ -961,12 +965,12 @@ def test_name_from_100__g_q_populates_value_from_preferred_name():
     schema = load_schema('authors')
     subschema = schema['properties']['name']
 
-    snippet = (
+    snippet = (  # record/1259075
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="g">ACTIVE</subfield>'
         '  <subfield code="q">Vyacheslav I. Yukalova</subfield>'
         '</datafield>'
-    )  # record/1259075
+    )
 
     expected = {
         'preferred_name': 'Vyacheslav I. Yukalova',
@@ -991,13 +995,13 @@ def test_title_from_100__a_c_q_discards_default_title():
     schema = load_schema('authors')
     subschema = schema['properties']['name']
 
-    snippet = (
+    snippet = (  # record/1270441
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Joosten, Sylvester Johannes</subfield>'
         '  <subfield code="c">title (e.g. Sir)</subfield>'
         '  <subfield code="q">Sylvester Johannes Joosten</subfield>'
         '</datafield>'
-    )  # record/1270441
+    )
 
     expected = {
         'preferred_name': 'Sylvester Johannes Joosten',
@@ -1021,13 +1025,13 @@ def test_status_from_100__a_g_q():
     schema = load_schema('authors')
     subschema = schema['properties']['status']
 
-    snippet = (
+    snippet = (  # record/1019100
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Abarbanel, Henry D.I.</subfield>'
         '  <subfield code="q">Henry D.I. Abarbanel</subfield>'
         '  <subfield code="g">ACTIVE</subfield>'
         '</datafield>'
-    )  # record/1019100
+    )
 
     expected = 'active'
     result = hepnames.do(create_record(snippet))
@@ -1050,14 +1054,14 @@ def test_birth_date_death_date_from_100__a_d_g_q():
     subschema_birth = schema['properties']['birth_date']
     subschema_death = schema['properties']['death_date']
 
-    snippet = (
+    snippet = (  # record/1017374
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Bardeen, John</subfield>'
         '  <subfield code="d">1908-05-23 - 1991-01-30</subfield>'
         '  <subfield code="g">DECEASED</subfield>'
         '  <subfield code="q">John Bardeen</subfield>'
         '</datafield>'
-    )  # record/1017374
+    )
 
     expected_birth = '1908-05-23'
     expected_death = '1991-01-30'
@@ -1084,14 +1088,14 @@ def test_birth_date_death_date_from_100__a_d_g_q_only_years():
     subschema_birth = schema['properties']['birth_date']
     subschema_death = schema['properties']['death_date']
 
-    snippet = (
+    snippet = (  # record/983266
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Wolfenstein, Lincoln</subfield>'
         '  <subfield code="d">1923-2015</subfield>'
         '  <subfield code="g">DECEASED</subfield>'
         '  <subfield code="q">Lincoln Wolfenstein</subfield>'
         '</datafield>'
-    )  # record/983266
+    )
 
     expected_birth = '1923'
     expected_death = '2015'
@@ -1117,14 +1121,14 @@ def test_death_date_from_100__a_d_g_q():
     schema = load_schema('authors')
     subschema = schema['properties']['death_date']
 
-    snippet = (
+    snippet = (  # record/1046337
         '<datafield tag="100" ind1=" " ind2=" ">'
         '  <subfield code="a">Blosser, Henry G.</subfield>'
         '  <subfield code="d">-2013-03-20</subfield>'
         '  <subfield code="g">DECEASED</subfield>'
         '  <subfield code="q">Henry G. Blosser</subfield>'
         '</datafield>'
-    )  # record/1046337
+    )
 
     expected = '2013-03-20'
     result = hepnames.do(create_record(snippet))
@@ -1147,13 +1151,13 @@ def test_name_variants_from_400__triple_a():
     schema = load_schema('authors')
     subschema = schema['properties']['name']['properties']['name_variants']
 
-    snippet = (
+    snippet = (  # record/1292399
         '<datafield tag="400" ind1=" " ind2=" ">'
         '  <subfield code="a">Yosef Cohen, Hadar</subfield>'
         '  <subfield code="a">Josef Cohen, Hadar</subfield>'
         '  <subfield code="a">Cohen, Hadar Josef</subfield>'
         '</datafield>'
-    )  # record/1292399
+    )
 
     expected = {
         'name_variants': [
@@ -1181,7 +1185,7 @@ def test_advisors_from_701__a_g_i():
     schema = load_schema('authors')
     subschema = schema['properties']['advisors']
 
-    snippet = (
+    snippet = (  # record/1474091
         '<datafield tag="701" ind1=" " ind2=" ">'
         '  <subfield code="a">Rivelles, Victor O.</subfield>'
         '  <subfield code="g">PhD</subfield>'
@@ -1189,22 +1193,17 @@ def test_advisors_from_701__a_g_i():
         '  <subfield code="x">991627</subfield>'
         '  <subfield code="y">1</subfield>'
         '</datafield>'
-    )  # record/1474091
+    )
 
     expected = [
         {
             'name': 'Rivelles, Victor O.',
             'degree_type': 'phd',
-            'ids': [
-                {
-                    'schema': 'INSPIRE ID',
-                    'value': 'INSPIRE-00120420'
-                }
-            ],
+            'ids': [{'schema': 'INSPIRE ID', 'value': 'INSPIRE-00120420'}],
             'record': {
                 '$ref': 'http://localhost:5000/api/authors/991627',
             },
-            'curated_relation': True
+            'curated_relation': True,
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -1228,7 +1227,7 @@ def test_advisors_from_701__a_g_i_h():
     schema = load_schema('authors')
     subschema = schema['properties']['advisors']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="701" ind1=" " ind2=" ">'
         '  <subfield code="a">Rivelles, Victor O.</subfield>'
         '  <subfield code="g">PhD</subfield>'
@@ -1237,23 +1236,18 @@ def test_advisors_from_701__a_g_i_h():
         '  <subfield code="y">1</subfield>'
         '  <subfield code="h">HIDDEN</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     expected = [
         {
             'name': 'Rivelles, Victor O.',
             'degree_type': 'phd',
-            'ids': [
-                {
-                    'schema': 'INSPIRE ID',
-                    'value': 'INSPIRE-00120420'
-                }
-            ],
+            'ids': [{'schema': 'INSPIRE ID', 'value': 'INSPIRE-00120420'}],
             'record': {
                 '$ref': 'http://localhost:5000/api/authors/991627',
             },
             'curated_relation': True,
-            'hidden': True
+            'hidden': True,
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -1278,24 +1272,19 @@ def test_advisors_from_701__a_g_i_orcid():
     schema = load_schema('authors')
     subschema = schema['properties']['advisors']
 
-    snippet = (
+    snippet = (  # record/1413663
         '<datafield tag="701" ind1=" " ind2=" ">'
         '  <subfield code="a">Riccioni, Fabio</subfield>'
         '  <subfield code="g">PhD</subfield>'
         '  <subfield code="i">0000-0003-4702-3632</subfield>'
         '</datafield>'
-    )  # record/1413663
+    )
 
     expected = [
         {
             'name': 'Riccioni, Fabio',
             'degree_type': 'phd',
-            'ids': [
-                {
-                    'schema': 'ORCID',
-                    'value': '0000-0003-4702-3632'
-                }
-            ],
+            'ids': [{'schema': 'ORCID', 'value': '0000-0003-4702-3632'}],
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -1319,33 +1308,25 @@ def test_email_addresses_from_371__a_m_z():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
 
-    snippet = (
+    snippet = (  # record/1222902
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Siegen U.</subfield>'
         '  <subfield code="m">test@hep.physik.uni-siegen.de</subfield>'
         '  <subfield code="z">current</subfield>'
         '</datafield>'
-    )  # record/1222902
+    )
 
-    expected = [
-        {
-            'current': True,
-            'value': 'test@hep.physik.uni-siegen.de'
-        }
-    ]
+    expected = [{'current': True, 'value': 'test@hep.physik.uni-siegen.de'}]
     result = hepnames.do(create_record(snippet))
 
     assert validate(result['email_addresses'], subschema) is None
     assert expected == result['email_addresses']
 
     expected = [
-        {
-            "a": "Siegen U.",
-            "z": "Current"
-        },
+        {"a": "Siegen U.", "z": "Current"},
         {
             "m": "test@hep.physik.uni-siegen.de",
-        }
+        },
     ]
 
     result = hepnames2marc.do(result)
@@ -1357,24 +1338,18 @@ def test_email_addresses_from_371__a_repeated_m_z():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
 
-    snippet = (
+    snippet = (  # record/1019084
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Sao Paulo U.</subfield>'
         '  <subfield code="m">test@usp.br</subfield>'
         '  <subfield code="m">test@fma.if.usp.br</subfield>'
         '  <subfield code="z">Current</subfield>'
         '</datafield>'
-    )  # record/1019084
+    )
 
     expected = [
-        {
-            'current': True,
-            'value': 'test@usp.br'
-        },
-        {
-            'current': True,
-            'value': 'test@fma.if.usp.br'
-        },
+        {'current': True, 'value': 'test@usp.br'},
+        {'current': True, 'value': 'test@fma.if.usp.br'},
     ]
     result = hepnames.do(create_record(snippet))
 
@@ -1382,16 +1357,13 @@ def test_email_addresses_from_371__a_repeated_m_z():
     assert expected == result['email_addresses']
 
     expected = [
-        {
-            "a": "Sao Paulo U.",
-            "z": "Current"
-        },
+        {"a": "Sao Paulo U.", "z": "Current"},
         {
             "m": "test@usp.br",
         },
         {
             "m": "test@fma.if.usp.br",
-        }
+        },
     ]
 
     result = hepnames2marc.do(result)
@@ -1403,7 +1375,7 @@ def test_email_addresses_from_371__a_o_r_s_t():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
 
-    snippet = (
+    snippet = (  # record/1060782
         '<datafield tag="371" ind1=" " ind2=" ">'
         '   <subfield code="a">IMSc, Chennai</subfield>'
         '   <subfield code="o">test@imsc.res.in</subfield>'
@@ -1411,29 +1383,19 @@ def test_email_addresses_from_371__a_o_r_s_t():
         '   <subfield code="s">2012</subfield>'
         '   <subfield code="t">2013</subfield>'
         '</datafield>'
-    )  # record/1060782
+    )
 
-    expected = [
-        {
-            'current': False,
-            'value': 'test@imsc.res.in'
-        }
-    ]
+    expected = [{'current': False, 'value': 'test@imsc.res.in'}]
     result = hepnames.do(create_record(snippet))
 
     assert validate(result['email_addresses'], subschema) is None
     assert expected == result['email_addresses']
 
     expected = [
-        {
-            "a": "IMSc, Chennai",
-            "s": "2012",
-            "r": "PD",
-            "t": "2013"
-        },
+        {"a": "IMSc, Chennai", "s": "2012", "r": "PD", "t": "2013"},
         {
             "o": "test@imsc.res.in",
-        }
+        },
     ]
 
     result = hepnames2marc.do(result)
@@ -1445,19 +1407,13 @@ def test_email_addresses_from_595__m():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
 
-    snippet = (
+    snippet = (  # record/1021896
         '<datafield tag="595" ind1=" " ind2=" ">'
         '   <subfield code="m">test@pnnl.gov</subfield>'
         '</datafield>'
-    )  # record/1021896
+    )
 
-    expected = [
-        {
-            'current': True,
-            'hidden': True,
-            'value': 'test@pnnl.gov'
-        }
-    ]
+    expected = [{'current': True, 'hidden': True, 'value': 'test@pnnl.gov'}]
     result = hepnames.do(create_record(snippet))
 
     assert validate(result['email_addresses'], subschema) is None
@@ -1478,19 +1434,13 @@ def test_email_addresses_from_595__o():
     schema = load_schema('authors')
     subschema = schema['properties']['email_addresses']
 
-    snippet = (
+    snippet = (  # record/1021896
         '<datafield tag="595" ind1=" " ind2=" ">'
         '   <subfield code="o">test@pnl.gov</subfield>'
         '</datafield>'
-    )  # record/1021896
+    )
 
-    expected = [
-        {
-            'current': False,
-            'hidden': True,
-            'value': 'test@pnl.gov'
-        }
-    ]
+    expected = [{'current': False, 'hidden': True, 'value': 'test@pnl.gov'}]
     result = hepnames.do(create_record(snippet))
 
     assert validate(result['email_addresses'], subschema) is None
@@ -1511,11 +1461,11 @@ def test_positions_from_371__a():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
 
-    snippet = (
+    snippet = (  # record/997958
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Aachen, Tech. Hochsch.</subfield>'
         '</datafield>'
-    )  # record/997958
+    )
 
     expected = [
         {
@@ -1527,9 +1477,7 @@ def test_positions_from_371__a():
     assert validate(result['positions'], subschema) is None
     assert expected == result['positions']
 
-    expected = [
-        {'a': 'Aachen, Tech. Hochsch.'}
-    ]
+    expected = [{'a': 'Aachen, Tech. Hochsch.'}]
     result = hepnames2marc.do(result)
 
     assert expected == result['371']
@@ -1539,12 +1487,12 @@ def test_positions_from_371__a_z():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
 
-    snippet = (
+    snippet = (  # record/1408378
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Argonne</subfield>'
         '  <subfield code="z">current</subfield>'
         '</datafield>'
-    )  # record/1408378
+    )
 
     expected = [
         {
@@ -1557,12 +1505,7 @@ def test_positions_from_371__a_z():
     assert validate(result['positions'], subschema) is None
     assert expected == result['positions']
 
-    expected = [
-        {
-            'a': 'Argonne',
-            'z': 'Current'
-        }
-    ]
+    expected = [{'a': 'Argonne', 'z': 'Current'}]
 
     result = hepnames2marc.do(result)
 
@@ -1573,13 +1516,13 @@ def test_positions_from_371__a_r_z():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
 
-    snippet = (
+    snippet = (  # record/997958
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Antwerp U.</subfield>'
         '  <subfield code="r">SENIOR</subfield>'
         '  <subfield code="z">Current</subfield>'
         '</datafield>'
-    )  # record/997958
+    )
 
     expected = [
         {
@@ -1593,13 +1536,7 @@ def test_positions_from_371__a_r_z():
     assert validate(result['positions'], subschema) is None
     assert expected == result['positions']
 
-    expected = [
-        {
-            'a': 'Antwerp U.',
-            'r': 'SENIOR',
-            'z': 'Current'
-        }
-    ]
+    expected = [{'a': 'Antwerp U.', 'r': 'SENIOR', 'z': 'Current'}]
     result = hepnames2marc.do(result)
 
     assert expected == result['371']
@@ -1609,21 +1546,21 @@ def test_positions_from_371__a_r_z_h():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
 
-    snippet = (
+    snippet = (  # synthetic data
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Antwerp U.</subfield>'
         '  <subfield code="r">SENIOR</subfield>'
         '  <subfield code="z">Current</subfield>'
         '  <subfield code="h">HIDDEN</subfield>'
         '</datafield>'
-    )  # synthetic data
+    )
 
     expected = [
         {
             'current': True,
             'institution': 'Antwerp U.',
             'rank': 'SENIOR',
-            'hidden': True
+            'hidden': True,
         },
     ]
     result = hepnames.do(create_record(snippet))
@@ -1648,23 +1585,21 @@ def test_positions_from_371__a_r_t_z():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
 
-    snippet = (
+    snippet = (  # record/1037568
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">San Luis Potosi U.</subfield>'
         '  <subfield code="r">Master</subfield>'
         '  <subfield code="t">2007</subfield>'
         '  <subfield code="z">903830</subfield>'
         '</datafield>'
-    )  # record/1037568
+    )
 
     expected = [
         {
             'end_date': '2007',
             'institution': 'San Luis Potosi U.',
             'rank': 'MASTER',
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/903830'
-            },
+            'record': {'$ref': 'http://localhost:5000/api/institutions/903830'},
             'curated_relation': True,
         },
     ]
@@ -1686,12 +1621,12 @@ def test_positions_from_371__a_r_t_z():
 
 
 def test_positions_from_371__r_t():
-    snippet = (
+    snippet = (  # record/1038489
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="r">UG</subfield>'
         '  <subfield code="t">1970</subfield>'
         '</datafield>'
-    )  # record/1038489
+    )
 
     result = hepnames.do(create_record(snippet))
 
@@ -1702,13 +1637,13 @@ def test_positions_from_371__a_r_t():
     schema = load_schema('authors')
     subschema = schema['properties']['positions']
 
-    snippet = (
+    snippet = (  # record/1590188
         '<datafield tag="371" ind1=" " ind2=" ">'
         '  <subfield code="a">Case Western Reserve U.</subfield>'
         '  <subfield code="r">UNDERGRADUATE</subfield>'
         '  <subfield code="t">2011</subfield>'
         '</datafield>'
-    )  # record/1590188
+    )
 
     expected = [
         {
@@ -1738,12 +1673,12 @@ def test_arxiv_categories_from_65017a_2():
     schema = load_schema('authors')
     subschema = schema['properties']['arxiv_categories']
 
-    snippet = (
+    snippet = (  # record/1010819
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="2">INSPIRE</subfield>'
         '  <subfield code="a">HEP-TH</subfield>'
         '</datafield>'
-    )  # record/1010819
+    )
 
     expected = [
         'hep-th',
@@ -1768,12 +1703,12 @@ def test_arxiv_categories_from_65017a_2_obsolete_category():
     schema = load_schema('authors')
     subschema = schema['properties']['arxiv_categories']
 
-    snippet = (
+    snippet = (  # record/1010819
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="2">INSPIRE</subfield>'
         '  <subfield code="a">ATOM-PH</subfield>'
         '</datafield>'
-    )  # record/1010819
+    )
 
     expected = [
         'physics.atom-ph',
@@ -1798,12 +1733,12 @@ def test_inspire_categories_from_65017a_2():
     schema = load_schema('authors')
     subschema = schema['properties']['inspire_categories']
 
-    snippet = (
+    snippet = (  # record/1271076
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="2">INSPIRE</subfield>'
         '  <subfield code="a">Computing</subfield>'
         '</datafield>'
-    )  # record/1271076
+    )
 
     expected = [
         {'term': 'Computing'},
@@ -1828,12 +1763,12 @@ def test_inspire_categories_from_65017a_2_E():
     schema = load_schema('authors')
     subschema = schema['properties']['inspire_categories']
 
-    snippet = (
+    snippet = (  # record/1019112
         '<datafield tag="650" ind1="1" ind2="7">'
         '  <subfield code="2">INSPIRE</subfield>'
         '  <subfield code="a">E</subfield>'
         '</datafield>'
-    )  # record/1019112
+    )
 
     expected = [
         {'term': 'Experiment-HEP'},
@@ -1858,15 +1793,12 @@ def test_public_notes_from_667__a():
     schema = load_schema('authors')
     subschema = schema['properties']['public_notes']
 
-    snippet = (
-        '<datafield tag="667" ind1=" " ind2=" ">'
-        '  <subfield code="a">Do not confuse with Acharya, Bannanje Sripath</subfield>'
-        '</datafield>'
-    )  # record/1018999
+    snippet = (  # record/1018999
+        '<datafield tag="667" ind1=" " ind2=" ">  <subfield code="a">Do not'
+        ' confuse with Acharya, Bannanje Sripath</subfield></datafield>'
+    )
 
-    expected = [
-        {'value': 'Do not confuse with Acharya, Bannanje Sripath'}
-    ]
+    expected = [{'value': 'Do not confuse with Acharya, Bannanje Sripath'}]
     result = hepnames.do(create_record(snippet))
 
     assert validate(result['public_notes'], subschema) is None
@@ -1882,11 +1814,11 @@ def test_public_notes_from_667__a():
 
 
 def test_previous_names_from_667__a():
-    snippet = (
+    snippet = (  # record/1281982
         '<datafield tag="667" ind1=" " ind2=" ">'
         '  <subfield code="a">Formerly Tomoko Furukawa</subfield>'
         '</datafield>'
-    )  # record/1281982
+    )
 
     expected = ['Tomoko Furukawa']
 
@@ -1901,7 +1833,7 @@ def test_previous_names_to_667__a():
 
     expected = [
         {'a': 'Formerly Tomoko Furukawa'},
-        {'a': 'Formerly Second previous name'}
+        {'a': 'Formerly Second previous name'},
     ]
     # record/1281982
 
@@ -1925,11 +1857,11 @@ def test_awards_from_678__a():
     schema = load_schema('authors')
     subschema = schema['properties']['awards']
 
-    snippet = (
+    snippet = (  # record/1050484
         '<datafield tag="678" ind1=" " ind2=" ">'
         '   <subfield code="a">Nobel Prize Physics 2003</subfield>'
         ' </datafield>'
-    )  # record/1050484
+    )
 
     expected = [
         {
@@ -1956,12 +1888,12 @@ def test_private_notes_from_595__a_9():
     schema = load_schema('authors')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
+    snippet = (  # record/1050484
         '<datafield tag="595" ind1=" " ind2=" ">'
         '  <subfield code="a">Author prefers Alexandrov, A.S.</subfield>'
         '  <subfield code="9">SPIRES-HIDDEN</subfield>'
         '</datafield>'
-    )  # record/1050484
+    )
 
     expected = [
         {
@@ -1989,12 +1921,11 @@ def test_private_notes_from_595__double_a():
     schema = load_schema('authors')
     subschema = schema['properties']['_private_notes']
 
-    snippet = (
-        '<datafield tag="595" ind1=" " ind2=" ">'
-        '  <subfield code="a">"I want to hide my personal information on REDACTED" 7/2017</subfield>'
-        '  <subfield code="a">REDACTED</subfield>'
-        '</datafield>'
-    )  # record/1279232
+    snippet = (  # record/1279232
+        '<datafield tag="595" ind1=" " ind2=" ">  <subfield code="a">"I want to'
+        ' hide my personal information on REDACTED" 7/2017</subfield> '
+        ' <subfield code="a">REDACTED</subfield></datafield>'
+    )
 
     expected = [
         {'value': '"I want to hide my personal information on REDACTED" 7/2017'},
@@ -2018,18 +1949,14 @@ def test_urls_from_8564_u_and_8564_g_u_y():
     schema = load_schema('authors')
     subschema = schema['properties']['urls']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="856" ind1="4" ind2=" ">'
-        '    <subfield code="u">http://www.haydenplanetarium.org/tyson/</subfield>'
-        '  </datafield>'
-        '  <datafield tag="856" ind1="4" ind2=" ">'
-        '    <subfield code="g">active</subfield>'
-        '    <subfield code="u">https://twitter.com/neiltyson</subfield>'
-        '    <subfield code="y">TWITTER</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1073331
+    snippet = (  # record/1073331
+        '<record>  <datafield tag="856" ind1="4" ind2=" ">    <subfield'
+        ' code="u">http://www.haydenplanetarium.org/tyson/</subfield> '
+        ' </datafield>  <datafield tag="856" ind1="4" ind2=" ">    <subfield'
+        ' code="g">active</subfield>    <subfield'
+        ' code="u">https://twitter.com/neiltyson</subfield>    <subfield'
+        ' code="y">TWITTER</subfield>  </datafield></record>'
+    )
 
     expected = [
         {'value': 'http://www.haydenplanetarium.org/tyson/'},
@@ -2055,24 +1982,17 @@ def test_ids_from_8564_g_u_y_twitter():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
-        '<record>'
-        '  <datafield tag="856" ind1="4" ind2=" ">'
-        '    <subfield code="u">http://www.haydenplanetarium.org/tyson/</subfield>'
-        '  </datafield>'
-        '  <datafield tag="856" ind1="4" ind2=" ">'
-        '    <subfield code="g">active</subfield>'
-        '    <subfield code="u">https://twitter.com/neiltyson</subfield>'
-        '    <subfield code="y">TWITTER</subfield>'
-        '  </datafield>'
-        '</record>'
-    )  # record/1073331
+    snippet = (  # record/1073331
+        '<record>  <datafield tag="856" ind1="4" ind2=" ">    <subfield'
+        ' code="u">http://www.haydenplanetarium.org/tyson/</subfield> '
+        ' </datafield>  <datafield tag="856" ind1="4" ind2=" ">    <subfield'
+        ' code="g">active</subfield>    <subfield'
+        ' code="u">https://twitter.com/neiltyson</subfield>    <subfield'
+        ' code="y">TWITTER</subfield>  </datafield></record>'
+    )
 
     expected = [
-        {
-            'schema': 'TWITTER',
-            'value': 'neiltyson'
-        },
+        {'schema': 'TWITTER', 'value': 'neiltyson'},
     ]
     result = hepnames.do(create_record(snippet))
 
@@ -2095,17 +2015,15 @@ def test_ids_from_8564_u_wikipedia():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1018793
         '<datafield tag="856" ind1="4" ind2=" ">'
-        '  <subfield code="u">https://en.wikipedia.org/wiki/Torsten_%C3%85kesson</subfield>'
+        '  <subfield'
+        ' code="u">https://en.wikipedia.org/wiki/Torsten_%C3%85kesson</subfield>'
         '</datafield>'
-    )  # record/1018793
+    )
 
     expected = [
-        {
-            'schema': 'WIKIPEDIA',
-            'value': u'Torsten_Åkesson'
-        },
+        {'schema': 'WIKIPEDIA', 'value': u'Torsten_Åkesson'},
     ]
     result = hepnames.do(create_record(snippet))
 
@@ -2127,18 +2045,14 @@ def test_ids_from_8564_u_y_linkedin():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
-        '<datafield tag="856" ind1="4" ind2=" ">'
-        '  <subfield code="u">https://www.linkedin.com/in/silvia-adri%C3%A1n-mart%C3%ADnez-ab1a548b</subfield>'
-        '  <subfield code="y">LINKEDIN</subfield>'
-        '</datafield>'
-    )  # record/1423251
+    snippet = (  # record/1423251
+        '<datafield tag="856" ind1="4" ind2=" ">  <subfield'
+        ' code="u">https://www.linkedin.com/in/silvia-adri%C3%A1n-mart%C3%ADnez-ab1a548b</subfield>'
+        '  <subfield code="y">LINKEDIN</subfield></datafield>'
+    )
 
     expected = [
-        {
-            'schema': 'LINKEDIN',
-            'value': u'silvia-adrián-martínez-ab1a548b'
-        },
+        {'schema': 'LINKEDIN', 'value': u'silvia-adrián-martínez-ab1a548b'},
     ]
     result = hepnames.do(create_record(snippet))
 
@@ -2147,7 +2061,9 @@ def test_ids_from_8564_u_y_linkedin():
 
     expected = [
         {
-            'u': 'https://www.linkedin.com/in/silvia-adri%C3%A1n-mart%C3%ADnez-ab1a548b',
+            'u': (
+                'https://www.linkedin.com/in/silvia-adri%C3%A1n-mart%C3%ADnez-ab1a548b'
+            ),
             'y': 'LINKEDIN',
         },
     ]
@@ -2160,11 +2076,11 @@ def test_native_names_from_880__a():
     schema = load_schema('authors')
     subschema = schema['properties']['name']['properties']['native_names']
 
-    snippet = (
+    snippet = (  # record/1019097
         '<datafield tag="880" ind1=" " ind2=" ">'
         '  <subfield code="a">Գեւորգ Ն. Աբազաջիան</subfield>'
         '</datafield>'
-    )  # record/1019097
+    )
 
     expected = [u'Գեւորգ Ն. Աբազաջիան']
 
@@ -2185,11 +2101,11 @@ def test_ids_from_970__a():
     schema = load_schema('authors')
     subschema = schema['properties']['ids']
 
-    snippet = (
+    snippet = (  # record/1498151
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="a">HEPNAMES-646482</subfield>'
         '</datafield>'
-    )  # record/1498151
+    )
 
     expected = [
         {
@@ -2214,11 +2130,11 @@ def test_new_record_from_970__d():
     schema = load_schema('authors')
     subschema = schema['properties']['new_record']
 
-    snippet = (
+    snippet = (  # record/1271254
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="d">1039458</subfield>'
         '</datafield>'
-    )  # record/1271254
+    )
 
     expected = {'$ref': 'http://localhost:5000/api/authors/1039458'}
     result = hepnames.do(create_record(snippet))
@@ -2236,11 +2152,11 @@ def test_stub_from_980__a_useful():
     schema = load_schema('authors')
     subschema = schema['properties']['stub']
 
-    snippet = (
+    snippet = (  # record/1222902
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">USEFUL</subfield>'
         '</datafield>'
-    )  # record/1222902
+    )
 
     expected = False
     result = hepnames.do(create_record(snippet))
@@ -2264,11 +2180,11 @@ def test_stub_from_980__a_not_useful():
     schema = load_schema('authors')
     subschema = schema['properties']['stub']
 
-    snippet = (
+    snippet = (  # record/1019103
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">HEPNAMES</subfield>'
         '</datafield>'
-    )  # record/1019103
+    )
 
     expected = True
     result = hepnames.do(create_record(snippet))
@@ -2288,11 +2204,11 @@ def test_deleted_from_980__c():
     schema = load_schema('authors')
     subschema = schema['properties']['deleted']
 
-    snippet = (
+    snippet = (  # record/1511071
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="c">DELETED</subfield>'
         '</datafield>'
-    )  # record/1511071
+    )
 
     expected = True
     result = hepnames.do(create_record(snippet))

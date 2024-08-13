@@ -28,7 +28,6 @@ from inspire_dojson.utils.geo import (
     parse_institution_address,
 )
 
-
 # TODO: test match_country_code
 
 

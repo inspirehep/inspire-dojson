@@ -27,8 +27,8 @@ from __future__ import absolute_import, division, print_function
 from dojson import utils
 from idutils import normalize_doi
 
-from .model import data
-from ..utils import force_single_element, get_record_ref
+from inspire_dojson.data.model import data
+from inspire_dojson.utils import force_single_element, get_record_ref
 
 
 @data.over('dois', '^0247.')

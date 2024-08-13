@@ -28,17 +28,14 @@ import re
 from collections import defaultdict
 
 import pycountry
-
 from dojson import utils
 from idutils import is_arxiv_post_2007, is_doi, is_handle, normalize_doi
-
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import normalize_arxiv_category
 from inspire_utils.helpers import force_list
 
-from ..model import hep, hep2marc
-from ...utils import force_single_element, normalize_isbn
-
+from inspire_dojson.hep.model import hep, hep2marc
+from inspire_dojson.utils import force_single_element, normalize_isbn
 
 RE_LANGUAGE = re.compile(r'\/| or | and |,|=|\s+')
 
@@ -47,10 +44,13 @@ RE_LANGUAGE = re.compile(r'\/| or | and |,|=|\s+')
 @utils.for_each_value
 def isbns(self, key, value):
     """Populate the ``isbns`` key."""
+
     def _get_medium(value):
         def _normalize(medium):
             schema = load_schema('hep')
-            valid_media = schema['properties']['isbns']['items']['properties']['medium']['enum']
+            valid_media = schema['properties']['isbns']['items']['properties'][
+                'medium'
+            ]['enum']
 
             medium = medium.lower().replace('-', '').replace(' ', '')
             if medium in valid_media:
@@ -95,6 +95,7 @@ def dois(self, key, value):
 
     Also populates the ``persistent_identifiers`` key through side effects.
     """
+
     def _get_first_non_curator_source(sources):
         sources_without_curator = [el for el in sources if el.upper() != 'CURATOR']
         return force_single_element(sources_without_curator)
@@ -128,19 +129,23 @@ def dois(self, key, value):
         source = _get_first_non_curator_source(sources)
 
         if _is_doi(id_, schema):
-            dois.append({
-                'material': material,
-                'source': source,
-                'value': normalize_doi(id_),
-            })
+            dois.append(
+                {
+                    'material': material,
+                    'source': source,
+                    'value': normalize_doi(id_),
+                }
+            )
         else:
             schema = 'HDL' if _is_handle(id_, schema) else schema
-            persistent_identifiers.append({
-                'material': material,
-                'schema': schema,
-                'source': source,
-                'value': id_,
-            })
+            persistent_identifiers.append(
+                {
+                    'material': material,
+                    'schema': schema,
+                    'source': source,
+                    'value': id_,
+                }
+            )
 
     self['persistent_identifiers'] = persistent_identifiers
     return dois
@@ -174,8 +179,10 @@ def persistent_identifiers2marc(self, key, value):
 def texkeys(self, key, value):
     """Populate the ``texkeys`` key.
 
-    Also populates the ``external_system_identifiers`` and ``_desy_bookkeeping`` keys through side effects.
+    Also populates the ``external_system_identifiers`` and
+    ``_desy_bookkeeping`` keys through side effects.
     """
+
     def _is_oai(id_, schema):
         return id_.startswith('oai:')
 
@@ -207,10 +214,13 @@ def texkeys(self, key, value):
             elif _is_desy(id_, schema):
                 _desy_bookkeeping.append({'identifier': id_})
             else:
-                external_system_identifiers.insert(0, {
-                    'schema': schema,
-                    'value': id_,
-                })
+                external_system_identifiers.insert(
+                    0,
+                    {
+                        'schema': schema,
+                        'value': id_,
+                    },
+                )
 
         for id_ in other_ids:
             id_ = id_.strip()
@@ -224,10 +234,12 @@ def texkeys(self, key, value):
             elif _is_desy(id_, schema):
                 _desy_bookkeeping.append({'identifier': id_})
             else:
-                external_system_identifiers.append({
-                    'schema': schema,
-                    'value': id_,
-                })
+                external_system_identifiers.append(
+                    {
+                        'schema': schema,
+                        'value': id_,
+                    }
+                )
 
     self['external_system_identifiers'] = external_system_identifiers
     self['_desy_bookkeeping'] = _desy_bookkeeping
@@ -242,16 +254,20 @@ def texkeys2marc(self, key, value):
     values = force_list(value)
     if values:
         value = values[0]
-        result.append({
-            '9': 'INSPIRETeX',
-            'a': value,
-        })
+        result.append(
+            {
+                '9': 'INSPIRETeX',
+                'a': value,
+            }
+        )
 
         for value in values[1:]:
-            result.append({
-                '9': 'INSPIRETeX',
-                'z': value,
-            })
+            result.append(
+                {
+                    '9': 'INSPIRETeX',
+                    'z': value,
+                }
+            )
 
     return result
 
@@ -264,6 +280,7 @@ def external_system_identifiers2marc(self, key, value):
     ``id_dict`` dictionary that holds potentially duplicate IDs that are
     post-processed in a filter.
     """
+
     def _is_scheme_cernkey(id_, schema):
         return schema == 'CERNKEY'
 
@@ -280,14 +297,18 @@ def external_system_identifiers2marc(self, key, value):
         schema = value.get('schema')
 
         if _is_scheme_spires(id_, schema):
-            result_970.append({
-                'a': id_,
-            })
+            result_970.append(
+                {
+                    'a': id_,
+                }
+            )
         elif _is_scheme_cernkey(id_, schema):
-            result_035.append({
-                '9': 'CERNKEY',
-                'z': id_,
-            })
+            result_035.append(
+                {
+                    '9': 'CERNKEY',
+                    'z': id_,
+                }
+            )
         else:
             id_dict[schema].append(id_)
 
@@ -302,6 +323,7 @@ def arxiv_eprints(self, key, value):
 
     Also populates the ``report_numbers`` key through side effects.
     """
+
     def _get_clean_arxiv_eprint(id_):
         return id_.split(':')[-1]
 
@@ -323,26 +345,34 @@ def arxiv_eprints(self, key, value):
     for value in values:
         id_ = force_single_element(value.get('a', ''))
         other_id = force_single_element(value.get('z', ''))
-        categories = [normalize_arxiv_category(category) for category
-                      in force_list(value.get('c'))]
+        categories = [
+            normalize_arxiv_category(category)
+            for category in force_list(value.get('c'))
+        ]
         source = force_single_element(value.get('9', ''))
 
         if _is_arxiv_eprint(id_, source):
-            arxiv_eprints.append({
-                'categories': categories,
-                'value': _get_clean_arxiv_eprint(id_),
-            })
+            arxiv_eprints.append(
+                {
+                    'categories': categories,
+                    'value': _get_clean_arxiv_eprint(id_),
+                }
+            )
         elif _is_hidden_report_number(other_id, source):
-            report_numbers.append({
-                'hidden': True,
-                'source': _get_clean_source(source),
-                'value': other_id,
-            })
+            report_numbers.append(
+                {
+                    'hidden': True,
+                    'source': _get_clean_source(source),
+                    'value': other_id,
+                }
+            )
         else:
-            report_numbers.append({
-                'source': _get_clean_source(source),
-                'value': id_,
-            })
+            report_numbers.append(
+                {
+                    'source': _get_clean_source(source),
+                    'value': id_,
+                }
+            )
 
     self['report_numbers'] = report_numbers
     return arxiv_eprints
@@ -361,23 +391,29 @@ def arxiv_eprints2marc(self, key, values):
     for value in values:
         arxiv_id = value.get('value')
         arxiv_id = 'arXiv:' + arxiv_id if is_arxiv_post_2007(arxiv_id) else arxiv_id
-        result_037.append({
-            '9': 'arXiv',
-            'a': arxiv_id,
-            'c': force_single_element(value.get('categories')),
-        })
+        result_037.append(
+            {
+                '9': 'arXiv',
+                'a': arxiv_id,
+                'c': force_single_element(value.get('categories')),
+            }
+        )
 
-        result_035.append({
-            '9': 'arXiv',
-            'a': 'oai:arXiv.org:' + value.get('value'),
-        })
+        result_035.append(
+            {
+                '9': 'arXiv',
+                'a': 'oai:arXiv.org:' + value.get('value'),
+            }
+        )
 
         categories = force_list(value.get('categories'))
         for category in categories:
-            result_65017.append({
-                '2': 'arXiv',
-                'a': category,
-            })
+            result_65017.append(
+                {
+                    '2': 'arXiv',
+                    'a': category,
+                }
+            )
 
     self['65017'] = result_65017
     self['035'] = result_035
@@ -388,6 +424,7 @@ def arxiv_eprints2marc(self, key, values):
 @utils.for_each_value
 def report_numbers2marc(self, key, value):
     """Populate the ``037`` MARC field."""
+
     def _get_mangled_source(source):
         if source == 'arXiv':
             return 'arXiv:reportnumber'
