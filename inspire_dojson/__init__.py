@@ -28,4 +28,4 @@ from inspire_dojson import common  # noqa: F401
 from inspire_dojson.api import marcxml2record, record2marcxml  # noqa: F401
 from inspire_dojson.errors import DoJsonError  # noqa: F401
 
-__version__ = "63.2.23"
+__version__ = "63.2.24"
