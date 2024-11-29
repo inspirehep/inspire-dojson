@@ -43,7 +43,7 @@ install_requires = [
     "langdetect~=1.0,>=1.0.7",
     "pycountry~=17.0,>=17.5.4",
     "MarkupSafe>=1.1.1",
-    "urllib3~=1.25.0",
+    "urllib3>=2.2.2",
 ]
 
 docs_require = []
