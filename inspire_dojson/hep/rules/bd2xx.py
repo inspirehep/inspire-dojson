@@ -65,8 +65,11 @@ def titles(self, key, value):
 @utils.for_each_value
 def title_translations(self, key, value):
     """Populate the ``title_translations`` key."""
+    language = langdetect.detect(value.get('a'))
+    if language:
+        language = language.split("-")[0]
     return {
-        'language': langdetect.detect(value.get('a')),
+        'language': language,
         'source': value.get('9'),
         'subtitle': value.get('b'),
         'title': value.get('a'),
