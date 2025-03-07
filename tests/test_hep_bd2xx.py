@@ -218,6 +218,38 @@ def test_title_translations_from_242__a():
 
 
 @pytest.mark.usefixtures(name='_stable_langdetect')
+def test_title_translations_from_242__a_handles_chinese_correctly():
+    schema = load_schema('hep')
+    subschema = schema['properties']['title_translations']
+
+    snippet = (
+        '<datafield tag="242" ind1=" " ind2=" ">'
+        '  <subfield code="a">LHCb上底介子含粲衰变过程中强子谱学的实验研究</subfield>'
+        '</datafield>'
+    )
+
+    expected = [
+        {
+            'language': 'zh',
+            'title': 'LHCb上底介子含粲衰变过程中强子谱学的实验研究',
+        },
+    ]
+    result = hep.do(create_record(snippet))
+
+    assert validate(result['title_translations'], subschema) is None
+    assert expected == result['title_translations']
+
+    expected = [
+        {
+            'a': 'LHCb上底介子含粲衰变过程中强子谱学的实验研究',
+        },
+    ]
+    result = hep2marc.do(result)
+
+    assert expected == result['242']
+
+
+@pytest.mark.usefixtures(name='_stable_langdetect')
 def test_title_translations_from_242__a_b():
     schema = load_schema('hep')
     subschema = schema['properties']['title_translations']
