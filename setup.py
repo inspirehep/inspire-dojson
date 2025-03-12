@@ -33,7 +33,6 @@ with open("README.rst") as f:
 
 
 install_requires = [
-    'bump2version~=1.0',
     "Flask>=0.12.3",
     "IDUtils~=1.0,>=1.0.1",
     "dojson~=1.0,>=1.3.1",
