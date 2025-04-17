@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "inspire-dojson"
+version = "63.2.27"
+description = "INSPIRE-specific rules to transform from MARCXML to JSON and back."
+readme = "README.md"
+homepage = "https://github.com/inspirehep/inspire-dojson"
+license = "GPL-2.0-or-later"
+authors = [
+    "CERN <admin@inspirehep.net>"
+]
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+
+[tool.poetry.dependencies]
+python = ">=2.7,<2.8 || >=3.11,<4.0"
+Flask = ">=0.12.3"
+idutils =  { version = "~=1.2,>=1.2.1",   markers = "python_version >= '3.11' and python_version < '4.0'" }
+inspire-idutils =  { version = "1.2.4",   markers = "python_version < '3.11'" }
+pycountry = "~=17.0,>=17.5.4"
+dojson = [
+    {version = "^1.5.0",  markers = "python_version >= '3.11' and python_version < '4.0'" },
+    {version = "~=1.0,>=1.3.1", markers = "python_version < '3.11'" }
+]
+inspire-utils = "^3.0.63"
+langdetect = "^1.0.9"
+inspire-schemas = "^61.6.13"
+
+
+[tool.poetry.dev-dependencies]
+mock = "~=2.0,>=2.0.0"
+pytest = [
+    { version = "^8.3.5", markers = "python_version >= '3.11' and python_version < '4.0'" },
+    { version = "~=4.0,>=4.6", markers = "python_version < '3.11'" }
+]
+pytest-cov = [
+    { version = "^5.0.0", markers = "python_version >= '3.11' and python_version < '4.0'" },
+    { version = "~=2.0,>=2.6.1", markers = "python_version < '3.11'" }
+]
+
+[tool.coverage.run]
+include = ["inspire_dojson/*.py"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=inspire_dojson --cov-report=term-missing:skip-covered"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
