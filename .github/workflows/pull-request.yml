@@ -5,5 +5,8 @@ on:
     branches: [master]
 
 jobs:
-  tests:
-    uses: ./.github/workflows/test.yml
+  # python2_tests:
+  #   uses: ./.github/workflows/test-python-2.yml
+
+  python3_tests:
+    uses: ./.github/workflows/test-python-3.yml

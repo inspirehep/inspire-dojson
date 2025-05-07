@@ -32,13 +32,13 @@ from inspire_schemas.utils import (
     split_page_artid,
 )
 from inspire_utils.helpers import force_list, maybe_int
+from inspire_utils.isbn import normalize_isbn
 
 from inspire_dojson.hep.model import hep, hep2marc
 from inspire_dojson.utils import (
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
-    normalize_isbn,
 )
 
 

@@ -1,69 +1,17 @@
-name: Build and release
+name: Pull request master
 
 on:
   push:
     branches: [master]
 
 jobs:
-  tests:
-    uses: ./.github/workflows/test.yml
+  # python2_tests:
+  #   uses: ./.github/workflows/test-python-2.yml
 
-  bump:
-    needs: [tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  python3_tests:
+    uses: ./.github/workflows/test-python-3.yml
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.8'
-
-      - name: Install bump2version
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          pip install bump2version
-
-      - name: Configure git
-        shell: bash
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-
-      - name: Bump version
-        shell: bash
-        run: |
-          bump2version patch --tag --verbose
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-          tags: true
-
-      - name: Install python dependencies
-        run: |
-          pip --no-cache-dir install setuptools wheel
-          pip --no-cache-dir install -e .[tests,docs]
-
-      - name: Show python dependencies
-        run: |
-          pip freeze
-
-      - name: Build package
-        run: |
-          mkdir clean-build
-          python setup.py sdist bdist_wheel --universal --dist-dir ./clean-build
-
-      - name: Publish package
-        uses: pypa/gh-action-pypi-publish@v1.3.1
-        with:
-          verify_metadata: false
-          user: __token__
-          password: ${{ secrets.pypi_password }}
-          packages_dir: clean-build/
+  bump_version:
+    needs: [python3_tests]
+    uses: ./.github/workflows/bump-and-publish.yml
+    secrets: inherit

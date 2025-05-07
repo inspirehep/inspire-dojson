@@ -33,9 +33,10 @@ from idutils import is_arxiv_post_2007, is_doi, is_handle, normalize_doi
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import normalize_arxiv_category
 from inspire_utils.helpers import force_list
+from inspire_utils.isbn import normalize_isbn
 
 from inspire_dojson.hep.model import hep, hep2marc
-from inspire_dojson.utils import force_single_element, normalize_isbn
+from inspire_dojson.utils import force_single_element
 
 RE_LANGUAGE = re.compile(r'\/| or | and |,|=|\s+')
 

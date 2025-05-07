@@ -32,20 +32,10 @@ from flask import current_app
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
-from isbn import ISBN
 from six import binary_type, iteritems, text_type
 from six.moves import urllib
 
 DEFAULT_AFS_PATH = '/afs/cern.ch/project/inspire/PROD'
-
-
-def normalize_isbn(isbn):
-    """Normalize an ISBN in order to be schema-compliant."""
-    try:
-        return str(ISBN(isbn))
-    except Exception:
-        return isbn
-
 
 def normalize_rank(rank):
     """Normalize a rank in order to be schema-compliant."""
