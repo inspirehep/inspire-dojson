@@ -1289,7 +1289,6 @@ def test_accelerator_experiments_from_693__a():
         },
     ]
     result = cds2hep_marc.do(create_record(snippet))
-
     assert expected == result['693__']
 
     expected = [
@@ -1334,6 +1333,65 @@ def test_accelerator_experiments_from_693__a_e():
     assert validate(result['accelerator_experiments'], subschema) is None
     assert expected == result['accelerator_experiments']
 
+def test_accelerator_experiments_from_693__a_e_multiple_e():
+    schema = load_schema('hep')
+    subschema = schema['properties']['accelerator_experiments']
+
+    snippet = (  # cds.cern.ch/record/2927944
+        '<record>'
+        '  <datafield tag="693" ind1=" " ind2=" ">'
+        '    <subfield code="a">CERN LHC</subfield>'
+        '    <subfield code="e">ATLAS</subfield>'
+        '    <subfield code="e">CMS</subfield>'
+        '    <subfield code="e">LHCb</subfield>'
+        '  </datafield>'
+        '  <datafield tag="693" ind1=" " ind2=" ">'
+        '    <subfield code="a">SuperKEK</subfield>'
+        '    <subfield code="e">Belle II</subfield>'
+        '  </datafield>'
+        '</record>'
+    )
+
+    expected = [
+        {
+            'a': 'CERN LHC',
+            'e': 'CERN-LHC-ATLAS'
+        },
+        {
+            'a': 'CERN LHC',
+            'e': 'CERN-LHC-CMS'
+        },
+        {
+            'a': 'CERN LHC',
+            'e': 'CERN-LHC-LHCb'
+        },
+        {
+            'a': 'SuperKEK',
+            'e': 'Belle II'
+        }
+    ]
+
+    result = cds2hep_marc.do(create_record(snippet))
+    assert expected == result['693__']
+
+    expected = [
+        {
+            'legacy_name': 'CERN-LHC-ATLAS',
+        },
+        {
+            'legacy_name': 'CERN-LHC-CMS',
+        },
+        {
+            'legacy_name': 'CERN-LHC-LHCb',
+        },
+        {
+            'legacy_name': 'Belle II',
+        }
+    ]
+    result = hep.do(create_record_from_dict(result))
+
+    assert validate(result['accelerator_experiments'], subschema) is None
+    assert expected == result['accelerator_experiments']
 
 def test_accelerator_experiments_from_693__a_e_ignores_not_applicable():
     snippet = (  # cds.cern.ch/record/329074

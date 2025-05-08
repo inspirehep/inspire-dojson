@@ -397,15 +397,20 @@ def keywords(self, key, value):
 
 
 @cds2hep_marc.over('693__', '^693..')
+@utils.flatten
 @utils.for_each_value
 def accelerator_experiments(self, key, value):
     accelerator = ignore_not_applicable(value.get('a'))
-    experiment = ignore_not_applicable(value.get('e'))
-    experiment = EXPERIMENTS.get((accelerator, experiment), experiment)
-    return {
-        'a': accelerator,
-        'e': experiment,
-    }
+    experiments = force_list(value.get('e')) if value.get('e') else [None]
+    filtered_not_applicable = [ignore_not_applicable(experiment)
+                               for experiment in experiments]
+    return [
+        {
+            'a': accelerator,
+            'e': EXPERIMENTS.get((accelerator, exp), exp)
+        }
+        for exp in filtered_not_applicable
+    ]
 
 
 @cds2hep_marc.over('65017', '^695..')
