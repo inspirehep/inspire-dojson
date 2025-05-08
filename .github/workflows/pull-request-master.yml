@@ -1,17 +1,19 @@
 name: Pull request master
 
 on:
-  push:
+  pull_request:
     branches: [master]
 
 jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+
   python2_tests:
+    needs: [lint]
     uses: ./.github/workflows/test-python-2.yml
 
   python3_tests:
+    needs: [lint]
     uses: ./.github/workflows/test-python-3.yml
-
-  bump_version:
-    needs: [python2_tests, python3_tests]
-    uses: ./.github/workflows/bump-and-publish.yml
-    secrets: inherit

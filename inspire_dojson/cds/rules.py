@@ -24,7 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import contextlib
 import os
 import re
 from itertools import chain
@@ -223,10 +222,12 @@ def languages(self, key, value):
         try:
             languages.append({'a': pycountry.languages.get(alpha_3=alpha_3).name})
         except KeyError:
-            with contextlib.suppress(KeyError):
+            try:
                 languages.append(
                     {'a': pycountry.languages.get(bibliographic=alpha_3).name}
                 )
+            except KeyError:
+                pass
 
     return languages
 
