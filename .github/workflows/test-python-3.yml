@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.11'
 
       - name: Install python dependencies
         run: |
@@ -24,9 +24,7 @@ jobs:
           pip --no-cache-dir install --user -e .[tests,docs]
 
       - name: Show python dependencies
-        run: |
-          pip freeze
+        run: pip freeze
 
       - name: Run tests
-        run: |
-          ./run-tests.sh
+        run: ./run-tests.sh

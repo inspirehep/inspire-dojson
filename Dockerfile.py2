@@ -1,0 +1,11 @@
+FROM python:2.7.18-buster
+
+ARG APP_HOME=/code
+WORKDIR ${APP_HOME}
+
+COPY . .
+
+RUN pip install --upgrade pip
+RUN pip --no-cache-dir install -e .[tests,docs]
+
+CMD ["/bin/bash"]
