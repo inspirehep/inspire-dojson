@@ -49,7 +49,8 @@ docs_require = []
 tests_require = [
     "flake8-future-import~=0.0,>=0.4.3",
     "mock~=2.0,>=2.0.0",
-    "pytest~=4.0,>=4.6",
+    'pytest~=4.0,>=4.6; python_version == "2.7"',
+    'pytest~=6.0,>=6.2.5; python_version >= "3"',
     "pytest-cov~=2.0,>=2.6.1",
 ]
 
@@ -93,7 +94,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
