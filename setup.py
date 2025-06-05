@@ -36,7 +36,7 @@ install_requires = [
     "Flask>=0.12.3",
     "IDUtils~=1.0,>=1.0.1",
     "dojson~=1.0,>=1.3.1",
-    "inspire-schemas",
+    "inspire-schemas~=61.6,>=61.6.17",
     "inspire-utils~=3.0,>=3.0.65",
     "langdetect~=1.0,>=1.0.7",
     "pycountry~=17.0,>=17.5.4",
