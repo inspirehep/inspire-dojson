@@ -219,15 +219,13 @@ def languages(self, key, value):
 
     for language in values:
         alpha_3 = language.strip().lower()
-        try:
-            languages.append({'a': pycountry.languages.get(alpha_3=alpha_3).name})
-        except KeyError:
-            try:
-                languages.append(
-                    {'a': pycountry.languages.get(bibliographic=alpha_3).name}
-                )
-            except KeyError:
-                pass
+        language_match = pycountry.languages.get(alpha_3=alpha_3)
+
+        if language_match is None:
+            language_match = pycountry.languages.get(bibliographic=alpha_3)
+
+        if language_match is not None:
+            languages.append({'a': language_match.name})
 
     return languages
 
