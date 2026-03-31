@@ -40,7 +40,8 @@ install_requires = [
     "inspire-schemas",
     "inspire-utils~=3.0,>=3.0.65",
     "langdetect~=1.0,>=1.0.7",
-    "pycountry~=17.0,>=17.5.4",
+    'pycountry==18.12.8; python_version == "2.7"',
+    'pycountry>=18.12.8,<27; python_version >= "3"',
     "MarkupSafe>=1.1.1",
     "urllib3~=1.26.0",
 ]

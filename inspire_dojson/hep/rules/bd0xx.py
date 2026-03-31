@@ -453,11 +453,14 @@ def languages(self, key, value):
     values = force_list(value.get('a'))
     for value in values:
         for language in RE_LANGUAGE.split(value):
-            try:
-                name = language.strip().capitalize()
-                languages.append(pycountry.languages.get(name=name).alpha_2)
-            except KeyError:
-                pass
+
+            name = language.strip().capitalize()
+
+            language_match = pycountry.languages.get(name=name)
+            if language_match is None:
+                continue
+
+            languages.append(language_match.alpha_2)
 
     return languages
 
