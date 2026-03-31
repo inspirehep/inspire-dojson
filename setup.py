@@ -43,7 +43,6 @@ install_requires = [
     'pycountry==18.12.8; python_version == "2.7"',
     'pycountry>=18.12.8,<27; python_version >= "3"',
     "MarkupSafe>=1.1.1",
-    "urllib3~=1.26.0",
 ]
 
 docs_require = []
