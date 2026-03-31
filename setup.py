@@ -87,7 +87,7 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     extras_require=extras_require,
-    version="63.2.33",
+    version="63.2.34",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
