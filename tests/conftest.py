@@ -21,9 +21,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
+
 import pytest
-from flask import Flask
 from langdetect import DetectorFactory
+from mock import patch
 
 CONFIG = {
     'SERVER_NAME': 'localhost:5000',
@@ -31,16 +33,14 @@ CONFIG = {
 }
 
 
-@pytest.fixture(autouse=True, scope='session')
-def app():
-    app = Flask(__name__)
-    app.config.update(CONFIG)
-    with app.app_context():
-        yield app
+@pytest.fixture(autouse=True)
+def _env_config():
+    with patch.dict(os.environ, CONFIG):
+        yield
 
 
 @pytest.fixture()
-def _stable_langdetect(app):
+def _stable_langdetect():
     """Ensure that ``langdetect`` always returns the same thing.
 
     See: https://github.com/Mimino666/langdetect#basic-usage.

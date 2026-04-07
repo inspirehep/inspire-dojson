@@ -22,9 +22,10 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
+
 import pytest
 from dojson.contrib.marc21.utils import create_record
-from flask import current_app
 from inspire_schemas.api import load_schema, validate
 from mock import patch
 
@@ -34,7 +35,7 @@ from inspire_dojson.hep import hep, hep2marc
 @pytest.fixture()
 def _legacy_afs_service_config():
     config = {'LABS_AFS_HTTP_SERVICE': 'http://legacy-afs-web'}
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config):
         yield
 
 

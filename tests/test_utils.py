@@ -22,8 +22,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
+
 import pytest
-from flask import current_app
 from mock import patch
 
 from inspire_dojson.utils import (
@@ -97,10 +98,10 @@ def test_force_single_element_returns_none_on_empty_list():
     assert force_single_element([]) is None
 
 
-def test_absolute_url_with_undef_server_name():
-    config = {'SERVER_NAME': None}
+def test_absolute_url_with_missing_server_name():
+    config = {}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://inspirehep.net/foo'
         result = absolute_url('foo')
 
@@ -110,7 +111,7 @@ def test_absolute_url_with_undef_server_name():
 def test_absolute_url_with_server_name_localhost():
     config = {'SERVER_NAME': 'localhost:5000'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://localhost:5000/foo'
         result = absolute_url('foo')
 
@@ -120,7 +121,7 @@ def test_absolute_url_with_server_name_localhost():
 def test_absolute_url_with_http_server_name():
     config = {'SERVER_NAME': 'http://example.com'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://example.com/foo'
         result = absolute_url('foo')
 
@@ -130,7 +131,7 @@ def test_absolute_url_with_http_server_name():
 def test_absolute_url_with_https_server_name():
     config = {'SERVER_NAME': 'https://example.com'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'https://example.com/foo'
         result = absolute_url('foo')
 
@@ -138,9 +139,12 @@ def test_absolute_url_with_https_server_name():
 
 
 def test_absolute_url_with_https_preferred_scheme():
-    config = {'PREFERRED_URL_SCHEME': 'https'}
+    config = {
+        'SERVER_NAME': 'localhost:5000',
+        'PREFERRED_URL_SCHEME': 'https',
+    }
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'https://localhost:5000/foo'
         result = absolute_url('foo')
 
@@ -187,7 +191,7 @@ def test_afs_url_handles_none():
 def test_afs_url_with_custom_afs_path():
     config = {'LEGACY_AFS_PATH': '/custom/path/'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'file:///custom/path/var/file.txt'
         result = afs_url('/opt/cds-invenio/var/file.txt')
 
@@ -206,7 +210,7 @@ def test_afs_url_handles_unicode():
 def test_afs_url_with_afs_service_enabled_and_encodes_characters():
     config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://jessicajones.com/nested/nested/var/file%20with%20spaces.txt'
         result = afs_url('/opt/cds-invenio/var/file with spaces.txt')
 
@@ -216,7 +220,7 @@ def test_afs_url_with_afs_service_enabled_and_encodes_characters():
 def test_afs_url_with_afs_service_enabled_converts_afs_path():
     config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://jessicajones.com/nested/nested/var/file.txt'
         result = afs_url('/opt/cds-invenio/var/file.txt')
 
@@ -226,7 +230,7 @@ def test_afs_url_with_afs_service_enabled_converts_afs_path():
 def test_afs_url_with_afs_service_enabled_with_trailing_slash_converts_afs_path():
     config = {'LABS_AFS_HTTP_SERVICE': 'http://jessicajones.com/nested/nested/'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://jessicajones.com/nested/nested/var/file.txt'
         result = afs_url('/opt/cds-invenio/var/file.txt')
 
@@ -253,7 +257,7 @@ def test_afs_url_converts_afs_url_to_path():
     }
 
     expected = "file:///afs/cern.ch/project/inspire/PROD/var/file.txt"
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config):
         result = afs_url_to_path("http://jessicajones.com/nested/nested/var/file.txt")
 
     assert expected == result
@@ -266,16 +270,16 @@ def test_afs_url_handles_custom_afs_path():
     }
 
     expected = "file:///foo/bar/var/file.txt"
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config):
         result = afs_url_to_path("http://jessicajones.com/nested/nested/var/file.txt")
 
     assert expected == result
 
 
-def test_get_record_ref_with_empty_server_name():
-    config = {'SERVER_NAME': None}
+def test_get_record_ref_with_missing_server_name():
+    config = {}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://inspirehep.net/api/endpoint/123'
         result = get_record_ref(123, 'endpoint')
 
@@ -285,7 +289,7 @@ def test_get_record_ref_with_empty_server_name():
 def test_get_record_ref_with_server_name_localhost():
     config = {'SERVER_NAME': 'localhost:5000'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config):
         expected = 'http://localhost:5000/api/endpoint/123'
         result = get_record_ref(123, 'endpoint')
 
@@ -295,7 +299,7 @@ def test_get_record_ref_with_server_name_localhost():
 def test_get_record_ref_with_http_server_name():
     config = {'SERVER_NAME': 'http://example.com'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config):
         expected = 'http://example.com/api/endpoint/123'
         result = get_record_ref(123, 'endpoint')
 
@@ -305,7 +309,7 @@ def test_get_record_ref_with_http_server_name():
 def test_get_record_ref_with_https_server_name():
     config = {'SERVER_NAME': 'https://example.com'}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config):
         expected = 'https://example.com/api/endpoint/123'
         result = get_record_ref(123, 'endpoint')
 
@@ -317,9 +321,9 @@ def test_get_record_ref_without_recid_returns_none():
 
 
 def test_get_record_ref_without_endpoint_defaults_to_record():
-    config = {'SERVER_NAME': None}
+    config = {}
 
-    with patch.dict(current_app.config, config):
+    with patch.dict(os.environ, config, clear=True):
         expected = 'http://inspirehep.net/api/record/123'
         result = get_record_ref(123)
 

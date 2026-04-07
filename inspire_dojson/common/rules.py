@@ -24,11 +24,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 from datetime import datetime
 
 from dojson import utils
-from flask import current_app
 from inspire_schemas.api import load_schema
 from inspire_schemas.utils import classify_field
 from inspire_utils.date import PartialDate, earliest_date
@@ -43,6 +43,7 @@ from inspire_dojson.hepnames.model import hepnames, hepnames2marc
 from inspire_dojson.institutions.model import institutions
 from inspire_dojson.journals.model import journals
 from inspire_dojson.utils import (
+    DEFAULT_SERVER_NAME,
     force_single_element,
     get_recid_from_ref,
     get_record_ref,
@@ -839,7 +840,9 @@ def public_notes_680(self, key, value):
 @journals.over('urls', '^8564.')
 def urls(self, key, value):
     def _is_internal_url(url):
-        base = urllib.parse.urlparse(current_app.config['LEGACY_BASE_URL'])
+        base = urllib.parse.urlparse(
+            os.environ.get('LEGACY_BASE_URL', DEFAULT_SERVER_NAME)
+        )
         base_netloc = base.netloc or base.path
         base_domain = '.'.join(base_netloc.split('.')[-2:])
         parsed_url = urllib.parse.urlparse(url)
