@@ -28,7 +28,6 @@ import os
 import re
 
 from dojson.utils import GroupableOrderedDict
-from flask import current_app
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
@@ -36,6 +35,8 @@ from six import binary_type, iteritems, text_type
 from six.moves import urllib
 
 DEFAULT_AFS_PATH = '/afs/cern.ch/project/inspire/PROD'
+DEFAULT_SERVER_NAME = 'http://inspirehep.net'
+DEFAULT_PREFERRED_URL_SCHEME = 'http'
 
 def normalize_rank(rank):
     """Normalize a rank in order to be schema-compliant."""
@@ -88,12 +89,13 @@ def get_recid_from_ref(ref_obj):
 def absolute_url(relative_url):
     """Returns an absolute URL from a URL relative to the server root.
 
-    The base URL is taken from the Flask app config if present, otherwise it
+    The base URL is taken from environment variables if present, otherwise it
     falls back to ``http://inspirehep.net``.
     """
-    default_server = 'http://inspirehep.net'
-    server = current_app.config['SERVER_NAME'] or default_server
-    scheme = current_app.config['PREFERRED_URL_SCHEME']
+    server = os.environ.get('SERVER_NAME', DEFAULT_SERVER_NAME)
+    scheme = os.environ.get(
+        'PREFERRED_URL_SCHEME', DEFAULT_PREFERRED_URL_SCHEME
+    )
     if not re.match('^https?://', server):
         server = u'{scheme}://{server}'.format(scheme=scheme, server=server)
     return urllib.parse.urljoin(server, relative_url)
@@ -105,11 +107,11 @@ def afs_url(file_path):
     If ``file_path`` doesn't start with ``/opt/cds-invenio/``, and hence is not on
     AFS, it returns it unchanged.
 
-    The base AFS path is taken from the Flask app config if present, otherwise
+    The base AFS path is taken from environment variables if present, otherwise
     it falls back to ``/afs/cern.ch/project/inspire/PROD``.
     """
-    afs_path = current_app.config.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
-    afs_service = current_app.config.get('LABS_AFS_HTTP_SERVICE')
+    afs_path = os.environ.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
+    afs_service = os.environ.get('LABS_AFS_HTTP_SERVICE')
 
     if file_path is None:
         return None
@@ -142,11 +144,11 @@ def afs_url_to_path(url):
     If ``url`` doesn't start with the AFS HTTP service and hence is not on
     AFS, it returns it unchanged.
 
-    The base AFS path is taken from the Flask app config if present, otherwise
+    The base AFS path is taken from environment variables if present, otherwise
     it falls back to ``/afs/cern.ch/project/inspire/PROD``.
     """
-    afs_path = current_app.config.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
-    afs_service = current_app.config.get('LABS_AFS_HTTP_SERVICE')
+    afs_path = os.environ.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
+    afs_service = os.environ.get('LABS_AFS_HTTP_SERVICE')
 
     if url is None:
         return None

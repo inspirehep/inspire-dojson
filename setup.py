@@ -33,7 +33,6 @@ with open("README.rst") as f:
 
 
 install_requires = [
-    "Flask>=0.12.3",
     "IDUtils~=1.0,>=1.0.1",
     'dojson==1.4.0; python_version == "2.7"',
     'dojson~=1.0,>=1.3.1; python_version >= "3"',
