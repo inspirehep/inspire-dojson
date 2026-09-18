@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import urllib.parse
 from itertools import chain
 
 from dojson.contrib.marc21.utils import create_record
@@ -33,8 +34,6 @@ from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 from lxml.builder import E
 from lxml.etree import tostring
-from six import iteritems, text_type, unichr
-from six.moves import urllib
 
 from inspire_dojson.cds import cds2hep_marc
 from inspire_dojson.conferences import conferences
@@ -48,7 +47,7 @@ from inspire_dojson.journals import journals
 from inspire_dojson.utils import create_record_from_dict, force_single_element
 
 try:
-    unichr(0x100000)
+    chr(0x100000)
     RE_INVALID_CHARS_FOR_XML = re.compile(
         u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]+'
     )
@@ -113,22 +112,22 @@ def record2marcxml_etree(record):
 
     record = RECORD()
 
-    for key, values in sorted(iteritems(marcjson)):
+    for key, values in sorted(marcjson.items()):
         tag, ind1, ind2 = _parse_key(key)
         if _is_controlfield(tag, ind1, ind2):
             value = force_single_element(values)
-            if not isinstance(value, text_type):
-                value = text_type(value)
+            if not isinstance(value, str):
+                value = str(value)
             record.append(
                 CONTROLFIELD(_strip_invalid_chars_for_xml(value), {'tag': tag})
             )
         else:
             for value in force_list(values):
                 datafield = DATAFIELD({'tag': tag, 'ind1': ind1, 'ind2': ind2})
-                for code, els in sorted(iteritems(value)):
+                for code, els in sorted(value.items()):
                     for el in force_list(els):
-                        if not isinstance(el, text_type):
-                            el = text_type(el)
+                        if not isinstance(el, str):
+                            el = str(el)
                         datafield.append(
                             SUBFIELD(_strip_invalid_chars_for_xml(el), {'code': code})
                         )

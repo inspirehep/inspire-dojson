@@ -26,13 +26,13 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import urllib.parse
+from urllib import request
 
 from dojson.utils import GroupableOrderedDict
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
-from six import binary_type, iteritems, text_type
-from six.moves import urllib
 
 DEFAULT_AFS_PATH = '/afs/cern.ch/project/inspire/PROD'
 DEFAULT_SERVER_NAME = 'http://inspirehep.net'
@@ -128,11 +128,11 @@ def afs_url(file_path):
         if afs_service:
             return os.path.join(
                 afs_service,
-                urllib.request.pathname2url(file_path.encode('utf-8')),
+                request.pathname2url(file_path),
             )
         file_path = os.path.join(afs_path, file_path)
         return urllib.parse.urljoin(
-            'file://', urllib.request.pathname2url(file_path.encode('utf-8'))
+            'file://', request.pathname2url(file_path)
         )
 
     return file_path
@@ -242,17 +242,17 @@ def normalize_date_aggressively(date):
 
 def create_record_from_dict(dictionary):
     """Create an input record for dojson from a dict."""
-    return GroupableOrderedDict(iteritems(dictionary))
+    return GroupableOrderedDict(dictionary.items())
 
 
 def quote_url(unquoted):
-    if isinstance(unquoted, text_type):
+    if isinstance(unquoted, str):
         unquoted = unquoted.encode('utf-8')
     return urllib.parse.quote(unquoted)
 
 
 def unquote_url(quoted):
     unquoted = urllib.parse.unquote(quoted)
-    if isinstance(unquoted, binary_type):
+    if isinstance(unquoted, bytes):
         unquoted = unquoted.decode('utf-8')
     return unquoted

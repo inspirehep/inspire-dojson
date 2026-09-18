@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import urllib.parse
 from datetime import datetime
 
 from dojson import utils
@@ -33,7 +34,6 @@ from inspire_schemas.api import load_schema
 from inspire_schemas.utils import classify_field
 from inspire_utils.date import PartialDate, earliest_date
 from inspire_utils.helpers import force_list, maybe_int
-from six.moves import urllib
 
 from inspire_dojson.conferences.model import conferences
 from inspire_dojson.data.model import data
