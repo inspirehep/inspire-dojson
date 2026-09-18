@@ -32,7 +32,6 @@ from functools import wraps
 
 from dojson import Overdo
 from dojson.errors import IgnoreKey
-from six import raise_from
 
 from inspire_dojson.errors import DoJsonError
 from inspire_dojson.utils import dedupe_all_lists, strip_empty_values
@@ -68,23 +67,20 @@ class FilterOverdo(Overdo):
             except Exception as exc:
                 if type(exc) is IgnoreKey:
                     raise exc
-                raise_from(
-                    DoJsonError(
-                        u'Error in rule "{name}" for field "{key}"'.format(
-                            name=name, key=key
-                        ),
-                        exc.args,
-                        value,
+                raise DoJsonError(
+                    'Error in rule "{name}" for field "{key}"'.format(
+                        name=name, key=key
                     ),
-                    exc,
-                )
+                    exc.args,
+                    value,
+                ) from exc
 
         return func
 
 
 def add_schema(schema):
     def _add_schema(record, blob):
-        record['$schema'] = schema
+        record["$schema"] = schema
         return record
 
     return _add_schema
@@ -92,7 +88,7 @@ def add_schema(schema):
 
 def add_collection(name):
     def _add_collection(record, blob):
-        record['_collections'] = [name]
+        record["_collections"] = [name]
         return record
 
     return _add_collection

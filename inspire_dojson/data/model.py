@@ -32,8 +32,8 @@ from inspire_dojson.model import (
 )
 
 filters = [
-    add_schema('data.json'),
-    add_collection('Data'),
+    add_schema("data.json"),
+    add_collection("Data"),
     clean_record(),
 ]
 

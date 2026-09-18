@@ -29,53 +29,53 @@ from inspire_dojson.hep import hep
 
 
 def test_ensure_curated():
-    schema = load_schema('hep')
-    subschema = schema['properties']['curated']
+    schema = load_schema("hep")
+    subschema = schema["properties"]["curated"]
 
-    snippet = '<record></record>'  # synthetic data
+    snippet = "<record></record>"  # synthetic data
 
     expected = True
     result = hep.do(create_record(snippet))
 
-    assert validate(result['curated'], subschema) is None
-    assert expected == result['curated']
+    assert validate(result["curated"], subschema) is None
+    assert expected == result["curated"]
 
 
 def test_ensure_curated_when_500_present():
-    schema = load_schema('hep')
-    subschema = schema['properties']['curated']
+    schema = load_schema("hep")
+    subschema = schema["properties"]["curated"]
 
     snippet = (  # record/1450044
         '<datafield tag="500" ind1=" " ind2=" ">'
         '  <subfield code="9">arXiv</subfield>'
         '  <subfield code="a">5 pages</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = True
     result = hep.do(create_record(snippet))
 
-    assert validate(result['curated'], subschema) is None
-    assert expected == result['curated']
+    assert validate(result["curated"], subschema) is None
+    assert expected == result["curated"]
 
 
 def test_set_citeable_when_not_citeable():
     snippet = (  # record/59
         '<datafield tag="773" ind1=" " ind2=" ">  <subfield'
         ' code="c">152-61</subfield>  <subfield code="x">Proc. of Athens'
-        ' Topical Conference on Recently Discovered Resonant Particles, Athens,'
-        ' Ohio, 1963. Athens, Ohio, Ohio U., 1963. p.'
-        ' 152-61</subfield></datafield>'
+        " Topical Conference on Recently Discovered Resonant Particles, Athens,"
+        " Ohio, 1963. Athens, Ohio, Ohio U., 1963. p."
+        " 152-61</subfield></datafield>"
     )
 
     result = hep.do(create_record(snippet))
 
-    assert 'citeable' not in result
+    assert "citeable" not in result
 
 
 def test_set_citeable_when_citeable():
-    schema = load_schema('hep')
-    subschema = schema['properties']['citeable']
+    schema = load_schema("hep")
+    subschema = schema["properties"]["citeable"]
 
     snippet = (  # record/4328
         '<datafield tag="773" ind1=" " ind2=" ">'
@@ -84,11 +84,11 @@ def test_set_citeable_when_citeable():
         '  <subfield code="c">579-588</subfield>'
         '  <subfield code="y">1961</subfield>'
         '  <subfield code="1">1214548</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = True
     result = hep.do(create_record(snippet))
 
-    assert validate(result['citeable'], subschema) is None
-    assert expected == result['citeable']
+    assert validate(result["citeable"], subschema) is None
+    assert expected == result["citeable"]

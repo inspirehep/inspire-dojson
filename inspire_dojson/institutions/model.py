@@ -33,19 +33,19 @@ from inspire_dojson.model import (
 
 
 def combine_addresses_and_location(record, blob):
-    if not record.get('addresses') or not record.get('_location'):
+    if not record.get("addresses") or not record.get("_location"):
         return record
 
-    record['addresses'][0]['latitude'] = record['_location']['latitude']
-    record['addresses'][0]['longitude'] = record['_location']['longitude']
-    del record['_location']
+    record["addresses"][0]["latitude"] = record["_location"]["latitude"]
+    record["addresses"][0]["longitude"] = record["_location"]["longitude"]
+    del record["_location"]
 
     return record
 
 
 filters = [
-    add_schema('institutions.json'),
-    add_collection('Institutions'),
+    add_schema("institutions.json"),
+    add_collection("Institutions"),
     combine_addresses_and_location,
     clean_record(),
 ]

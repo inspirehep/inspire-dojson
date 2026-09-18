@@ -36,72 +36,72 @@ def test_marcxml2record_handles_conferences():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">CONFERENCES</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'conferences.json'
+    expected = "conferences.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_handles_data():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">DATA</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'data.json'
+    expected = "data.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_handles_experiments():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">EXPERIMENT</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'experiments.json'
+    expected = "experiments.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_handles_hepnames():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">HEPNAMES</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'authors.json'
+    expected = "authors.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_handles_institutions():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">INSTITUTION</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'institutions.json'
+    expected = "institutions.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_raises_on_jobs():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">JOB</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     with pytest.raises(NotSupportedError):
@@ -112,7 +112,7 @@ def test_marcxml2record_raises_on_jobhidden():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">JOBHIDDEN</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     with pytest.raises(NotSupportedError):
@@ -123,86 +123,86 @@ def test_marcxml2record_handles_journals():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">JOURNALS</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'journals.json'
+    expected = "journals.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_handles_journalsnew():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">JOURNALSNEW</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'journals.json'
+    expected = "journals.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_handles_multiple_as_in_the_same_980():
     snippet = (  # record/1247377
-        '<record>'
+        "<record>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">Published</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">citeable</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">HEP</subfield>'
         '    <subfield code="a">NONCORE</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
-    expected = 'hep.json'
+    expected = "hep.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_marcxml2record_falls_back_to_hep():
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">HALhidden</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = 'hep.json'
+    expected = "hep.json"
     result = marcxml2record(snippet)
 
-    assert expected == result['$schema']
+    assert expected == result["$schema"]
 
 
 def test_cds_marcxml2record_handles_cds():
     snippet = (  # cds.cern.ch/record/2270264
-        '<record>'
+        "<record>"
         '  <controlfield tag="001">2270264</controlfield>'
         '  <controlfield tag="003">SzGeCERN</controlfield>'
-        '</record>'
+        "</record>"
     )
 
     expected = [
         {
-            'schema': 'CDS',
-            'value': '2270264',
+            "schema": "CDS",
+            "value": "2270264",
         },
     ]
     result = cds_marcxml2record(snippet)
 
-    assert expected == result['external_system_identifiers']
+    assert expected == result["external_system_identifiers"]
 
 
 def test_record2marcxml_generates_controlfields():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'control_number': 4328,
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "control_number": 4328,
     }
 
     expected = b'<record>\n  <controlfield tag="001">4328</controlfield>\n</record>\n'
@@ -213,18 +213,18 @@ def test_record2marcxml_generates_controlfields():
 
 def test_record2marcxml_generates_datafields():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'authors': [
-            {'full_name': 'Glashow, S.L.'},
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "authors": [
+            {"full_name": "Glashow, S.L."},
         ],
     }
 
     expected = (
-        b'<record>\n'
+        b"<record>\n"
         b'  <datafield tag="100" ind1=" " ind2=" ">\n'
         b'    <subfield code="a">Glashow, S.L.</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b"  </datafield>\n"
+        b"</record>\n"
     )
     result = record2marcxml(record)
 
@@ -233,19 +233,19 @@ def test_record2marcxml_generates_datafields():
 
 def test_record2marcxml_generates_indices():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'inspire_categories': [
-            {'term': 'Accelerators'},
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "inspire_categories": [
+            {"term": "Accelerators"},
         ],
     }
 
     expected = (
-        b'<record>\n'
+        b"<record>\n"
         b'  <datafield tag="650" ind1="1" ind2="7">\n'
         b'    <subfield code="2">INSPIRE</subfield>\n'
         b'    <subfield code="a">Accelerators</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b"  </datafield>\n"
+        b"</record>\n"
     )
     result = record2marcxml(record)
 
@@ -254,8 +254,8 @@ def test_record2marcxml_generates_indices():
 
 def test_record2marcxml_supports_authors():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/authors.json',
-        'control_number': 1010819,
+        "$schema": "http://localhost:5000/schemas/records/authors.json",
+        "control_number": 1010819,
     }
 
     expected = (
@@ -268,8 +268,8 @@ def test_record2marcxml_supports_authors():
 
 def test_record2marcxml_supports_relative_urls():
     record = {
-        '$schema': '/schemas/records/hep.json',
-        'control_number': 4328,
+        "$schema": "/schemas/records/hep.json",
+        "control_number": 4328,
     }
 
     expected = b'<record>\n  <controlfield tag="001">4328</controlfield>\n</record>\n'
@@ -280,18 +280,18 @@ def test_record2marcxml_supports_relative_urls():
 
 def test_record2marcxml_handles_unicode():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'authors': [
-            {'full_name': u'Kätlne, J.'},
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "authors": [
+            {"full_name": "Kätlne, J."},
         ],
     }
 
     expected = (
-        b'<record>\n'
+        b"<record>\n"
         b'  <datafield tag="100" ind1=" " ind2=" ">\n'
         b'    <subfield code="a">K\xc3\xa4tlne, J.</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b"  </datafield>\n"
+        b"</record>\n"
     )
     result = record2marcxml(record)
 
@@ -300,18 +300,18 @@ def test_record2marcxml_handles_unicode():
 
 def test_record2marcxml_handles_numbers():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'publication_info': [
-            {'year': 1975},
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "publication_info": [
+            {"year": 1975},
         ],
     }
 
     expected = (
-        b'<record>\n'
+        b"<record>\n"
         b'  <datafield tag="773" ind1=" " ind2=" ">\n'
         b'    <subfield code="y">1975</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b"  </datafield>\n"
+        b"</record>\n"
     )
     result = record2marcxml(record)
 
@@ -320,22 +320,22 @@ def test_record2marcxml_handles_numbers():
 
 def test_record2marcxml_handles_repeated_fields():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        '_collections': [
-            'Literature',
-            'HAL Hidden',
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "_collections": [
+            "Literature",
+            "HAL Hidden",
         ],
     }
 
     expected = (
-        b'<record>\n'
+        b"<record>\n"
         b'  <datafield tag="980" ind1=" " ind2=" ">\n'
         b'    <subfield code="a">HEP</subfield>\n'
-        b'  </datafield>\n'
+        b"  </datafield>\n"
         b'  <datafield tag="980" ind1=" " ind2=" ">\n'
         b'    <subfield code="a">HALhidden</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b"  </datafield>\n"
+        b"</record>\n"
     )
     result = record2marcxml(record)
 
@@ -344,26 +344,26 @@ def test_record2marcxml_handles_repeated_fields():
 
 def test_record2marcxml_handles_repeated_subfields():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'authors': [
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "authors": [
             {
-                'affiliations': [
-                    {'value': 'SISSA, Trieste'},
-                    {'value': 'Meudon Observ.'},
+                "affiliations": [
+                    {"value": "SISSA, Trieste"},
+                    {"value": "Meudon Observ."},
                 ],
-                'full_name': 'Puy, Denis',
+                "full_name": "Puy, Denis",
             },
         ],
     }
 
     expected = (
-        b'<record>\n'
+        b"<record>\n"
         b'  <datafield tag="100" ind1=" " ind2=" ">\n'
         b'    <subfield code="a">Puy, Denis</subfield>\n'
         b'    <subfield code="u">SISSA, Trieste</subfield>\n'
         b'    <subfield code="u">Meudon Observ.</subfield>\n'
-        b'  </datafield>\n'
-        b'</record>\n'
+        b"  </datafield>\n"
+        b"</record>\n"
     )
     result = record2marcxml(record)
 
@@ -372,14 +372,14 @@ def test_record2marcxml_handles_repeated_subfields():
 
 def test_record2marcxml_strips_control_characters():
     record = {
-        '$schema': 'http://localhost:5000/schemas/records/hep.json',
-        'abstracts': [
+        "$schema": "http://localhost:5000/schemas/records/hep.json",
+        "abstracts": [
             {
-                'source': 'submitter',
-                'value': (
-                    u'A common feature shared by many quantum gravity models is'
-                    u' modi\u001Ccations of two-point functions at energy'
-                    u' scales around the Planck scale.'
+                "source": "submitter",
+                "value": (
+                    "A common feature shared by many quantum gravity models is"
+                    " modi\u001ccations of two-point functions at energy"
+                    " scales around the Planck scale."
                 ),
             },
         ],
@@ -388,9 +388,9 @@ def test_record2marcxml_strips_control_characters():
     expected = (
         b'<record>\n  <datafield tag="520" ind1=" " ind2=" ">\n    <subfield'
         b' code="9">submitter</subfield>\n    <subfield code="a">A common'
-        b' feature shared by many quantum gravity models is modications of'
-        b' two-point functions at energy scales around the Planck'
-        b' scale.</subfield>\n  </datafield>\n</record>\n'
+        b" feature shared by many quantum gravity models is modications of"
+        b" two-point functions at energy scales around the Planck"
+        b" scale.</subfield>\n  </datafield>\n</record>\n"
     )
     result = record2marcxml(record)
 
@@ -398,8 +398,8 @@ def test_record2marcxml_strips_control_characters():
 
 
 def test_record2marcxml_raises_when_rules_were_not_implemented():
-    record = {'$schema': 'http://localhost:5000/schemas/records/data.json'}
+    record = {"$schema": "http://localhost:5000/schemas/records/data.json"}
 
     with pytest.raises(NotImplementedError) as excinfo:
         record2marcxml(record)
-    assert 'missing' in str(excinfo.value)
+    assert "missing" in str(excinfo.value)

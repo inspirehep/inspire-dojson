@@ -31,17 +31,17 @@ from inspire_dojson.data.model import data
 from inspire_dojson.utils import force_single_element, get_record_ref
 
 
-@data.over('dois', '^0247.')
+@data.over("dois", "^0247.")
 @utils.for_each_value
 def dois(self, key, value):
     return {
-        'source': value.get('9'),
-        'value': normalize_doi(value.get('a')),
+        "source": value.get("9"),
+        "value": normalize_doi(value.get("a")),
     }
 
 
-@data.over('new_record', '^970..')
+@data.over("new_record", "^970..")
 def new_record(self, key, value):
-    new_recid = force_single_element(value.get('d'))
+    new_recid = force_single_element(value.get("d"))
     if new_recid:
-        return get_record_ref(new_recid, 'data')
+        return get_record_ref(new_recid, "data")

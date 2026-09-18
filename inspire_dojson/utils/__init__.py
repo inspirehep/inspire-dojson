@@ -26,45 +26,46 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import urllib.parse
+from urllib import request
 
 from dojson.utils import GroupableOrderedDict
 from inspire_utils.date import normalize_date
 from inspire_utils.dedupers import dedupe_list, dedupe_list_of_dicts
 from inspire_utils.helpers import force_list, maybe_int
-from six import binary_type, iteritems, text_type
-from six.moves import urllib
 
-DEFAULT_AFS_PATH = '/afs/cern.ch/project/inspire/PROD'
-DEFAULT_SERVER_NAME = 'http://inspirehep.net'
-DEFAULT_PREFERRED_URL_SCHEME = 'http'
+DEFAULT_AFS_PATH = "/afs/cern.ch/project/inspire/PROD"
+DEFAULT_SERVER_NAME = "http://inspirehep.net"
+DEFAULT_PREFERRED_URL_SCHEME = "http"
+
 
 def normalize_rank(rank):
     """Normalize a rank in order to be schema-compliant."""
     normalized_ranks = {
-        'BA': 'UNDERGRADUATE',
-        'BACHELOR': 'UNDERGRADUATE',
-        'BS': 'UNDERGRADUATE',
-        'BSC': 'UNDERGRADUATE',
-        'JUNIOR': 'JUNIOR',
-        'MAS': 'MASTER',
-        'MASTER': 'MASTER',
-        'MS': 'MASTER',
-        'MSC': 'MASTER',
-        'PD': 'POSTDOC',
-        'PHD': 'PHD',
-        'POSTDOC': 'POSTDOC',
-        'SENIOR': 'SENIOR',
-        'STAFF': 'STAFF',
-        'STUDENT': 'PHD',
-        'UG': 'UNDERGRADUATE',
-        'UNDERGRADUATE': 'UNDERGRADUATE',
-        'VISITING SCIENTIST': 'VISITOR',
-        'VISITOR': 'VISITOR',
+        "BA": "UNDERGRADUATE",
+        "BACHELOR": "UNDERGRADUATE",
+        "BS": "UNDERGRADUATE",
+        "BSC": "UNDERGRADUATE",
+        "JUNIOR": "JUNIOR",
+        "MAS": "MASTER",
+        "MASTER": "MASTER",
+        "MS": "MASTER",
+        "MSC": "MASTER",
+        "PD": "POSTDOC",
+        "PHD": "PHD",
+        "POSTDOC": "POSTDOC",
+        "SENIOR": "SENIOR",
+        "STAFF": "STAFF",
+        "STUDENT": "PHD",
+        "UG": "UNDERGRADUATE",
+        "UNDERGRADUATE": "UNDERGRADUATE",
+        "VISITING SCIENTIST": "VISITOR",
+        "VISITOR": "VISITOR",
     }
     if not rank:
         return None
-    rank = rank.upper().replace('.', '')
-    return normalized_ranks.get(rank, 'OTHER')
+    rank = rank.upper().replace(".", "")
+    return normalized_ranks.get(rank, "OTHER")
 
 
 def force_single_element(obj):
@@ -82,8 +83,8 @@ def get_recid_from_ref(ref_obj):
     """
     if not isinstance(ref_obj, dict):
         return None
-    url = ref_obj.get('$ref', '')
-    return maybe_int(url.split('/')[-1])
+    url = ref_obj.get("$ref", "")
+    return maybe_int(url.split("/")[-1])
 
 
 def absolute_url(relative_url):
@@ -92,12 +93,10 @@ def absolute_url(relative_url):
     The base URL is taken from environment variables if present, otherwise it
     falls back to ``http://inspirehep.net``.
     """
-    server = os.environ.get('SERVER_NAME', DEFAULT_SERVER_NAME)
-    scheme = os.environ.get(
-        'PREFERRED_URL_SCHEME', DEFAULT_PREFERRED_URL_SCHEME
-    )
-    if not re.match('^https?://', server):
-        server = u'{scheme}://{server}'.format(scheme=scheme, server=server)
+    server = os.environ.get("SERVER_NAME", DEFAULT_SERVER_NAME)
+    scheme = os.environ.get("PREFERRED_URL_SCHEME", DEFAULT_PREFERRED_URL_SCHEME)
+    if not re.match("^https?://", server):
+        server = "{scheme}://{server}".format(scheme=scheme, server=server)
     return urllib.parse.urljoin(server, relative_url)
 
 
@@ -110,30 +109,28 @@ def afs_url(file_path):
     The base AFS path is taken from environment variables if present, otherwise
     it falls back to ``/afs/cern.ch/project/inspire/PROD``.
     """
-    afs_path = os.environ.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
-    afs_service = os.environ.get('LABS_AFS_HTTP_SERVICE')
+    afs_path = os.environ.get("LEGACY_AFS_PATH", DEFAULT_AFS_PATH)
+    afs_service = os.environ.get("LABS_AFS_HTTP_SERVICE")
 
     if file_path is None:
         return None
     process_path = False
 
-    if file_path.startswith('/opt/cds-invenio/'):
+    if file_path.startswith("/opt/cds-invenio/"):
         process_path = True
-        file_path = os.path.relpath(file_path, '/opt/cds-invenio/')
-    elif file_path.startswith('/opt/venvs/inspire-legacy/'):
+        file_path = os.path.relpath(file_path, "/opt/cds-invenio/")
+    elif file_path.startswith("/opt/venvs/inspire-legacy/"):
         process_path = True
-        file_path = os.path.relpath(file_path, '/opt/venvs/inspire-legacy/')
+        file_path = os.path.relpath(file_path, "/opt/venvs/inspire-legacy/")
 
     if process_path:
         if afs_service:
             return os.path.join(
                 afs_service,
-                urllib.request.pathname2url(file_path.encode('utf-8')),
+                request.pathname2url(file_path),
             )
         file_path = os.path.join(afs_path, file_path)
-        return urllib.parse.urljoin(
-            'file://', urllib.request.pathname2url(file_path.encode('utf-8'))
-        )
+        return urllib.parse.urljoin("file://", request.pathname2url(file_path))
 
     return file_path
 
@@ -147,8 +144,8 @@ def afs_url_to_path(url):
     The base AFS path is taken from environment variables if present, otherwise
     it falls back to ``/afs/cern.ch/project/inspire/PROD``.
     """
-    afs_path = os.environ.get('LEGACY_AFS_PATH', DEFAULT_AFS_PATH)
-    afs_service = os.environ.get('LABS_AFS_HTTP_SERVICE')
+    afs_path = os.environ.get("LEGACY_AFS_PATH", DEFAULT_AFS_PATH)
+    afs_service = os.environ.get("LABS_AFS_HTTP_SERVICE")
 
     if url is None:
         return None
@@ -156,11 +153,11 @@ def afs_url_to_path(url):
     if not afs_service or not url.startswith(afs_service):
         return url
 
-    path = url[len(afs_service) :].lstrip('/')
-    return urllib.parse.urljoin('file://', os.path.join(afs_path, path))
+    path = url[len(afs_service) :].lstrip("/")
+    return urllib.parse.urljoin("file://", os.path.join(afs_path, path))
 
 
-def get_record_ref(recid, endpoint='record'):
+def get_record_ref(recid, endpoint="record"):
     """Create record jsonref reference object from recid.
 
     None recids will return a None object.
@@ -168,7 +165,7 @@ def get_record_ref(recid, endpoint='record'):
     """
     if recid is None:
         return None
-    return {'$ref': absolute_url(u'/api/{}/{}'.format(endpoint, recid))}
+    return {"$ref": absolute_url("/api/{}/{}".format(endpoint, recid))}
 
 
 def strip_empty_values(obj):
@@ -224,16 +221,16 @@ def normalize_date_aggressively(date):
     """Normalize date, stripping date parts until a valid date is obtained."""
 
     def _strip_last_part(date):
-        parts = date.split('-')
-        return '-'.join(parts[:-1])
+        parts = date.split("-")
+        return "-".join(parts[:-1])
 
-    fake_dates = {'0000', '9999'}
+    fake_dates = {"0000", "9999"}
     if date in fake_dates:
         return None
     try:
         return normalize_date(date)
     except (IndexError, TypeError, ValueError):
-        if '-' not in date:
+        if "-" not in date:
             raise
         else:
             new_date = _strip_last_part(date)
@@ -242,17 +239,17 @@ def normalize_date_aggressively(date):
 
 def create_record_from_dict(dictionary):
     """Create an input record for dojson from a dict."""
-    return GroupableOrderedDict(iteritems(dictionary))
+    return GroupableOrderedDict(dictionary.items())
 
 
 def quote_url(unquoted):
-    if isinstance(unquoted, text_type):
-        unquoted = unquoted.encode('utf-8')
+    if isinstance(unquoted, str):
+        unquoted = unquoted.encode("utf-8")
     return urllib.parse.quote(unquoted)
 
 
 def unquote_url(quoted):
     unquoted = urllib.parse.unquote(quoted)
-    if isinstance(unquoted, binary_type):
-        unquoted = unquoted.decode('utf-8')
+    if isinstance(unquoted, bytes):
+        unquoted = unquoted.decode("utf-8")
     return unquoted

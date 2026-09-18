@@ -34,27 +34,27 @@ from inspire_dojson.model import (
 
 def remove_lone_series_number(record, blob):
     def _valid(series):
-        return series.get('name')
+        return series.get("name")
 
-    record['series'] = list(filter(_valid, record.get('series', [])))
+    record["series"] = list(filter(_valid, record.get("series", [])))
 
     return record
 
 
 def combine_addresses_and_location(record, blob):
-    if not record.get('addresses') or not record.get('_location'):
+    if not record.get("addresses") or not record.get("_location"):
         return record
 
-    record['addresses'][0]['latitude'] = record['_location']['latitude']
-    record['addresses'][0]['longitude'] = record['_location']['longitude']
-    del record['_location']
+    record["addresses"][0]["latitude"] = record["_location"]["latitude"]
+    record["addresses"][0]["longitude"] = record["_location"]["longitude"]
+    del record["_location"]
 
     return record
 
 
 filters = [
-    add_schema('conferences.json'),
-    add_collection('Conferences'),
+    add_schema("conferences.json"),
+    add_collection("Conferences"),
     remove_lone_series_number,
     combine_addresses_and_location,
     clean_record(),

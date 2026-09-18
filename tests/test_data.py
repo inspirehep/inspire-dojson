@@ -29,39 +29,39 @@ from inspire_dojson.data import data
 
 
 def test_dois_from_0247_2_a():
-    schema = load_schema('data')
-    subschema = schema['properties']['dois']
+    schema = load_schema("data")
+    subschema = schema["properties"]["dois"]
 
     snippet = (  # record/1639676
         '<datafield tag="024" ind1="7" ind2=" ">'
         '  <subfield code="a">10.17182/hepdata.77268.v1/t6</subfield>'
         '  <subfield code="2">DOI</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'value': '10.17182/hepdata.77268.v1/t6',
+            "value": "10.17182/hepdata.77268.v1/t6",
         }
     ]
     result = data.do(create_record(snippet))
 
-    assert validate(result['dois'], subschema) is None
-    assert expected == result['dois']
+    assert validate(result["dois"], subschema) is None
+    assert expected == result["dois"]
 
 
 def test_new_record_from_970__d():
-    schema = load_schema('data')
-    subschema = schema['properties']['new_record']
+    schema = load_schema("data")
+    subschema = schema["properties"]["new_record"]
 
     snippet = (  # synthetic data
         '<datafield tag="970" ind1=" " ind2=" ">'
         '  <subfield code="d">361769</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = {'$ref': 'http://localhost:5000/api/data/361769'}
+    expected = {"$ref": "http://localhost:5000/api/data/361769"}
     result = data.do(create_record(snippet))
 
-    assert validate(result['new_record'], subschema) is None
-    assert expected == result['new_record']
+    assert validate(result["new_record"], subschema) is None
+    assert expected == result["new_record"]

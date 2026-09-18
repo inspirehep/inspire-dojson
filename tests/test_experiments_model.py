@@ -29,7 +29,7 @@ from inspire_dojson.model import FilterOverdo
 def test_add_project_type():
     model = FilterOverdo(filters=[add_project_type])
 
-    expected = {'project_type': ['experiment']}
+    expected = {"project_type": ["experiment"]}
     result = model.do({})
 
     assert expected == result

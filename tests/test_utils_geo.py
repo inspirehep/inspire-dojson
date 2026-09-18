@@ -32,35 +32,35 @@ from inspire_dojson.utils.geo import (
 
 
 def test_match_country_name_to_its_code_fetches_from_country_to_iso_code():
-    expected = 'AF'
-    result = match_country_name_to_its_code('AFGHANISTAN')
+    expected = "AF"
+    result = match_country_name_to_its_code("AFGHANISTAN")
 
     assert expected == result
 
 
 def test_match_country_name_to_its_code_ignores_case():
-    expected = 'AL'
-    result = match_country_name_to_its_code('Albania')
+    expected = "AL"
+    result = match_country_name_to_its_code("Albania")
 
     assert expected == result
 
 
 def test_match_country_name_to_its_code_uses_alternative_spellings():
-    expected = 'AM'
-    result = match_country_name_to_its_code('Republic of Armenia')
+    expected = "AM"
+    result = match_country_name_to_its_code("Republic of Armenia")
 
     assert expected == result
 
 
 def test_match_country_name_disambiguates_koreas_when_given_a_city():
-    expected = 'KR'
-    result = match_country_name_to_its_code('Korea', city='Seoul')
+    expected = "KR"
+    result = match_country_name_to_its_code("Korea", city="Seoul")
 
     assert expected == result
 
 
 def test_match_country_name_doesnt_crash_when_disambiguating_koreas():
-    assert match_country_name_to_its_code('Korea') is None
+    assert match_country_name_to_its_code("Korea") is None
 
 
 # TODO: test match_us_state
@@ -68,57 +68,57 @@ def test_match_country_name_doesnt_crash_when_disambiguating_koreas():
 
 def test_parse_conference_address_recognizes_state_and_country_of_us_city():
     expected = {
-        'cities': [
-            'Waltham',
+        "cities": [
+            "Waltham",
         ],
-        'country_code': 'US',
-        'place_name': '',
-        'state': 'MA',
+        "country_code": "US",
+        "place_name": "",
+        "state": "MA",
     }
-    result = parse_conference_address('Waltham, Mass.')
+    result = parse_conference_address("Waltham, Mass.")
 
     assert expected == result
 
 
 def test_parse_conference_address_recognizes_country_of_non_us_city():
     expected = {
-        'cities': [
-            'Dubna',
+        "cities": [
+            "Dubna",
         ],
-        'country_code': 'SU',
-        'place_name': '',
-        'state': None,
+        "country_code": "SU",
+        "place_name": "",
+        "state": None,
     }
-    result = parse_conference_address('Dubna, USSR')
+    result = parse_conference_address("Dubna, USSR")
 
     assert expected == result
 
 
 def test_parse_conference_address_handles_empty_string():
     expected = {}
-    result = parse_conference_address('')
+    result = parse_conference_address("")
 
     assert expected == result
 
 
 def test_parse_institution_address_adds_country_code():
     address = {
-        'address': None,
-        'city': 'Beijing',
-        'state_province': None,
-        'country': 'China',
-        'postal_code': '123-CFG',
-        'country_code': None,
+        "address": None,
+        "city": "Beijing",
+        "state_province": None,
+        "country": "China",
+        "postal_code": "123-CFG",
+        "country_code": None,
     }
 
     expected = {
-        'cities': [
-            'Beijing',
+        "cities": [
+            "Beijing",
         ],
-        'country_code': 'CN',
-        'postal_address': [],
-        'postal_code': '123-CFG',
-        'state': None,
+        "country_code": "CN",
+        "postal_address": [],
+        "postal_code": "123-CFG",
+        "state": None,
     }
     result = parse_institution_address(**address)
 
@@ -127,24 +127,24 @@ def test_parse_institution_address_adds_country_code():
 
 def test_parse_institution_address_preserves_the_original_address():
     address = {
-        'address': 'Tuscaloosa, AL 35487-0324',
-        'city': 'Tuscaloosa',
-        'country': '',
-        'state_province': 'AL',
-        'postal_code': 'PO Box 870324',
-        'country_code': None,
+        "address": "Tuscaloosa, AL 35487-0324",
+        "city": "Tuscaloosa",
+        "country": "",
+        "state_province": "AL",
+        "postal_code": "PO Box 870324",
+        "country_code": None,
     }
 
     expected = {
-        'cities': [
-            'Tuscaloosa',
+        "cities": [
+            "Tuscaloosa",
         ],
-        'country_code': 'US',
-        'postal_address': [
-            'Tuscaloosa, AL 35487-0324',
+        "country_code": "US",
+        "postal_address": [
+            "Tuscaloosa, AL 35487-0324",
         ],
-        'postal_code': 'PO Box 870324',
-        'state': 'AL',
+        "postal_code": "PO Box 870324",
+        "state": "AL",
     }
     result = parse_institution_address(**address)
 

@@ -29,71 +29,71 @@ from inspire_dojson.institutions import institutions
 
 
 def test_addresses_from_034__d_f_and_371__double_a_b_d_g():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/902630
-        '<record>'
+        "<record>"
         '  <datafield tag="034" ind1=" " ind2=" ">'
         '    <subfield code="f">35.0499505</subfield>'
         '    <subfield code="d">137.052276</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="371" ind1=" " ind2=" ">'
         '    <subfield code="a">1 Hirosawa, Igaya-cho</subfield>'
         '    <subfield code="a">Kariya-shi, Aichi 448</subfield>'
         '    <subfield code="b">Kariya-shi</subfield>'
         '    <subfield code="d">Japan</subfield>'
         '    <subfield code="g">JP</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'cities': [
-                'Kariya-shi',
+            "cities": [
+                "Kariya-shi",
             ],
-            'country_code': 'JP',
-            'latitude': 35.0499505,
-            'longitude': 137.052276,
-            'postal_address': [
-                '1 Hirosawa, Igaya-cho',
-                'Kariya-shi, Aichi 448',
+            "country_code": "JP",
+            "latitude": 35.0499505,
+            "longitude": 137.052276,
+            "postal_address": [
+                "1 Hirosawa, Igaya-cho",
+                "Kariya-shi, Aichi 448",
             ],
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_external_system_identifiers_from_035__a_9():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['external_system_identifiers']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["external_system_identifiers"]
 
     snippet = (  # record/910133
         '<datafield tag="035" ind1=" " ind2=" ">'
         '  <subfield code="9">HAL</subfield>'
         '  <subfield code="a">1969</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'schema': 'HAL',
-            'value': '1969',
+            "schema": "HAL",
+            "value": "1969",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['external_system_identifiers'], subschema) is None
-    assert expected == result['external_system_identifiers']
+    assert validate(result["external_system_identifiers"], subschema) is None
+    assert expected == result["external_system_identifiers"]
 
 
 def test_related_records_from_110__a_t_u_double_x_double_z():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['related_records']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["related_records"]
 
     snippet = (  # record/1272953
         '<datafield tag="110" ind1=" " ind2=" ">'
@@ -104,112 +104,112 @@ def test_related_records_from_110__a_t_u_double_x_double_z():
         '  <subfield code="x">Pittsburgh U., Med. School</subfield>'
         '  <subfield code="z">908047</subfield>'
         '  <subfield code="z">905042</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/908047',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/908047",
             },
-            'relation_freetext': 'obsolete',
+            "relation_freetext": "obsolete",
         },
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/905042',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/905042",
             },
-            'relation_freetext': 'obsolete',
+            "relation_freetext": "obsolete",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert validate(result["related_records"], subschema) is None
+    assert expected == result["related_records"]
 
 
 def test_icn_legacy_icn_institution_hierarchy_from_110__a_t_u():
-    schema = load_schema('institutions')
-    ICN_schema = schema['properties']['ICN']
-    legacy_ICN_schema = schema['properties']['legacy_ICN']
-    institution_hierarchy_schema = schema['properties']['institution_hierarchy']
+    schema = load_schema("institutions")
+    ICN_schema = schema["properties"]["ICN"]
+    legacy_ICN_schema = schema["properties"]["legacy_ICN"]
+    institution_hierarchy_schema = schema["properties"]["institution_hierarchy"]
 
     snippet = (  # record/902725
         '<datafield tag="110" ind1=" " ind2=" ">  <subfield code="a">European'
-        ' Organization for Nuclear Research (CERN)</subfield>  <subfield'
+        " Organization for Nuclear Research (CERN)</subfield>  <subfield"
         ' code="t">CERN, Geneva</subfield>  <subfield'
         ' code="u">CERN</subfield></datafield>'
     )
 
     expected_ICN = [
-        'CERN, Geneva',
+        "CERN, Geneva",
     ]
-    expected_legacy_ICN = 'CERN'
+    expected_legacy_ICN = "CERN"
     expected_institution_hierarchy = [
         {
-            'acronym': 'CERN',
-            'name': 'European Organization for Nuclear Research',
+            "acronym": "CERN",
+            "name": "European Organization for Nuclear Research",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['ICN'], ICN_schema) is None
-    assert expected_ICN == result['ICN']
+    assert validate(result["ICN"], ICN_schema) is None
+    assert expected_ICN == result["ICN"]
 
-    assert validate(result['legacy_ICN'], legacy_ICN_schema) is None
-    assert expected_legacy_ICN == result['legacy_ICN']
+    assert validate(result["legacy_ICN"], legacy_ICN_schema) is None
+    assert expected_legacy_ICN == result["legacy_ICN"]
 
     assert (
-        validate(result['institution_hierarchy'], institution_hierarchy_schema) is None
+        validate(result["institution_hierarchy"], institution_hierarchy_schema) is None
     )
-    assert expected_institution_hierarchy == result['institution_hierarchy']
+    assert expected_institution_hierarchy == result["institution_hierarchy"]
 
 
 def test_icn_legacy_icn_institution_hierarchy_from_110__a_b_t_u():
-    schema = load_schema('institutions')
-    ICN_schema = schema['properties']['ICN']
-    legacy_ICN_schema = schema['properties']['legacy_ICN']
-    institution_hierarchy_schema = schema['properties']['institution_hierarchy']
+    schema = load_schema("institutions")
+    ICN_schema = schema["properties"]["ICN"]
+    legacy_ICN_schema = schema["properties"]["legacy_ICN"]
+    institution_hierarchy_schema = schema["properties"]["institution_hierarchy"]
 
     snippet = (  # record/909579
         '<datafield tag="110" ind1=" " ind2=" ">  <subfield code="a">Université'
         ' Libre de Bruxelles</subfield>  <subfield code="b">Physique Theorique'
         ' et Mathematique (PTM)</subfield>  <subfield code="t">U. Libre'
         ' Brussels, PTM</subfield>  <subfield code="u">Brussels U.,'
-        ' PTM</subfield></datafield>'
+        " PTM</subfield></datafield>"
     )
 
     expected_ICN = [
-        'U. Libre Brussels, PTM',
+        "U. Libre Brussels, PTM",
     ]
-    expected_legacy_ICN = 'Brussels U., PTM'
+    expected_legacy_ICN = "Brussels U., PTM"
     expected_institution_hierarchy = [
         {
-            'acronym': 'PTM',
-            'name': 'Physique Theorique et Mathematique',
+            "acronym": "PTM",
+            "name": "Physique Theorique et Mathematique",
         },
         {
-            'name': u'Université Libre de Bruxelles',
+            "name": "Université Libre de Bruxelles",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['ICN'], ICN_schema) is None
-    assert expected_ICN == result['ICN']
+    assert validate(result["ICN"], ICN_schema) is None
+    assert expected_ICN == result["ICN"]
 
-    assert validate(result['legacy_ICN'], legacy_ICN_schema) is None
-    assert expected_legacy_ICN == result['legacy_ICN']
+    assert validate(result["legacy_ICN"], legacy_ICN_schema) is None
+    assert expected_legacy_ICN == result["legacy_ICN"]
 
     assert (
-        validate(result['institution_hierarchy'], institution_hierarchy_schema) is None
+        validate(result["institution_hierarchy"], institution_hierarchy_schema) is None
     )
-    assert expected_institution_hierarchy == result['institution_hierarchy']
+    assert expected_institution_hierarchy == result["institution_hierarchy"]
 
 
 def test_addresses_from_371__double_a_b_d_e_g():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1209215
         '<datafield tag="371" ind1=" " ind2=" ">'
@@ -219,34 +219,34 @@ def test_addresses_from_371__double_a_b_d_e_g():
         '  <subfield code="d">Germany</subfield>'
         '  <subfield code="e">69120</subfield>'
         '  <subfield code="g">DE</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'cities': [
-                'Heidelberg',
+            "cities": [
+                "Heidelberg",
             ],
-            'country_code': 'DE',
-            'postal_address': [
-                'Philosophenweg 16',
-                '69120 Heidelberg',
+            "country_code": "DE",
+            "postal_address": [
+                "Philosophenweg 16",
+                "69120 Heidelberg",
             ],
-            'postal_code': '69120',
+            "postal_code": "69120",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_371__triple_a_b_d_e_g_and_371__triple_a_b_d_e_g_x():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/902696
-        '<record>'
+        "<record>"
         '  <datafield tag="371" ind1=" " ind2=" ">'
         '    <subfield code="a">Université Libre de Bruxelles (ULB)</subfield>'
         '    <subfield code="a">Boulevard du Triomphe, 2</subfield>'
@@ -255,7 +255,7 @@ def test_addresses_from_371__triple_a_b_d_e_g_and_371__triple_a_b_d_e_g_x():
         '    <subfield code="d">Belgium</subfield>'
         '    <subfield code="e">1050</subfield>'
         '    <subfield code="g">BE</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="371" ind1=" " ind2=" ">'
         '    <subfield code="a">Vrije Universiteit VUB</subfield>'
         '    <subfield code="a">Pleinlaan 2</subfield>'
@@ -265,45 +265,45 @@ def test_addresses_from_371__triple_a_b_d_e_g_and_371__triple_a_b_d_e_g_x():
         '    <subfield code="e">1050</subfield>'
         '    <subfield code="g">BE</subfield>'
         '    <subfield code="x">secondary</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'cities': [
-                'Brussels',
+            "cities": [
+                "Brussels",
             ],
-            'country_code': 'BE',
-            'postal_address': [
-                u'Université Libre de Bruxelles (ULB)',
-                'Boulevard du Triomphe, 2',
-                'B-1050 Bruxelles',
+            "country_code": "BE",
+            "postal_address": [
+                "Université Libre de Bruxelles (ULB)",
+                "Boulevard du Triomphe, 2",
+                "B-1050 Bruxelles",
             ],
-            'postal_code': '1050',
+            "postal_code": "1050",
         },
         {
-            'cities': [
-                'Brussels',
+            "cities": [
+                "Brussels",
             ],
-            'country_code': 'BE',
-            'postal_address': [
-                'Vrije Universiteit VUB',
-                'Pleinlaan 2',
-                'B-1050 Brussel',
+            "country_code": "BE",
+            "postal_address": [
+                "Vrije Universiteit VUB",
+                "Pleinlaan 2",
+                "B-1050 Brussel",
             ],
-            'postal_code': '1050',
+            "postal_code": "1050",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_371__double_a_b_d_e_double_g():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1241283
         '<datafield tag="371" ind1=" " ind2=" ">'
@@ -314,31 +314,31 @@ def test_addresses_from_371__double_a_b_d_e_double_g():
         '  <subfield code="b">Las Cruces</subfield>'
         '  <subfield code="d">USA</subfield>'
         '  <subfield code="g">US</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'cities': [
-                'Las Cruces',
+            "cities": [
+                "Las Cruces",
             ],
-            'country_code': 'US',
-            'postal_address': [
-                'Physical Science Lab',
-                'Las Cruces, NM 88003',
+            "country_code": "US",
+            "postal_address": [
+                "Physical Science Lab",
+                "Las Cruces, NM 88003",
             ],
-            'postal_code': '88003',
+            "postal_code": "88003",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_371__a_b_d_e_g():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/902671
         '<datafield tag="371" ind1=" " ind2=" ">'
@@ -347,67 +347,67 @@ def test_addresses_from_371__a_b_d_e_g():
         '  <subfield code="d">United Kingdom</subfield>'
         '  <subfield code="e">B15 2TT</subfield>'
         '  <subfield code="g">UK</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'cities': [
-                'Birmingham',
+            "cities": [
+                "Birmingham",
             ],
-            'country_code': 'GB',
-            'postal_address': [
-                'Edgbaston, Birmingham B15 2TT',
+            "country_code": "GB",
+            "postal_address": [
+                "Edgbaston, Birmingham B15 2TT",
             ],
-            'postal_code': 'B15 2TT',
+            "postal_code": "B15 2TT",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_institution_type_from_372__a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['institution_type']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["institution_type"]
 
     snippet = (  # record/902624
         '<datafield tag="372" ind1=" " ind2=" ">'
         '  <subfield code="a">Research center</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        'Research Center',
+        "Research Center",
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['institution_type'], subschema) is None
-    assert expected == result['institution_type']
+    assert validate(result["institution_type"], subschema) is None
+    assert expected == result["institution_type"]
 
 
 def test_name_variants_from_410__a_9():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['name_variants']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["name_variants"]
 
     snippet = (  # record/1496423
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">INSPIRE</subfield>'
         '  <subfield code="a">University of Chile</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'source': 'INSPIRE',
-            'value': 'University of Chile',
+            "source": "INSPIRE",
+            "value": "University of Chile",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['name_variants'], subschema) is None
-    assert expected == result['name_variants']
+    assert validate(result["name_variants"], subschema) is None
+    assert expected == result["name_variants"]
 
 
 def test_name_variants_from_410__a_9_discards_desy_source():
@@ -415,12 +415,12 @@ def test_name_variants_from_410__a_9_discards_desy_source():
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">DESY</subfield>'
         '  <subfield code="a">Aachen Tech. Hochsch.</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     result = institutions.do(create_record(snippet))
 
-    assert 'name_variants' not in result
+    assert "name_variants" not in result
 
 
 def test_name_variants_from_410__a_9_discards_desy_aff_source():
@@ -428,12 +428,12 @@ def test_name_variants_from_410__a_9_discards_desy_aff_source():
         '<datafield tag="410" ind1=" " ind2=" ">'
         '  <subfield code="9">DESY_AFF</subfield>'
         '  <subfield code="a">AARHUS UNIV</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     result = institutions.do(create_record(snippet))
 
-    assert 'name_variants' not in result
+    assert "name_variants" not in result
 
 
 def test_name_variants_from_410__9_discards_other_sources():
@@ -442,17 +442,17 @@ def test_name_variants_from_410__9_discards_other_sources():
         '  <subfield code="9">Tech</subfield>'
         '  <subfield code="a">CIIT</subfield>'
         '  <subfield code="g">Inst</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     result = institutions.do(create_record(snippet))
 
-    assert 'name_variants' not in result
+    assert "name_variants" not in result
 
 
 def test_name_variants_from_410__double_a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['name_variants']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["name_variants"]
 
     snippet = (  # record/902624
         '<datafield tag="410" ind1=" " ind2=" ">  <subfield'
@@ -461,25 +461,25 @@ def test_name_variants_from_410__double_a():
     )
 
     expected = [
-        {'value': 'Theoretische Teilchenphysik und Kosmologie'},
-        {'value': 'Elementarteilchenphysik'},
+        {"value": "Theoretische Teilchenphysik und Kosmologie"},
+        {"value": "Elementarteilchenphysik"},
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['name_variants'], subschema) is None
-    assert expected == result['name_variants']
+    assert validate(result["name_variants"], subschema) is None
+    assert expected == result["name_variants"]
 
 
 def test_extra_words_from_410__decuple_g():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['extra_words']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["extra_words"]
 
     snippet = (  # record/902624
         '<datafield tag="410" ind1=" " ind2=" ">  <subfield code="g">Institut'
         ' Theoretische Physik,</subfield>  <subfield code="g">RWTH,'
         ' Inst.</subfield>  <subfield code="g">institute A</subfield> '
         ' <subfield code="g">III. Physikalisches Institut, Technische'
-        ' Hochschule Aachen, Aachen, West</subfield>  <subfield'
+        " Hochschule Aachen, Aachen, West</subfield>  <subfield"
         ' code="g">physics</subfield>  <subfield code="g">52056</subfield> '
         ' <subfield code="g">D-52056</subfield>  <subfield'
         ' code="g">DE-52056</subfield>  <subfield code="g">phys</subfield> '
@@ -487,427 +487,427 @@ def test_extra_words_from_410__decuple_g():
     )
 
     expected = [
-        'Institut Theoretische Physik,',
-        'RWTH, Inst.',
-        'institute A',
-        'III. Physikalisches Institut, Technische Hochschule Aachen, Aachen, West',
-        'physics',
-        '52056',
-        'D-52056',
-        'DE-52056',
-        'phys',
-        'I. Physikalisches Institut',
+        "Institut Theoretische Physik,",
+        "RWTH, Inst.",
+        "institute A",
+        "III. Physikalisches Institut, Technische Hochschule Aachen, Aachen, West",
+        "physics",
+        "52056",
+        "D-52056",
+        "DE-52056",
+        "phys",
+        "I. Physikalisches Institut",
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['extra_words'], subschema) is None
-    assert expected == result['extra_words']
+    assert validate(result["extra_words"], subschema) is None
+    assert expected == result["extra_words"]
 
 
 def test_related_records_from_510__a_w_0_accepts_parents():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['related_records']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["related_records"]
 
     snippet = (  # record/1430106
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">1385404</subfield>'
         '  <subfield code="a">U. Caen (main)</subfield>'
         '  <subfield code="w">t</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/1385404',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/1385404",
             },
-            'relation': 'parent',
+            "relation": "parent",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert validate(result["related_records"], subschema) is None
+    assert expected == result["related_records"]
 
 
 def test_related_records_from_double_510__a_w_0_accepts_parents():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['related_records']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["related_records"]
 
     snippet = (  # record/1430106
-        '<record>'
+        "<record>"
         '  <datafield tag="510" ind1=" " ind2=" ">'
         '    <subfield code="0">1385404</subfield>'
         '    <subfield code="a">U. Caen (main)</subfield>'
         '    <subfield code="w">t</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="510" ind1=" " ind2=" ">'
         '    <subfield code="0">926589</subfield>'
         '    <subfield code="a">CNRS, France</subfield>'
         '    <subfield code="w">t</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/1385404',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/1385404",
             },
-            'relation': 'parent',
+            "relation": "parent",
         },
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/926589',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/926589",
             },
-            'relation': 'parent',
+            "relation": "parent",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert validate(result["related_records"], subschema) is None
+    assert expected == result["related_records"]
 
 
 def test_related_records_from_double_510__a_w_0_accepts_predecessors():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['related_records']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["related_records"]
 
     snippet = (  # record/902916
-        '<record>'
+        "<record>"
         '  <datafield tag="510" ind1=" " ind2=" ">'
         '    <subfield code="0">903276</subfield>'
         '    <subfield code="a">INS, Tokyo</subfield>'
         '    <subfield code="w">a</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="510" ind1=" " ind2=" ">'
         '    <subfield code="0">905439</subfield>'
         '    <subfield code="a">U. Tokyo, Meson Sci. Lab.</subfield>'
         '    <subfield code="w">a</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/903276',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/903276",
             },
-            'relation': 'predecessor',
+            "relation": "predecessor",
         },
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/905439',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/905439",
             },
-            'relation': 'predecessor',
+            "relation": "predecessor",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert validate(result["related_records"], subschema) is None
+    assert expected == result["related_records"]
 
 
 def test_related_records_from_510__a_w_0_accepts_other():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['related_records']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["related_records"]
 
     snippet = (  # record/902971
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">945696</subfield>'
         '  <subfield code="a">UMass Amherst</subfield>'
         '  <subfield code="w">r</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/945696',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/945696",
             },
-            'relation_freetext': 'other',
+            "relation_freetext": "other",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert validate(result["related_records"], subschema) is None
+    assert expected == result["related_records"]
 
 
 def test_related_records_from__510__a_w_0_accepts_successors():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['related_records']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["related_records"]
 
     snippet = (  # record/902831
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="0">911753</subfield>'
         '  <subfield code="a">HZB, Berlin</subfield>'
         '  <subfield code="w">b</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'curated_relation': True,
-            'record': {
-                '$ref': 'http://localhost:5000/api/institutions/911753',
+            "curated_relation": True,
+            "record": {
+                "$ref": "http://localhost:5000/api/institutions/911753",
             },
-            'relation': 'successor',
+            "relation": "successor",
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['related_records'], subschema) is None
-    assert expected == result['related_records']
+    assert validate(result["related_records"], subschema) is None
+    assert expected == result["related_records"]
 
 
 def test_related_records_from_510__w_discards_malformed():
     snippet = (  # synthetic data
         '<datafield tag="510" ind1=" " ind2=" ">'
         '  <subfield code="w">foo</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     result = institutions.do(create_record(snippet))
 
-    assert 'related_records' not in result
+    assert "related_records" not in result
 
 
 def test_core_from_980__a_core():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['core']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["core"]
 
     snippet = (  # record/902645
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">CORE</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = True
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['core'], subschema) is None
-    assert expected == result['core']
+    assert validate(result["core"], subschema) is None
+    assert expected == result["core"]
 
 
 def test_core_from_980__a_b_noncore():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['core']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["core"]
 
     snippet = (  # record/906132
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">NONCORE</subfield>'
         '  <subfield code="b">NON-PPF</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = False
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['core'], subschema) is None
-    assert expected == result['core']
+    assert validate(result["core"], subschema) is None
+    assert expected == result["core"]
 
 
 def test_private_notes_from_667__a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['_private_notes']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["_private_notes"]
 
     snippet = (  # record/902663
         '<datafield tag="667" ind1=" " ind2=" ">'
         '  <subfield code="a">Former ICN = Negev U.</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        {'value': 'Former ICN = Negev U.'},
+        {"value": "Former ICN = Negev U."},
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['_private_notes'], subschema) is None
-    assert expected == result['_private_notes']
+    assert validate(result["_private_notes"], subschema) is None
+    assert expected == result["_private_notes"]
 
 
 def test_private_notes_from_595__a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['_private_notes']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["_private_notes"]
 
     snippet = (  # record/902879
         '<datafield tag="595" ind1=" " ind2=" ">  <subfield code="a">The'
-        ' Division is located inside the Department of Physics and Astronomy of'
+        " Division is located inside the Department of Physics and Astronomy of"
         ' the University of Catania Scientific Campus ("Città Universitaria" or'
         ' "Cittadella"). Via Santa Sofia 64 95123'
-        ' CATANIA</subfield></datafield>'
+        " CATANIA</subfield></datafield>"
     )
 
     expected = [
         {
-            'value': (
-                u'The Division is located inside the Department of Physics and'
-                u' Astronomy of the University of Catania Scientific Campus'
-                u' ("Città Universitaria" or "Cittadella"). Via Santa Sofia 64'
-                u' 95123 CATANIA'
+            "value": (
+                "The Division is located inside the Department of Physics and"
+                " Astronomy of the University of Catania Scientific Campus"
+                ' ("Città Universitaria" or "Cittadella"). Via Santa Sofia 64'
+                " 95123 CATANIA"
             )
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['_private_notes'], subschema) is None
-    assert expected == result['_private_notes']
+    assert validate(result["_private_notes"], subschema) is None
+    assert expected == result["_private_notes"]
 
 
 def test_private_notes_from_double_595__a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['_private_notes']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["_private_notes"]
 
     snippet = (  # record/907691
         '<record>  <datafield tag="595" ind1=" " ind2=" ">    <subfield'
         ' code="a">The Roma II Structure was established in 1989 at the'
-        ' University of Rome “Tor Vergata” - cc</subfield>  </datafield> '
+        " University of Rome “Tor Vergata” - cc</subfield>  </datafield> "
         ' <datafield tag="595" ind1=" " ind2=" ">    <subfield'
         ' code="a">REDACTED thinks we don\'t have to write 110__t: "INFN, Rome'
-        ' 2" because Rome 2 is only in the url but not in the site. She\'ll ask'
-        ' to REDACTED (from INFN) to have her feedback.</subfield> '
-        ' </datafield></record>'
+        " 2\" because Rome 2 is only in the url but not in the site. She'll ask"
+        " to REDACTED (from INFN) to have her feedback.</subfield> "
+        " </datafield></record>"
     )
 
     expected = [
         {
-            'value': (
-                u'The Roma II Structure was established in 1989 at the'
-                u' University of Rome “Tor Vergata” - cc'
+            "value": (
+                "The Roma II Structure was established in 1989 at the"
+                " University of Rome “Tor Vergata” - cc"
             )
         },
         {
-            'value': (
-                u'REDACTED thinks we don\'t have to write 110__t: "INFN, Rome'
-                u' 2" because Rome 2 is only in the url but not in the site.'
-                u' She\'ll ask to REDACTED (from INFN) to have her feedback.'
+            "value": (
+                "REDACTED thinks we don't have to write 110__t: \"INFN, Rome"
+                ' 2" because Rome 2 is only in the url but not in the site.'
+                " She'll ask to REDACTED (from INFN) to have her feedback."
             )
         },
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['_private_notes'], subschema) is None
-    assert expected == result['_private_notes']
+    assert validate(result["_private_notes"], subschema) is None
+    assert expected == result["_private_notes"]
 
 
 def test_public_notes_from_680__i():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['public_notes']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["public_notes"]
 
     snippet = (  # record/902725
         '<datafield tag="680" ind1=" " ind2=" ">  <subfield code="i">2nd'
-        ' address: Organisation Européenne pour la Recherche Nucléaire (CERN),'
-        ' F-01631 Prévessin Cedex, France</subfield></datafield>'
+        " address: Organisation Européenne pour la Recherche Nucléaire (CERN),"
+        " F-01631 Prévessin Cedex, France</subfield></datafield>"
     )
 
     expected = [
         {
-            'value': (
-                u'2nd address: Organisation Européenne pour la Recherche'
-                u' Nucléaire (CERN), F-01631 Prévessin Cedex, France'
+            "value": (
+                "2nd address: Organisation Européenne pour la Recherche"
+                " Nucléaire (CERN), F-01631 Prévessin Cedex, France"
             )
         }
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['public_notes'], subschema) is None
-    assert expected == result['public_notes']
+    assert validate(result["public_notes"], subschema) is None
+    assert expected == result["public_notes"]
 
 
 def test_historical_data_from_6781_a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['historical_data']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["historical_data"]
 
     snippet = (  # record/902666
         '<datafield tag="678" ind1="1" ind2=" ">  <subfield code="a">Became IFH'
-        ' (Inst for Hochenergiephysik)in 1968. Since 1992 the official name of'
-        ' the Inst. is simply DESY Zeuthen. Changed 1/26/99'
-        ' AMR</subfield></datafield>'
+        " (Inst for Hochenergiephysik)in 1968. Since 1992 the official name of"
+        " the Inst. is simply DESY Zeuthen. Changed 1/26/99"
+        " AMR</subfield></datafield>"
     )
 
     expected = [
-        'Became IFH (Inst for Hochenergiephysik)in 1968. Since 1992 the'
-        ' official name of the Inst. is simply DESY Zeuthen. Changed'
-        ' 1/26/99 AMR'
+        "Became IFH (Inst for Hochenergiephysik)in 1968. Since 1992 the"
+        " official name of the Inst. is simply DESY Zeuthen. Changed"
+        " 1/26/99 AMR"
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['historical_data'], subschema) is None
-    assert expected == result['historical_data']
+    assert validate(result["historical_data"], subschema) is None
+    assert expected == result["historical_data"]
 
 
 def test_historical_data_from_6781_multiple_a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['historical_data']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["historical_data"]
 
     snippet = (  # record/902725
         '<datafield tag="678" ind1="1" ind2=" ">  <subfield code="a">Conseil'
-        ' européen pour la Recherche Nucléaire (1952-1954)</subfield> '
+        " européen pour la Recherche Nucléaire (1952-1954)</subfield> "
         ' <subfield code="a">Organisation européenne pour la Recherche'
         ' nucléaire (1954-now)</subfield>  <subfield code="a">Sub title:'
-        ' Laboratoire européen pour la Physique des Particules'
+        " Laboratoire européen pour la Physique des Particules"
         ' (1984-now)</subfield>  <subfield code="a">Sub title: European'
-        ' Laboratory for Particle Physics (1984-now)</subfield></datafield>'
+        " Laboratory for Particle Physics (1984-now)</subfield></datafield>"
     )
 
     expected = [
-        u'Conseil européen pour la Recherche Nucléaire (1952-1954)',
-        u'Organisation européenne pour la Recherche nucléaire (1954-now)',
-        u'Sub title: Laboratoire européen pour la Physique des Particules (1984-now)',
-        u'Sub title: European Laboratory for Particle Physics (1984-now)',
+        "Conseil européen pour la Recherche Nucléaire (1952-1954)",
+        "Organisation européenne pour la Recherche nucléaire (1954-now)",
+        "Sub title: Laboratoire européen pour la Physique des Particules (1984-now)",
+        "Sub title: European Laboratory for Particle Physics (1984-now)",
     ]
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['historical_data'], subschema) is None
-    assert expected == result['historical_data']
+    assert validate(result["historical_data"], subschema) is None
+    assert expected == result["historical_data"]
 
 
 def test_deleted_from_980__multiple_b_and_980__a_and_980__c():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['deleted']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["deleted"]
 
     snippet = (  # record/905453
-        '<record>'
+        "<record>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="b">CK90</subfield>'
         '    <subfield code="b">PPF</subfield>'
         '    <subfield code="b">WEB</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">INSTITUTION</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="c">DELETED</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = True
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['deleted'], subschema) is None
-    assert expected == result['deleted']
+    assert validate(result["deleted"], subschema) is None
+    assert expected == result["deleted"]
 
 
 def test_inactive_from_980__a():
-    schema = load_schema('institutions')
-    subschema = schema['properties']['inactive']
+    schema = load_schema("institutions")
+    subschema = schema["properties"]["inactive"]
 
     snippet = (  # record/1241100
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">DEAD</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = True
     result = institutions.do(create_record(snippet))
 
-    assert validate(result['inactive'], subschema) is None
-    assert expected == result['inactive']
+    assert validate(result["inactive"], subschema) is None
+    assert expected == result["inactive"]
