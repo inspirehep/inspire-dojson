@@ -32,7 +32,6 @@ from functools import wraps
 
 from dojson import Overdo
 from dojson.errors import IgnoreKey
-from six import raise_from
 
 from inspire_dojson.errors import DoJsonError
 from inspire_dojson.utils import dedupe_all_lists, strip_empty_values
@@ -68,16 +67,13 @@ class FilterOverdo(Overdo):
             except Exception as exc:
                 if type(exc) is IgnoreKey:
                     raise exc
-                raise_from(
-                    DoJsonError(
+                raise DoJsonError(
                         u'Error in rule "{name}" for field "{key}"'.format(
                             name=name, key=key
                         ),
                         exc.args,
                         value,
-                    ),
-                    exc,
-                )
+                    ) from exc
 
         return func
 

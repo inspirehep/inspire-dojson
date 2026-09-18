@@ -32,6 +32,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+.venv/
 build/
 develop-eggs/
 dist/
@@ -78,10 +79,6 @@ local_settings.py
 
 # Flask instance folder
 instance/
-
-# Sphinx documentation
-docs/_build/
-docs/_api/
 
 # PyBuilder
 target/

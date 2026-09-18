@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.11'
 
       - name: Install bump2version
         shell: bash
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ needs.bump.outputs.new_sha }}
@@ -63,21 +63,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.8"
+          python-version: "3.11"
 
-      - name: Install python dependencies
-        run: |
-          pip --no-cache-dir install setuptools wheel
-          pip --no-cache-dir install -e .[tests,docs]
-
-      - name: Show python dependencies
-        run: |
-          pip freeze
+      - name: Install Poetry
+        run: pipx install poetry
 
       - name: Build package
-        run: |
-          mkdir clean-build
-          python setup.py sdist bdist_wheel --universal --dist-dir ./clean-build
+        run: poetry build
 
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@v1.3.1
@@ -85,4 +77,3 @@ jobs:
           verify_metadata: false
           user: __token__
           password: ${{ secrets.pypi_password }}
-          packages_dir: clean-build/

@@ -23,9 +23,9 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+from unittest.mock import patch
 
 import pytest
-from mock import patch
 
 from inspire_dojson.utils import (
     absolute_url,

@@ -22,10 +22,10 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+from unittest.mock import patch
 
 import pytest
 from langdetect import DetectorFactory
-from mock import patch
 
 CONFIG = {
     'SERVER_NAME': 'localhost:5000',

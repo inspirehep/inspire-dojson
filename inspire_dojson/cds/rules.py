@@ -26,16 +26,15 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import urllib.parse
 from itertools import chain
 
 import pycountry
 import rfc3987
-import six
 from dojson import utils
 from idutils import is_arxiv
 from inspire_utils.helpers import force_list
 from inspire_utils.name import normalize_name
-from six.moves import urllib
 
 from inspire_dojson.cds.model import cds2hep_marc
 from inspire_dojson.utils import force_single_element, quote_url
@@ -97,7 +96,7 @@ def add_source(field, source='CDS'):
 
 
 def vanilla_dict(god):
-    return {k: v for (k, v) in six.iteritems(god) if k != '__order__'}
+    return {k: v for (k, v) in god.items() if k != '__order__'}
 
 
 def ignore_not_applicable(text):
