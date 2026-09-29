@@ -29,42 +29,42 @@ from inspire_dojson.conferences import conferences
 
 
 def test_addresses_from_034__d_f_and_111__c():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1707423
-        '<record>'
+        "<record>"
         '  <datafield tag="034" ind1=" " ind2=" ">'
         '    <subfield code="d">11.3426162</subfield>'
         '    <subfield code="f">44.494887</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="111" ind1=" " ind2=" ">'
         '    <subfield code="c">Bologna, Italy</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'cities': ['Bologna'],
-            'country_code': 'IT',
-            'latitude': 44.494887,
-            'longitude': 11.3426162,
+            "cities": ["Bologna"],
+            "country_code": "IT",
+            "latitude": 44.494887,
+            "longitude": 11.3426162,
         }
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_acronyms_from_111__a_c_e_g_x_y():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['acronyms']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["acronyms"]
 
     snippet = (  # record/1468357
         '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">16th'
-        ' Conference on Flavor Physics and CP Violation</subfield>  <subfield'
+        " Conference on Flavor Physics and CP Violation</subfield>  <subfield"
         ' code="c">Hyderabad, INDIA</subfield>  <subfield code="e">FPCP'
         ' 2018</subfield>  <subfield code="g">C18-07-09</subfield>  <subfield'
         ' code="x">2018-07-09</subfield>  <subfield'
@@ -72,21 +72,21 @@ def test_acronyms_from_111__a_c_e_g_x_y():
     )
 
     expected = [
-        'FPCP 2018',
+        "FPCP 2018",
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['acronyms'], subschema) is None
-    assert expected == result['acronyms']
+    assert validate(result["acronyms"], subschema) is None
+    assert expected == result["acronyms"]
 
 
 def test_acronyms_from_111__a_c_d_double_e_g_x_y():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['acronyms']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["acronyms"]
 
     snippet = (  # record/1308774
         '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">11th'
-        ' international vacuum congress and 7th international conference on'
+        " international vacuum congress and 7th international conference on"
         ' solid surfaces</subfield>  <subfield code="c">Cologne,'
         ' Germany</subfield>  <subfield code="d">25 – 29 Sep 1989</subfield> '
         ' <subfield code="e">IVC-11</subfield>  <subfield'
@@ -96,23 +96,23 @@ def test_acronyms_from_111__a_c_d_double_e_g_x_y():
     )
 
     expected = [
-        'IVC-11',
-        'ICSS-7',
+        "IVC-11",
+        "ICSS-7",
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['acronyms'], subschema) is None
-    assert expected == result['acronyms']
+    assert validate(result["acronyms"], subschema) is None
+    assert expected == result["acronyms"]
 
 
 def test_acronyms_from_111__a_c_double_e_g_x_y():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['acronyms']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["acronyms"]
 
     snippet = (  # record/1218346
         '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">2013 IEEE'
-        ' Nuclear Science Symposium and Medical Imaging Conference and Workshop'
-        ' on Room-Temperature Semiconductor Detectors</subfield>  <subfield'
+        " Nuclear Science Symposium and Medical Imaging Conference and Workshop"
+        " on Room-Temperature Semiconductor Detectors</subfield>  <subfield"
         ' code="c">Seoul, Korea</subfield>  <subfield code="e">NSS/MIC'
         ' 2013</subfield>  <subfield code="e">RTSD 2013</subfield>  <subfield'
         ' code="g">C13-10-26</subfield>  <subfield'
@@ -121,22 +121,22 @@ def test_acronyms_from_111__a_c_double_e_g_x_y():
     )
 
     expected = [
-        'NSS/MIC 2013',
-        'RTSD 2013',
+        "NSS/MIC 2013",
+        "RTSD 2013",
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['acronyms'], subschema) is None
-    assert expected == result['acronyms']
+    assert validate(result["acronyms"], subschema) is None
+    assert expected == result["acronyms"]
 
 
 def test_addresses_from_111__a_c_d_g_x_y():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/965081
         '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">11th Texas'
-        ' Symposium on Relativistic Astrophysics</subfield>  <subfield'
+        " Symposium on Relativistic Astrophysics</subfield>  <subfield"
         ' code="c">Austin, Tex.</subfield>  <subfield code="d">13-17 Dec'
         ' 1982</subfield>  <subfield code="g">C82-12-13</subfield>  <subfield'
         ' code="x">1982-12-13</subfield>  <subfield'
@@ -145,22 +145,22 @@ def test_addresses_from_111__a_c_d_g_x_y():
 
     expected = [
         {
-            'cities': [
-                'Austin',
+            "cities": [
+                "Austin",
             ],
-            'country_code': 'US',
-            'state': 'TX',
+            "country_code": "US",
+            "state": "TX",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_111__a_c_d_g_x_y_and_111__c():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1220831
         '<record>  <datafield tag="111" ind1=" " ind2=" ">    <subfield'
@@ -171,36 +171,36 @@ def test_addresses_from_111__a_c_d_g_x_y_and_111__c():
         ' code="x">2011-09-21</subfield>    <subfield'
         ' code="y">2011-09-29</subfield>  </datafield>  <datafield tag="111"'
         ' ind1=" " ind2=" ">    <subfield code="c">Tbilisi, Georgia</subfield> '
-        ' </datafield></record>'
+        " </datafield></record>"
     )
 
     expected = [
         {
-            'cities': [
-                'Yerevan',
+            "cities": [
+                "Yerevan",
             ],
-            'country_code': 'AM',
+            "country_code": "AM",
         },
         {
-            'cities': [
-                'Tbilisi',
+            "cities": [
+                "Tbilisi",
             ],
-            'country_code': 'GE',
+            "country_code": "GE",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_111__a_double_c_d_e_g_x_y():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1085463
         '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">16th'
-        ' High-Energy Physics International Conference in Quantum'
+        " High-Energy Physics International Conference in Quantum"
         ' Chromodynamics</subfield>  <subfield code="c">QCD 12</subfield> '
         ' <subfield code="c">Montpellier, France</subfield>  <subfield'
         ' code="d">2-7 Jul 2012</subfield>  <subfield code="e">QCD'
@@ -211,133 +211,133 @@ def test_addresses_from_111__a_double_c_d_e_g_x_y():
 
     expected = [
         {
-            'place_name': 'QCD 12',
+            "place_name": "QCD 12",
         },  # XXX: Wrong, but the best we can do.
         {
-            'cities': [
-                'Montpellier',
+            "cities": [
+                "Montpellier",
             ],
-            'country_code': 'FR',
+            "country_code": "FR",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_111__a_c_d_e_g_x_y_three_address_parts():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1781388
         '<datafield tag="111" ind1=" " ind2=" ">   <subfield code="a">10th Int.'
-        ' Conf. DICE2020: Spacetime - Matter - Quantum Mechanics</subfield>  '
+        " Conf. DICE2020: Spacetime - Matter - Quantum Mechanics</subfield>  "
         ' <subfield code="e">DICE2020</subfield>   <subfield'
         ' code="x">2020-09-14</subfield>   <subfield'
         ' code="y">2020-09-18</subfield>   <subfield code="c">Castiglioncello ,'
-        ' Tuscany, Italy</subfield>   <subfield'
+        " Tuscany, Italy</subfield>   <subfield"
         ' code="g">C20-09-14.1</subfield></datafield>'
     )
 
     expected = [
         {
-            'cities': [
-                'Castiglioncello',
+            "cities": [
+                "Castiglioncello",
             ],
-            'state': 'Tuscany',
-            'country_code': 'IT',
+            "state": "Tuscany",
+            "country_code": "IT",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_111__a_c_d_e_g_x_y_many_address_parts():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1699363
         '<datafield tag="111" ind1=" " ind2=" ">  <subfield code="a">Higher'
-        ' structures in Holomorphic and Topological Field Theory</subfield> '
+        " structures in Holomorphic and Topological Field Theory</subfield> "
         ' <subfield code="x">2019-01-14</subfield>  <subfield'
         ' code="y">2019-01-18</subfield>  <subfield code="c">IHES,'
-        ' Bures-sur-Yvette, Paris area, France</subfield>  <subfield'
+        " Bures-sur-Yvette, Paris area, France</subfield>  <subfield"
         ' code="g">C19-01-14.1</subfield></datafield>'
     )
 
     expected = [
         {
-            'cities': [
-                'IHES',
+            "cities": [
+                "IHES",
             ],  # XXX: Wrong, but better than dropping data
-            'place_name': 'Bures-sur-Yvette',
-            'state': 'Paris area',
-            'country_code': 'FR',
+            "place_name": "Bures-sur-Yvette",
+            "state": "Paris area",
+            "country_code": "FR",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_270__b():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1430104
         '<datafield tag="270" ind1=" " ind2=" ">'
         '  <subfield code="b">British Columbia</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        {'place_name': 'British Columbia'},
+        {"place_name": "British Columbia"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_addresses_from_111__a_c_e_g_x_y_and_270__b():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['addresses']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["addresses"]
 
     snippet = (  # record/1353313
         '<record>  <datafield tag="111" ind1=" " ind2=" ">    <subfield'
         ' code="a">2017 International Workshop on Baryon and Lepton Number'
-        ' Violation: From the Cosmos to the LHC</subfield>    <subfield'
+        " Violation: From the Cosmos to the LHC</subfield>    <subfield"
         ' code="c">Cleveland, Ohio, USA</subfield>    <subfield code="e">BLV'
         ' 2017</subfield>    <subfield code="g">C17-05-15</subfield>   '
         ' <subfield code="x">2017-05-15</subfield>    <subfield'
         ' code="y">2017-05-18</subfield>  </datafield>  <datafield tag="270"'
         ' ind1=" " ind2=" ">    <subfield code="b">Case Western Reserve'
-        ' University</subfield>  </datafield></record>'
+        " University</subfield>  </datafield></record>"
     )
 
     expected = [
         {
-            'cities': [
-                'Cleveland',
+            "cities": [
+                "Cleveland",
             ],
-            'country_code': 'US',
-            'state': 'OH',
+            "country_code": "US",
+            "state": "OH",
         },
-        {'place_name': 'Case Western Reserve University'},
+        {"place_name": "Case Western Reserve University"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['addresses'], subschema) is None
-    assert expected == result['addresses']
+    assert validate(result["addresses"], subschema) is None
+    assert expected == result["addresses"]
 
 
 def test_titles_from_111__a_c_d_g_x_y():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['titles']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["titles"]
 
     snippet = (
         '<datafield tag="111" ind1=" " ind2=" ">'
@@ -347,681 +347,681 @@ def test_titles_from_111__a_c_d_g_x_y():
         '  <subfield code="c">Las Vegas, Nevada</subfield>'
         '  <subfield code="g">C06-02-14</subfield>'
         '  <subfield code="y">2006-02-16</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        {'title': 'NASA Laboratory Astrophysics Workshop'},
+        {"title": "NASA Laboratory Astrophysics Workshop"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['titles'], subschema) is None
-    assert expected == result['titles']
+    assert validate(result["titles"], subschema) is None
+    assert expected == result["titles"]
 
 
 def test_titles_from_111__double_a_b():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['titles']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["titles"]
 
     snippet = (
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="a">Conférence IAP 2013</subfield>'
         '  <subfield code="a">75 Anniversary Conference</subfield>'
         '  <subfield code="b">The origin of the Hubble sequence</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'title': u'Conférence IAP 2013',
-            'subtitle': 'The origin of the Hubble sequence',
+            "title": "Conférence IAP 2013",
+            "subtitle": "The origin of the Hubble sequence",
         },
         {
-            'title': '75 Anniversary Conference',
-            'subtitle': 'The origin of the Hubble sequence',
+            "title": "75 Anniversary Conference",
+            "subtitle": "The origin of the Hubble sequence",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['titles'], subschema) is None
-    assert expected == result['titles']
+    assert validate(result["titles"], subschema) is None
+    assert expected == result["titles"]
 
 
 def test_opening_date_from_111__x_handles_incomplete_dates_with_year_and_month():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['opening_date']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["opening_date"]
 
     snippet = (  # record/1442284
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="x">2001-02-00</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = '2001-02'
+    expected = "2001-02"
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['opening_date'], subschema) is None
-    assert expected == result['opening_date']
+    assert validate(result["opening_date"], subschema) is None
+    assert expected == result["opening_date"]
 
 
 def test_opening_date_from_111__x_handles_incomplete_dates():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['opening_date']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["opening_date"]
 
     snippet = (  # record/1477158
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="x">1999-07</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = '1999-07'
+    expected = "1999-07"
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['opening_date'], subschema) is None
-    assert expected == result['opening_date']
+    assert validate(result["opening_date"], subschema) is None
+    assert expected == result["opening_date"]
 
 
 def test_opening_date_from_111__x_handles_unseparated_dates():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['opening_date']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["opening_date"]
 
     snippet = (  # record/1280577
         '<datafield tag="111" ind1=" " ind2=" ">'
         '    <subfield code="x">20140518</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = '2014-05-18'
+    expected = "2014-05-18"
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['opening_date'], subschema) is None
-    assert expected == result['opening_date']
+    assert validate(result["opening_date"], subschema) is None
+    assert expected == result["opening_date"]
 
 
 def test_closing_date_from_111__y_handles_incomplete_dates_with_only_year():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['closing_date']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["closing_date"]
 
     snippet = (  # record/1372837
         '<datafield tag="111" ind1=" " ind2=" ">'
         '  <subfield code="y">1967-00-00</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    expected = '1967'
+    expected = "1967"
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['closing_date'], subschema) is None
-    assert expected == result['closing_date']
+    assert validate(result["closing_date"], subschema) is None
+    assert expected == result["closing_date"]
 
 
 def test_contact_details_from_270__m_p():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['contact_details']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["contact_details"]
 
     snippet = (  # record/1517305
         '<datafield tag="270" ind1=" " ind2=" ">'
         '  <subfield code="m">jonivar@thphys.nuim.ie</subfield>'
         '  <subfield code="p">Jon-Ivar Skullerud</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'email': 'jonivar@thphys.nuim.ie',
-            'name': 'Jon-Ivar Skullerud',
+            "email": "jonivar@thphys.nuim.ie",
+            "name": "Jon-Ivar Skullerud",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['contact_details'], subschema) is None
-    assert expected == result['contact_details']
+    assert validate(result["contact_details"], subschema) is None
+    assert expected == result["contact_details"]
 
 
 def test_series_from_411__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/1430017
         '<datafield tag="411" ind1=" " ind2=" ">'
         '  <subfield code="a">DPF Series</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        {'name': 'DPF Series'},
+        {"name": "DPF Series"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_411__n():
     snippet = (  # record/1447029
         '<datafield tag="411" ind1=" " ind2=" ">'
         '  <subfield code="n">7</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     result = conferences.do(create_record(snippet))
 
-    assert 'series' not in result
+    assert "series" not in result
 
 
 def test_series_from_411__a_n():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/1468357
         '<datafield tag="411" ind1=" " ind2=" ">'
         '  <subfield code="a">FPCP</subfield>'
         '  <subfield code="n">16</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
         {
-            'name': 'FPCP',
-            'number': 16,
+            "name": "FPCP",
+            "number": 16,
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_411__a_n_and_411__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/1404073
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">Rencontres de Moriond</subfield>'
         '    <subfield code="n">51</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">Moriond EW</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'Rencontres de Moriond',
-            'number': 51,
+            "name": "Rencontres de Moriond",
+            "number": 51,
         },
         {
-            'name': 'Moriond EW',
+            "name": "Moriond EW",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_411__a_n_and_411__n():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/963769
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">SSI</subfield>'
         '    <subfield code="n">x</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="n">2</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'SSI',
-            'number': 2,
+            "name": "SSI",
+            "number": 2,
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_double_411__a_n():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/974856
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">ICHEP</subfield>'
         '    <subfield code="n">5</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">Rochester</subfield>'
         '    <subfield code="n">5</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'ICHEP',
-            'number': 5,
+            "name": "ICHEP",
+            "number": 5,
         },
         {
-            'name': 'Rochester',
-            'number': 5,
+            "name": "Rochester",
+            "number": 5,
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_411__n_and_411__a_n():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/963914
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="n">3</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">WIN</subfield>'
         '    <subfield code="n">3</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'WIN',
-            'number': 3,
+            "name": "WIN",
+            "number": 3,
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_411__n_and_411__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/972145
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="n">3</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">Gordon</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'Gordon',
-            'number': 3,
+            "name": "Gordon",
+            "number": 3,
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_double_411__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/964177
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">SNPS</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">NSS</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'SNPS',
+            "name": "SNPS",
         },
         {
-            'name': 'NSS',
+            "name": "NSS",
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_series_from_411__a_and_411__a_n():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['series']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["series"]
 
     snippet = (  # record/964448
-        '<record>'
+        "<record>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">CEC</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="411" ind1=" " ind2=" ">'
         '    <subfield code="a">ICMC</subfield>'
         '    <subfield code="n">2</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
         {
-            'name': 'CEC',
+            "name": "CEC",
         },
         {
-            'name': 'ICMC',
-            'number': 2,
+            "name": "ICMC",
+            "number": 2,
         },
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['series'], subschema) is None
-    assert expected == result['series']
+    assert validate(result["series"], subschema) is None
+    assert expected == result["series"]
 
 
 def test_public_notes_from_500__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['public_notes']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["public_notes"]
 
     snippet = (  # record/963579
         '<datafield tag="500" ind1=" " ind2=" ">  <subfield code="a">Same conf.'
-        ' as Kyoto 1975: none in intervening years</subfield></datafield>'
+        " as Kyoto 1975: none in intervening years</subfield></datafield>"
     )
 
     expected = [
-        {'value': 'Same conf. as Kyoto 1975: none in intervening years'},
+        {"value": "Same conf. as Kyoto 1975: none in intervening years"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['public_notes'], subschema) is None
-    assert expected == result['public_notes']
+    assert validate(result["public_notes"], subschema) is None
+    assert expected == result["public_notes"]
 
 
 def test_public_notes_from_double_500__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['public_notes']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["public_notes"]
 
     snippet = (  # record/1445071
         '<record>  <datafield tag="500" ind1=" " ind2=" ">    <subfield'
         ' code="a">Marion White, PhD (Argonne) Conference Chair Vladimir'
-        ' Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power (Argonne)'
-        ' Conference Editor/Scientific Secretariat</subfield>  </datafield> '
+        " Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power (Argonne)"
+        " Conference Editor/Scientific Secretariat</subfield>  </datafield> "
         ' <datafield tag="500" ind1=" " ind2=" ">    <subfield code="a">Will be'
-        ' published in: JACoW</subfield>  </datafield></record>'
+        " published in: JACoW</subfield>  </datafield></record>"
     )
 
     expected = [
         {
-            'value': (
-                'Marion White, PhD (Argonne) Conference Chair Vladimir'
-                ' Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power'
-                ' (Argonne) Conference Editor/Scientific Secretariat'
+            "value": (
+                "Marion White, PhD (Argonne) Conference Chair Vladimir"
+                " Shiltsev, PhD (FNAL) Scientific Program Chair Maria Power"
+                " (Argonne) Conference Editor/Scientific Secretariat"
             )
         },
-        {'value': 'Will be published in: JACoW'},
+        {"value": "Will be published in: JACoW"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['public_notes'], subschema) is None
-    assert expected == result['public_notes']
+    assert validate(result["public_notes"], subschema) is None
+    assert expected == result["public_notes"]
 
 
 def test_short_description_from_520__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['short_description']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["short_description"]
 
     snippet = (  # record/1326067
         '<datafield tag="520" ind1=" " ind2=" ">  <subfield code="a">QNP2015 is'
-        ' the Seventh International Conference on Quarks and Nuclear Physics.'
-        ' It is anticipated that QCD practitioners, both experimentalists and'
-        ' theorists, will gather at the Universidad Técnica Federico Santa'
-        ' María, in Valparaíso, Chile during the week of March 2, 2015 to'
-        ' present and discuss the latest advances in the field. The following'
-        ' topics will be covered: quarks and gluons content of nucleons and'
-        ' nuclei, hadron spectroscopy, non-perturbative methods in QCD'
-        ' (including lattice calculations), effective field theories, nuclear'
-        ' matter under extreme conditions and nuclear medium. Participants'
-        ' should register at the conference website'
-        ' https://indico.cern.ch/event/304663/</subfield></datafield>'
+        " the Seventh International Conference on Quarks and Nuclear Physics."
+        " It is anticipated that QCD practitioners, both experimentalists and"
+        " theorists, will gather at the Universidad Técnica Federico Santa"
+        " María, in Valparaíso, Chile during the week of March 2, 2015 to"
+        " present and discuss the latest advances in the field. The following"
+        " topics will be covered: quarks and gluons content of nucleons and"
+        " nuclei, hadron spectroscopy, non-perturbative methods in QCD"
+        " (including lattice calculations), effective field theories, nuclear"
+        " matter under extreme conditions and nuclear medium. Participants"
+        " should register at the conference website"
+        " https://indico.cern.ch/event/304663/</subfield></datafield>"
     )
 
     expected = {
-        'value': (
-            u'QNP2015 is the Seventh International Conference on Quarks and'
-            u' Nuclear Physics. It is anticipated that QCD practitioners, both'
-            u' experimentalists and theorists, will gather at the Universidad'
-            u' Técnica Federico Santa María, in Valparaíso, Chile during the'
-            u' week of March 2, 2015 to present and discuss the latest advances'
-            u' in the field. The following topics will be covered: quarks and'
-            u' gluons content of nucleons and nuclei, hadron spectroscopy,'
-            u' non-perturbative methods in QCD (including lattice'
-            u' calculations), effective field theories, nuclear matter under'
-            u' extreme conditions and nuclear medium. Participants should'
-            u' register at the conference website'
-            u' https://indico.cern.ch/event/304663/'
+        "value": (
+            "QNP2015 is the Seventh International Conference on Quarks and"
+            " Nuclear Physics. It is anticipated that QCD practitioners, both"
+            " experimentalists and theorists, will gather at the Universidad"
+            " Técnica Federico Santa María, in Valparaíso, Chile during the"
+            " week of March 2, 2015 to present and discuss the latest advances"
+            " in the field. The following topics will be covered: quarks and"
+            " gluons content of nucleons and nuclei, hadron spectroscopy,"
+            " non-perturbative methods in QCD (including lattice"
+            " calculations), effective field theories, nuclear matter under"
+            " extreme conditions and nuclear medium. Participants should"
+            " register at the conference website"
+            " https://indico.cern.ch/event/304663/"
         ),
     }
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['short_description'], subschema) is None
-    assert expected == result['short_description']
+    assert validate(result["short_description"], subschema) is None
+    assert expected == result["short_description"]
 
 
 def test_short_description_from_multiple_520__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['short_description']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["short_description"]
 
     snippet = (  # record/1288023
         '<record>  <datafield tag="520" ind1=" " ind2=" ">    <subfield'
         ' code="a">The alliance "Physics at the Terascale" will host "Proton'
         ' Structure in the LHC Era", from 29 September - 2 October, 2014 at'
-        ' DESY in Hamburg. The planned structure will be a 2 day SCHOOL'
-        ' (Monday-Tuesday) followed by a 2 day WORKSHOP (Wednesday-Thursday)'
-        ' devoted to the current problems of the LHC data interpretation,'
-        ' related to the particularities of QCD, factorization, proton'
-        ' structure and higher order calculations.</subfield>  </datafield> '
+        " DESY in Hamburg. The planned structure will be a 2 day SCHOOL"
+        " (Monday-Tuesday) followed by a 2 day WORKSHOP (Wednesday-Thursday)"
+        " devoted to the current problems of the LHC data interpretation,"
+        " related to the particularities of QCD, factorization, proton"
+        " structure and higher order calculations.</subfield>  </datafield> "
         ' <datafield tag="520" ind1=" " ind2=" ">    <subfield code="a">SCHOOL:'
-        ' (Monday-Tuesday, September 29-30, 2014) The school will address'
-        ' mainly Ph.D. students and postdocs working at the LHC experiments. It'
-        ' includes introductory lectures, accompanied by tutorials in'
-        ' HERAFitter, FastNLO, Applgrid and further tools.</subfield> '
+        " (Monday-Tuesday, September 29-30, 2014) The school will address"
+        " mainly Ph.D. students and postdocs working at the LHC experiments. It"
+        " includes introductory lectures, accompanied by tutorials in"
+        " HERAFitter, FastNLO, Applgrid and further tools.</subfield> "
         ' </datafield>  <datafield tag="520" ind1=" " ind2=" ">    <subfield'
         ' code="a">WORKSHOP: (Wednesday-Thursday, October 1-2, 2014) The'
-        ' following workshop will encompass the open issues in theory and'
-        ' experiment concerning the determination of PDFs, heavy quark masses'
-        ' and strong coupling. The workshop will run as an open session and is'
-        ' more expert-oriented</subfield>  </datafield></record>'
+        " following workshop will encompass the open issues in theory and"
+        " experiment concerning the determination of PDFs, heavy quark masses"
+        " and strong coupling. The workshop will run as an open session and is"
+        " more expert-oriented</subfield>  </datafield></record>"
     )
 
     expected = {
-        'value': (
+        "value": (
             'The alliance "Physics at the Terascale" will host "Proton'
             ' Structure in the LHC Era", from 29 September - 2 October, 2014 at'
-            ' DESY in Hamburg. The planned structure will be a 2 day SCHOOL'
-            ' (Monday-Tuesday) followed by a 2 day WORKSHOP'
-            ' (Wednesday-Thursday) devoted to the current problems of the LHC'
-            ' data interpretation, related to the particularities of QCD,'
-            ' factorization, proton structure and higher order'
-            ' calculations.\nSCHOOL: (Monday-Tuesday, September 29-30, 2014)'
-            ' The school will address mainly Ph.D. students and postdocs'
-            ' working at the LHC experiments. It includes introductory'
-            ' lectures, accompanied by tutorials in HERAFitter, FastNLO,'
-            ' Applgrid and further tools.\nWORKSHOP: (Wednesday-Thursday,'
-            ' October 1-2, 2014) The following workshop will encompass the open'
-            ' issues in theory and experiment concerning the determination of'
-            ' PDFs, heavy quark masses and strong coupling. The workshop will'
-            ' run as an open session and is more expert-oriented'
+            " DESY in Hamburg. The planned structure will be a 2 day SCHOOL"
+            " (Monday-Tuesday) followed by a 2 day WORKSHOP"
+            " (Wednesday-Thursday) devoted to the current problems of the LHC"
+            " data interpretation, related to the particularities of QCD,"
+            " factorization, proton structure and higher order"
+            " calculations.\nSCHOOL: (Monday-Tuesday, September 29-30, 2014)"
+            " The school will address mainly Ph.D. students and postdocs"
+            " working at the LHC experiments. It includes introductory"
+            " lectures, accompanied by tutorials in HERAFitter, FastNLO,"
+            " Applgrid and further tools.\nWORKSHOP: (Wednesday-Thursday,"
+            " October 1-2, 2014) The following workshop will encompass the open"
+            " issues in theory and experiment concerning the determination of"
+            " PDFs, heavy quark masses and strong coupling. The workshop will"
+            " run as an open session and is more expert-oriented"
         ),
     }
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['short_description'], subschema) is None
-    assert expected == result['short_description']
+    assert validate(result["short_description"], subschema) is None
+    assert expected == result["short_description"]
 
 
 def test_alternative_titles_from_711__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['alternative_titles']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["alternative_titles"]
 
     snippet = (  # record/1436454
         '<datafield tag="711" ind1=" " ind2=" ">'
         '  <subfield code="a">GCACSE16</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        {'title': 'GCACSE16'},
+        {"title": "GCACSE16"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['alternative_titles'], subschema) is None
-    assert expected == result['alternative_titles']
+    assert validate(result["alternative_titles"], subschema) is None
+    assert expected == result["alternative_titles"]
 
 
 def test_alternative_titles_from_double_711__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['alternative_titles']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["alternative_titles"]
 
     snippet = (  # record/1436454
-        '<record>'
+        "<record>"
         '  <datafield tag="711" ind1=" " ind2=" ">'
         '    <subfield code="a">GCACSE16</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="711" ind1=" " ind2=" ">'
         '    <subfield code="a">GCACSE 2016</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
-        {'title': 'GCACSE16'},
-        {'title': 'GCACSE 2016'},
+        {"title": "GCACSE16"},
+        {"title": "GCACSE 2016"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['alternative_titles'], subschema) is None
-    assert expected == result['alternative_titles']
+    assert validate(result["alternative_titles"], subschema) is None
+    assert expected == result["alternative_titles"]
 
 
 def test_alternative_titles_from_711__a_b():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['alternative_titles']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["alternative_titles"]
 
     snippet = (  # record/1403856
         '<datafield tag="711" ind1=" " ind2=" ">  <subfield code="a">XX'
-        ' Riunione Nazionale di Elettromagnetismo</subfield>  <subfield'
+        " Riunione Nazionale di Elettromagnetismo</subfield>  <subfield"
         ' code="b">Padova</subfield></datafield>'
     )
 
     expected = [
-        {'title': 'XX Riunione Nazionale di Elettromagnetismo'},
-        {'title': 'Padova'},
+        {"title": "XX Riunione Nazionale di Elettromagnetismo"},
+        {"title": "Padova"},
     ]
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['alternative_titles'], subschema) is None
-    assert expected == result['alternative_titles']
+    assert validate(result["alternative_titles"], subschema) is None
+    assert expected == result["alternative_titles"]
 
 
 def test_core_from_980__a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['core']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["core"]
 
     snippet = (  # record/1707423
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="a">CORE</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = True
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['core'], subschema) is None
-    assert expected == result['core']
+    assert validate(result["core"], subschema) is None
+    assert expected == result["core"]
 
 
 def test_core_from_980__a_b():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['core']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["core"]
 
     snippet = (  # record/1726216
-        '<record>'
+        "<record>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">CONFERENCES</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">CORE</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = True
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['core'], subschema) is None
-    assert expected == result['core']
+    assert validate(result["core"], subschema) is None
+    assert expected == result["core"]
 
 
 def test_deleted_from_980__c():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['deleted']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["deleted"]
 
     snippet = (
         '<datafield tag="980" ind1=" " ind2=" ">'
         '  <subfield code="c">DELETED</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = True
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['deleted'], subschema) is None
-    assert expected == result['deleted']
+    assert validate(result["deleted"], subschema) is None
+    assert expected == result["deleted"]
 
 
 def test_keywords_from_6531_9_a():
-    schema = load_schema('conferences')
-    subschema = schema['properties']['keywords']
+    schema = load_schema("conferences")
+    subschema = schema["properties"]["keywords"]
 
     snippet = (  # record/1713483
-        '<record>'
+        "<record>"
         '  <datafield tag="653" ind1="1" ind2=" ">'
         '    <subfield code="9">submitter</subfield>'
         '    <subfield code="a">electroweak</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="653" ind1="1" ind2=" ">'
         '    <subfield code="9">submitter</subfield>'
         '    <subfield code="a">standard model</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     expected = [
-        {'source': 'submitter', 'value': 'electroweak'},
-        {'source': 'submitter', 'value': 'standard model'},
+        {"source": "submitter", "value": "electroweak"},
+        {"source": "submitter", "value": "standard model"},
     ]
 
     result = conferences.do(create_record(snippet))
 
-    assert validate(result['keywords'], subschema) is None
-    assert expected == result['keywords']
+    assert validate(result["keywords"], subschema) is None
+    assert expected == result["keywords"]

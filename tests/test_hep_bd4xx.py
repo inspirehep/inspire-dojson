@@ -29,26 +29,26 @@ from inspire_dojson.hep import hep, hep2marc
 
 
 def test_book_series_from_490__a():
-    schema = load_schema('hep')
-    subschema = schema['properties']['book_series']
+    schema = load_schema("hep")
+    subschema = schema["properties"]["book_series"]
 
     snippet = (  # record/1508903
         '<datafield tag="490" ind1=" " ind2=" ">'
         '  <subfield code="a">Graduate Texts in Physics</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = [
-        {'title': 'Graduate Texts in Physics'},
+        {"title": "Graduate Texts in Physics"},
     ]
     result = hep.do(create_record(snippet))
 
-    assert validate(result['book_series'], subschema) is None
-    assert expected == result['book_series']
+    assert validate(result["book_series"], subschema) is None
+    assert expected == result["book_series"]
 
     expected = [
-        {'a': 'Graduate Texts in Physics'},
+        {"a": "Graduate Texts in Physics"},
     ]
     result = hep2marc.do(result)
 
-    assert expected == result['490']
+    assert expected == result["490"]

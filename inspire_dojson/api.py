@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import re
+import urllib.parse
 from itertools import chain
 
 from dojson.contrib.marc21.utils import create_record
@@ -33,8 +34,6 @@ from inspire_utils.helpers import force_list
 from inspire_utils.record import get_value
 from lxml.builder import E
 from lxml.etree import tostring
-from six import iteritems, text_type, unichr
-from six.moves import urllib
 
 from inspire_dojson.cds import cds2hep_marc
 from inspire_dojson.conferences import conferences
@@ -48,13 +47,13 @@ from inspire_dojson.journals import journals
 from inspire_dojson.utils import create_record_from_dict, force_single_element
 
 try:
-    unichr(0x100000)
+    chr(0x100000)
     RE_INVALID_CHARS_FOR_XML = re.compile(
-        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD\U00010000-\U0010FFFF]+'
+        "[^\U00000009\U0000000a\U0000000d\U00000020-\U0000d7ff\U0000e000-\U0000fffd\U00010000-\U0010ffff]+"
     )
 except ValueError:  # pragma: no cover
     RE_INVALID_CHARS_FOR_XML = re.compile(
-        u'[^\U00000009\U0000000A\U0000000D\U00000020-\U0000D7FF\U0000E000-\U0000FFFD]+'
+        "[^\U00000009\U0000000a\U0000000d\U00000020-\U0000d7ff\U0000e000-\U0000fffd]+"
     )
 
 RECORD = E.record
@@ -81,19 +80,19 @@ def marcxml2record(marcxml):
     marcjson = create_record(marcxml, keep_singletons=False)
     collections = _get_collections(marcjson)
 
-    if 'conferences' in collections:
+    if "conferences" in collections:
         return conferences.do(marcjson)
-    elif 'data' in collections:
+    elif "data" in collections:
         return data.do(marcjson)
-    elif 'experiment' in collections:
+    elif "experiment" in collections:
         return experiments.do(marcjson)
-    elif 'hepnames' in collections:
+    elif "hepnames" in collections:
         return hepnames.do(marcjson)
-    elif 'institution' in collections:
+    elif "institution" in collections:
         return institutions.do(marcjson)
-    elif 'journals' in collections or 'journalsnew' in collections:
+    elif "journals" in collections or "journalsnew" in collections:
         return journals.do(marcjson)
-    elif 'job' in collections or 'jobhidden' in collections:
+    elif "job" in collections or "jobhidden" in collections:
         raise NotSupportedError("Jobs are not supported any more")
     return hep.do(marcjson)
 
@@ -102,35 +101,35 @@ def record2marcxml_etree(record):
     """Convert a JSON record to a MARCXML element tree."""
     schema_name = _get_schema_name(record)
 
-    if schema_name == 'hep':
+    if schema_name == "hep":
         marcjson = hep2marc.do(record)
-    elif schema_name == 'authors':
+    elif schema_name == "authors":
         marcjson = hepnames2marc.do(record)
     else:
         raise NotSupportedError(
-            u'JSON -> MARC rules missing for "{}"'.format(schema_name)
+            'JSON -> MARC rules missing for "{}"'.format(schema_name)
         )
 
     record = RECORD()
 
-    for key, values in sorted(iteritems(marcjson)):
+    for key, values in sorted(marcjson.items()):
         tag, ind1, ind2 = _parse_key(key)
         if _is_controlfield(tag, ind1, ind2):
             value = force_single_element(values)
-            if not isinstance(value, text_type):
-                value = text_type(value)
+            if not isinstance(value, str):
+                value = str(value)
             record.append(
-                CONTROLFIELD(_strip_invalid_chars_for_xml(value), {'tag': tag})
+                CONTROLFIELD(_strip_invalid_chars_for_xml(value), {"tag": tag})
             )
         else:
             for value in force_list(values):
-                datafield = DATAFIELD({'tag': tag, 'ind1': ind1, 'ind2': ind2})
-                for code, els in sorted(iteritems(value)):
+                datafield = DATAFIELD({"tag": tag, "ind1": ind1, "ind2": ind2})
+                for code, els in sorted(value.items()):
                     for el in force_list(els):
-                        if not isinstance(el, text_type):
-                            el = text_type(el)
+                        if not isinstance(el, str):
+                            el = str(el)
                         datafield.append(
-                            SUBFIELD(_strip_invalid_chars_for_xml(el), {'code': code})
+                            SUBFIELD(_strip_invalid_chars_for_xml(el), {"code": code})
                         )
                 record.append(datafield)
 
@@ -151,7 +150,7 @@ def record2marcxml(record):
 
     """
     record_tree = record2marcxml_etree(record)
-    return tostring(record_tree, encoding='utf8', pretty_print=True)
+    return tostring(record_tree, encoding="utf8", pretty_print=True)
 
 
 def cds_marcxml2record(marcxml):
@@ -162,7 +161,7 @@ def cds_marcxml2record(marcxml):
 
 def _get_collections(marcjson):
     collections = chain.from_iterable(
-        [force_list(el) for el in force_list(get_value(marcjson, '980__.a'))]
+        [force_list(el) for el in force_list(get_value(marcjson, "980__.a"))]
     )
     normalized_collections = [el.lower() for el in collections]
 
@@ -170,7 +169,7 @@ def _get_collections(marcjson):
 
 
 def _get_schema_name(record):
-    schema_url = record['$schema']
+    schema_url = record["$schema"]
     parsed_url = urllib.parse.urlparse(schema_url)
     _, filename = os.path.split(parsed_url.path)
     schema_name, _ = os.path.splitext(filename)
@@ -179,12 +178,12 @@ def _get_schema_name(record):
 
 
 def _is_controlfield(tag, ind1, ind2):
-    return tag.startswith('00')
+    return tag.startswith("00")
 
 
 def _parse_key(key):
-    return key[:3], key[3:4] or ' ', key[4:5] or ' '
+    return key[:3], key[3:4] or " ", key[4:5] or " "
 
 
 def _strip_invalid_chars_for_xml(s):
-    return re.sub(RE_INVALID_CHARS_FOR_XML, '', s)
+    return re.sub(RE_INVALID_CHARS_FOR_XML, "", s)

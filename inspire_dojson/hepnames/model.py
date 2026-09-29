@@ -33,8 +33,8 @@ from inspire_dojson.model import (
 )
 
 hepnames_filters = [
-    add_schema('authors.json'),
-    add_collection('Authors'),
+    add_schema("authors.json"),
+    add_collection("Authors"),
     clean_record(),
 ]
 

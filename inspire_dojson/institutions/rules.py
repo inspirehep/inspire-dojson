@@ -33,35 +33,35 @@ from inspire_dojson.institutions.model import institutions
 from inspire_dojson.utils import force_single_element, get_record_ref
 from inspire_dojson.utils.geo import parse_institution_address
 
-ACRONYM = re.compile(r'\s*\((.*)\)\s*$')
+ACRONYM = re.compile(r"\s*\((.*)\)\s*$")
 
 
 def _is_secondary_address(value):
-    return 'x' in value
+    return "x" in value
 
 
-@institutions.over('_location', '^034..')
+@institutions.over("_location", "^034..")
 def _location(self, key, value):
-    latitude = maybe_float(value.get('f'))
-    longitude = maybe_float(value.get('d'))
+    latitude = maybe_float(value.get("f"))
+    longitude = maybe_float(value.get("d"))
 
     if latitude and longitude:
         return {
-            'latitude': latitude,
-            'longitude': longitude,
+            "latitude": latitude,
+            "longitude": longitude,
         }
 
 
-@institutions.over('external_system_identifiers', '^035..')
+@institutions.over("external_system_identifiers", "^035..")
 @utils.for_each_value
 def external_system_identifiers(self, key, value):
     return {
-        'schema': force_single_element(value.get('9')),
-        'value': force_single_element(value.get('a')),
+        "schema": force_single_element(value.get("9")),
+        "value": force_single_element(value.get("a")),
     }
 
 
-@institutions.over('ICN', '^110..')
+@institutions.over("ICN", "^110..")
 def ICN(self, key, value):
     def _split_acronym(value):
         try:
@@ -69,39 +69,39 @@ def ICN(self, key, value):
         except AttributeError:
             acronym = None
 
-        return ACRONYM.sub('', value), acronym
+        return ACRONYM.sub("", value), acronym
 
-    ICN = self.get('ICN', [])
-    legacy_ICN = self.get('legacy_ICN', '')
-    institution_hierarchy = self.get('institution_hierarchy', [])
-    related_records = self.get('related_records', [])
+    ICN = self.get("ICN", [])
+    legacy_ICN = self.get("legacy_ICN", "")
+    institution_hierarchy = self.get("institution_hierarchy", [])
+    related_records = self.get("related_records", [])
 
     for current_value in force_list(value):
-        ICN.extend(force_list(value.get('t')))
+        ICN.extend(force_list(value.get("t")))
 
         if not legacy_ICN:
-            legacy_ICN = force_single_element(current_value.get('u'))
+            legacy_ICN = force_single_element(current_value.get("u"))
 
-        for b_value in force_list(current_value.get('b')):
+        for b_value in force_list(current_value.get("b")):
             department_name, department_acronym = _split_acronym(b_value)
             institution_hierarchy.append(
                 {
-                    'acronym': department_acronym,
-                    'name': department_name,
+                    "acronym": department_acronym,
+                    "name": department_name,
                 }
             )
 
-        for a_value in force_list(current_value.get('a')):
+        for a_value in force_list(current_value.get("a")):
             institution_name, institution_acronym = _split_acronym(a_value)
             institution_hierarchy.append(
                 {
-                    'acronym': institution_acronym,
-                    'name': institution_name,
+                    "acronym": institution_acronym,
+                    "name": institution_name,
                 }
             )
 
-        x_values = force_list(current_value.get('x'))
-        z_values = force_list(current_value.get('z'))
+        x_values = force_list(current_value.get("x"))
+        z_values = force_list(current_value.get("z"))
 
         # XXX: we zip only when they have the same length, otherwise
         #      we might match a relation with the wrong recid.
@@ -109,30 +109,30 @@ def ICN(self, key, value):
             for _, recid in zip(x_values, z_values):
                 related_records.append(
                     {
-                        'curated_relation': True,
-                        'record': get_record_ref(recid, 'institutions'),
-                        'relation_freetext': 'obsolete',
+                        "curated_relation": True,
+                        "record": get_record_ref(recid, "institutions"),
+                        "relation_freetext": "obsolete",
                     }
                 )
 
-    self['related_records'] = related_records
-    self['institution_hierarchy'] = institution_hierarchy
-    self['legacy_ICN'] = legacy_ICN
+    self["related_records"] = related_records
+    self["institution_hierarchy"] = institution_hierarchy
+    self["legacy_ICN"] = legacy_ICN
     return ICN
 
 
-@institutions.over('addresses', '^371..')
+@institutions.over("addresses", "^371..")
 def addresses_371(self, key, values):
-    addresses = self.get('addresses', [])
+    addresses = self.get("addresses", [])
 
     for value in force_list(values):
         address = parse_institution_address(
-            value.get('a'),
-            value.get('b'),
-            value.get('c'),
-            value.get('d'),
-            value.get('e'),
-            force_single_element(value.get('g')),
+            value.get("a"),
+            value.get("b"),
+            value.get("c"),
+            value.get("d"),
+            value.get("e"),
+            force_single_element(value.get("g")),
         )
 
         if _is_secondary_address(value):
@@ -143,111 +143,111 @@ def addresses_371(self, key, values):
     return addresses
 
 
-@institutions.over('institution_type', '^372..')
+@institutions.over("institution_type", "^372..")
 @utils.for_each_value
 def institution_type(self, key, value):
     INSTITUTION_TYPE_MAP = {
-        'Company': 'Company',
-        'Research center': 'Research Center',
-        'Research Center': 'Research Center',
-        'Research center/': 'Research Center',
-        'Research Center-microelectronics': 'Research Center',
-        'university': 'University',
-        'Univesity': 'University',
-        'University': 'University',
+        "Company": "Company",
+        "Research center": "Research Center",
+        "Research Center": "Research Center",
+        "Research center/": "Research Center",
+        "Research Center-microelectronics": "Research Center",
+        "university": "University",
+        "Univesity": "University",
+        "University": "University",
     }
 
-    a_value = force_single_element(value.get('a'))
-    return INSTITUTION_TYPE_MAP.get(a_value, 'Other')
+    a_value = force_single_element(value.get("a"))
+    return INSTITUTION_TYPE_MAP.get(a_value, "Other")
 
 
-@institutions.over('name_variants', '^410..')
+@institutions.over("name_variants", "^410..")
 def name_variants(self, key, value):
-    valid_sources = ['ADS', 'INSPIRE']
+    valid_sources = ["ADS", "INSPIRE"]
 
-    if value.get('9') and value.get('9') not in valid_sources:
-        return self.get('name_variants', [])
+    if value.get("9") and value.get("9") not in valid_sources:
+        return self.get("name_variants", [])
 
-    if value.get('g'):
-        self.setdefault('extra_words', [])
-        self['extra_words'].extend(force_list(value.get('g')))
+    if value.get("g"):
+        self.setdefault("extra_words", [])
+        self["extra_words"].extend(force_list(value.get("g")))
 
-    name_variants = self.get('name_variants', [])
+    name_variants = self.get("name_variants", [])
 
-    source = force_single_element(value.get('9'))
-    for name_variant in force_list(value.get('a')):
+    source = force_single_element(value.get("9"))
+    for name_variant in force_list(value.get("a")):
         name_variants.append(
             {
-                'source': source,
-                'value': name_variant,
+                "source": source,
+                "value": name_variant,
             }
         )
 
     return name_variants
 
 
-@institutions.over('related_records', '^510..')
+@institutions.over("related_records", "^510..")
 @utils.for_each_value
 def related_records(self, key, value):
     def _get_relation(value):
         RELATIONS_MAP = {
-            'a': 'predecessor',
-            'b': 'successor',
-            'r': 'other',
-            't': 'parent',
+            "a": "predecessor",
+            "b": "successor",
+            "r": "other",
+            "t": "parent",
         }
 
-        return RELATIONS_MAP.get(value.get('w'))
+        return RELATIONS_MAP.get(value.get("w"))
 
-    record = get_record_ref(maybe_int(value.get('0')), 'institutions')
+    record = get_record_ref(maybe_int(value.get("0")), "institutions")
     relation = _get_relation(value)
 
-    if record and relation == 'other':
+    if record and relation == "other":
         return {
-            'curated_relation': record is not None,
-            'record': record,
-            'relation_freetext': relation,
+            "curated_relation": record is not None,
+            "record": record,
+            "relation_freetext": relation,
         }
     elif record and relation:
         return {
-            'curated_relation': record is not None,
-            'record': record,
-            'relation': relation,
+            "curated_relation": record is not None,
+            "record": record,
+            "relation": relation,
         }
 
 
-@institutions.over('historical_data', '^6781.')
+@institutions.over("historical_data", "^6781.")
 @utils.flatten
 @utils.for_each_value
 def historical_data(self, key, value):
-    return force_list(value.get('a'))
+    return force_list(value.get("a"))
 
 
-@institutions.over('deleted', '^980..')
+@institutions.over("deleted", "^980..")
 def deleted(self, key, value):
-    deleted = self.get('deleted')
-    core = self.get('core')
-    inactive = self.get('inactive')
+    deleted = self.get("deleted")
+    core = self.get("core")
+    inactive = self.get("inactive")
 
     if not deleted:
-        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
-        normalized_c_values = [el.upper() for el in force_list(value.get('c'))]
-        if 'DELETED' in normalized_a_values or 'DELETED' in normalized_c_values:
+        normalized_a_values = [el.upper() for el in force_list(value.get("a"))]
+        normalized_c_values = [el.upper() for el in force_list(value.get("c"))]
+        if "DELETED" in normalized_a_values or "DELETED" in normalized_c_values:
             deleted = True
 
     if not core:
-        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
-        if 'CORE' in normalized_a_values:
+        normalized_a_values = [el.upper() for el in force_list(value.get("a"))]
+        if "CORE" in normalized_a_values:
             core = True
-        elif 'NONCORE' in normalized_a_values:
+        elif "NONCORE" in normalized_a_values:
             core = False
 
     if not inactive:
-        normalized_a_values = [el.upper() for el in force_list(value.get('a'))]
-        normalized_b_values = [el.upper() for el in force_list(value.get('b'))]
-        if 'DEAD' in normalized_a_values or 'DEAD' in normalized_b_values:
+        normalized_a_values = [el.upper() for el in force_list(value.get("a"))]
+        normalized_b_values = [el.upper() for el in force_list(value.get("b"))]
+        if "DEAD" in normalized_a_values or "DEAD" in normalized_b_values:
             inactive = True
 
-    self['core'] = core
-    self['inactive'] = inactive
+    self["core"] = core
+    self["inactive"] = inactive
     return deleted

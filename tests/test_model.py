@@ -39,14 +39,14 @@ def test_filteroverdo_works_without_filters():
 
 def test_filteroverdo_wraps_exceptions():
     record = (  # synthetic data
-        '<record>'
+        "<record>"
         '  <datafield tag="269" ind1=" " ind2=" ">'
         '    <subfield code="c">Ceci n’est pas une dâte</subfield>'
-        '  </datafield>'
+        "  </datafield>"
         '  <datafield tag="980" ind1=" " ind2=" ">'
         '    <subfield code="a">HEP</subfield>'
-        '  </datafield>'
-        '</record>'
+        "  </datafield>"
+        "</record>"
     )
 
     with pytest.raises(DoJsonError) as exc:
@@ -56,8 +56,8 @@ def test_filteroverdo_wraps_exceptions():
 
 def test_filteroverdo_handles_exceptions_in_non_dicts():
     record = {
-        '$schema': 'hep.json',
-        'titles': None,
+        "$schema": "hep.json",
+        "titles": None,
     }  # synthetic data
 
     with pytest.raises(DoJsonError) as exc:
@@ -66,9 +66,9 @@ def test_filteroverdo_handles_exceptions_in_non_dicts():
 
 
 def test_add_schema():
-    model = FilterOverdo(filters=[add_schema('hep.json')])
+    model = FilterOverdo(filters=[add_schema("hep.json")])
 
-    expected = {'$schema': 'hep.json'}
+    expected = {"$schema": "hep.json"}
     result = model.do({})
 
     assert expected == result

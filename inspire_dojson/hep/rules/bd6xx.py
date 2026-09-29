@@ -24,7 +24,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import six
 from dojson import utils
 from inspire_utils.helpers import force_list
 
@@ -32,32 +31,32 @@ from inspire_dojson.hep.model import hep, hep2marc
 from inspire_dojson.utils import force_single_element, get_record_ref
 
 ENERGY_RANGES_MAP = {
-    '1': '0-3 GeV',
-    '2': '3-10 GeV',
-    '3': '10-30 GeV',
-    '4': '30-100 GeV',
-    '5': '100-300 GeV',
-    '6': '300-1000 GeV',
-    '7': '1-10 TeV',
-    '8': '> 10 TeV',
+    "1": "0-3 GeV",
+    "2": "3-10 GeV",
+    "3": "10-30 GeV",
+    "4": "30-100 GeV",
+    "5": "100-300 GeV",
+    "6": "300-1000 GeV",
+    "7": "1-10 TeV",
+    "8": "> 10 TeV",
 }
 
-ENERGY_RANGES_REVERSE_MAP = {v: k for k, v in six.iteritems(ENERGY_RANGES_MAP)}
+ENERGY_RANGES_REVERSE_MAP = {v: k for k, v in ENERGY_RANGES_MAP.items()}
 
 
-@hep.over('accelerator_experiments', '^693..')
+@hep.over("accelerator_experiments", "^693..")
 @utils.flatten
 @utils.for_each_value
 def accelerator_experiments(self, key, value):
     """Populate the ``accelerator_experiments`` key."""
     result = []
 
-    a_value = force_single_element(value.get('a'))
-    e_values = [el for el in force_list(value.get('e')) if el != '-']
-    zero_values = force_list(value.get('0'))
+    a_value = force_single_element(value.get("a"))
+    e_values = [el for el in force_list(value.get("e")) if el != "-"]
+    zero_values = force_list(value.get("0"))
 
     if a_value and not e_values:
-        result.append({'accelerator': a_value})
+        result.append({"accelerator": a_value})
 
     # XXX: we zip only when they have the same length, otherwise
     #      we might match a value with the wrong recid.
@@ -65,28 +64,28 @@ def accelerator_experiments(self, key, value):
         for e_value, zero_value in zip(e_values, zero_values):
             result.append(
                 {
-                    'legacy_name': e_value,
-                    'record': get_record_ref(zero_value, 'experiments'),
+                    "legacy_name": e_value,
+                    "record": get_record_ref(zero_value, "experiments"),
                 }
             )
     else:
         for e_value in e_values:
-            result.append({'legacy_name': e_value})
+            result.append({"legacy_name": e_value})
 
     return result
 
 
-@hep2marc.over('693', '^accelerator_experiments$')
+@hep2marc.over("693", "^accelerator_experiments$")
 @utils.for_each_value
 def accelerator_experiments2marc(self, key, value):
     """Populate the ``693`` MARC field."""
     return {
-        'a': value.get('accelerator'),
-        'e': value.get('legacy_name'),
+        "a": value.get("accelerator"),
+        "e": value.get("legacy_name"),
     }
 
 
-@hep.over('keywords', '^(084|653|695)..')
+@hep.over("keywords", "^(084|653|695)..")
 def keywords(self, key, values):
     """Populate the ``keywords`` key.
 
@@ -94,116 +93,116 @@ def keywords(self, key, values):
     """
 
     def _get_source(value):
-        sources = force_list(value.get('9'))
-        if 'conference' in sources:
-            return 'conference'
-        if automatic_keywords or 'bibclassify' in sources:
-            return 'classifier'
+        sources = force_list(value.get("9"))
+        if "conference" in sources:
+            return "conference"
+        if automatic_keywords or "bibclassify" in sources:
+            return "classifier"
         return force_single_element(sources)
 
-    keywords = self.get('keywords', [])
-    energy_ranges = self.get('energy_ranges', [])
+    keywords = self.get("keywords", [])
+    energy_ranges = self.get("energy_ranges", [])
     values = force_list(values)
     automatic_keywords = any(
-        a_value.lower() == '* automatic keywords *'
+        a_value.lower() == "* automatic keywords *"
         for value in values
-        for a_value in force_list(value.get('a'))
+        for a_value in force_list(value.get("a"))
     )
 
     for value in values:
-        if value.get('a'):
-            schema = force_single_element(value.get('2', '')).upper()
+        if value.get("a"):
+            schema = force_single_element(value.get("2", "")).upper()
             source = _get_source(value)
 
-            a_values = force_list(value.get('a'))
+            a_values = force_list(value.get("a"))
 
-            if source == 'conference':
+            if source == "conference":
                 continue
             for a_value in a_values:
-                if a_value.lower() == '* automatic keywords *':
+                if a_value.lower() == "* automatic keywords *":
                     continue
                 keywords.append(
                     {
-                        'schema': schema,
-                        'source': source,
-                        'value': a_value,
+                        "schema": schema,
+                        "source": source,
+                        "value": a_value,
                     }
                 )
 
-        if value.get('e'):
-            energy_ranges.append(ENERGY_RANGES_MAP.get(value.get('e')))
+        if value.get("e"):
+            energy_ranges.append(ENERGY_RANGES_MAP.get(value.get("e")))
 
-    self['energy_ranges'] = energy_ranges
+    self["energy_ranges"] = energy_ranges
     return keywords
 
 
-@hep2marc.over('695', '^energy_ranges$')
+@hep2marc.over("695", "^energy_ranges$")
 @utils.for_each_value
 def energy_ranges2marc(self, key, value):
     """Populate the ``695`` MARC field."""
     if value in ENERGY_RANGES_REVERSE_MAP:
         return {
-            '2': 'INSPIRE',
-            'e': ENERGY_RANGES_REVERSE_MAP[value],
+            "2": "INSPIRE",
+            "e": ENERGY_RANGES_REVERSE_MAP[value],
         }
 
 
-@hep2marc.over('695', '^keywords$')
+@hep2marc.over("695", "^keywords$")
 def keywords2marc(self, key, values):
     """Populate the ``695`` MARC field.
 
     Also populates the ``084`` and ``6531`` MARC fields through side effects.
     """
-    result_695 = self.get('695', [])
-    result_084 = self.get('084', [])
-    result_6531 = self.get('6531', [])
+    result_695 = self.get("695", [])
+    result_084 = self.get("084", [])
+    result_6531 = self.get("6531", [])
     automatic_keywords = False
 
     for value in values:
-        schema = value.get('schema')
-        source = value.get('source')
-        if source == 'classifier':
-            source = 'bibclassify'
+        schema = value.get("schema")
+        source = value.get("source")
+        if source == "classifier":
+            source = "bibclassify"
             automatic_keywords = True
-        keyword = value.get('value')
+        keyword = value.get("value")
 
-        if schema == 'PACS' or schema == 'PDG':
+        if schema == "PACS" or schema == "PDG":
             result_084.append(
                 {
-                    '2': schema,
-                    '9': source,
-                    'a': keyword,
+                    "2": schema,
+                    "9": source,
+                    "a": keyword,
                 }
             )
-        elif schema == 'JACOW':
+        elif schema == "JACOW":
             result_6531.append(
                 {
-                    '2': 'JACoW',
-                    '9': source,
-                    'a': keyword,
+                    "2": "JACoW",
+                    "9": source,
+                    "a": keyword,
                 }
             )
-        elif schema == 'INSPIRE':
+        elif schema == "INSPIRE":
             result_695.append(
                 {
-                    '2': 'INSPIRE',
-                    '9': source,
-                    'a': keyword,
+                    "2": "INSPIRE",
+                    "9": source,
+                    "a": keyword,
                 }
             )
-        elif schema == 'INIS':
+        elif schema == "INIS":
             result_695.append(
                 {
-                    '2': 'INIS',
-                    '9': source,
-                    'a': keyword,
+                    "2": "INIS",
+                    "9": source,
+                    "a": keyword,
                 }
             )
-        elif source != 'magpie':
+        elif source != "magpie":
             result_6531.append(
                 {
-                    '9': source,
-                    'a': keyword,
+                    "9": source,
+                    "a": keyword,
                 }
             )
 
@@ -211,11 +210,11 @@ def keywords2marc(self, key, values):
         result_695.insert(
             0,
             {
-                '2': 'INSPIRE',
-                'a': '* Automatic Keywords *',
+                "2": "INSPIRE",
+                "a": "* Automatic Keywords *",
             },
         )
 
-    self['6531'] = result_6531
-    self['084'] = result_084
+    self["6531"] = result_6531
+    self["084"] = result_084
     return result_695

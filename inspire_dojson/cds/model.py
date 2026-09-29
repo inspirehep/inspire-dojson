@@ -33,25 +33,25 @@ from inspire_dojson.model import FilterOverdo, clean_record
 
 
 def add_control_number(record, blob):
-    if '001' not in blob:
+    if "001" not in blob:
         return record
 
     collections = (
         value.lower()
         for value in chain(
-            force_list(get_value(blob, '980__.a', default=[])),
-            force_list(get_value(blob, '980__.c', default=[])),
+            force_list(get_value(blob, "980__.a", default=[])),
+            force_list(get_value(blob, "980__.c", default=[])),
         )
     )
-    if 'hidden' in collections:
-        record.setdefault('595__', []).append(
-            {'9': 'CDS', 'a': u'CDS-{}'.format(blob['001'])}
+    if "hidden" in collections:
+        record.setdefault("595__", []).append(
+            {"9": "CDS", "a": "CDS-{}".format(blob["001"])}
         )
     else:
-        record.setdefault('035__', []).append(
+        record.setdefault("035__", []).append(
             {
-                '9': 'CDS',
-                'a': blob['001'],
+                "9": "CDS",
+                "a": blob["001"],
             }
         )
 
@@ -60,21 +60,21 @@ def add_control_number(record, blob):
 
 def add_collections(record, blob):
     def _add_collection(value):
-        record.setdefault('980__', []).append({'a': value})
+        record.setdefault("980__", []).append({"a": value})
 
-    _add_collection('HEP')
-    _add_collection('CORE')
+    _add_collection("HEP")
+    _add_collection("CORE")
 
     return record
 
 
 def remove_english_language(record, blob):
-    if '041__' not in record:
+    if "041__" not in record:
         return record
 
-    languages = force_list(get_value(blob, '041__.a'))
-    if languages == ['eng']:
-        del record['041__']
+    languages = force_list(get_value(blob, "041__.a"))
+    if languages == ["eng"]:
+        del record["041__"]
 
     return record
 

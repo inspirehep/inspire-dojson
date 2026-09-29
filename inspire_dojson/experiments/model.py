@@ -33,15 +33,15 @@ from inspire_dojson.model import (
 
 
 def add_project_type(record, blob):
-    if not record.get('project_type'):
-        record['project_type'] = ['experiment']
+    if not record.get("project_type"):
+        record["project_type"] = ["experiment"]
 
     return record
 
 
 filters = [
-    add_schema('experiments.json'),
-    add_collection('Experiments'),
+    add_schema("experiments.json"),
+    add_collection("Experiments"),
     add_project_type,
     clean_record(),
 ]

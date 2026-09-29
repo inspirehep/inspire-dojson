@@ -29,42 +29,42 @@ from inspire_dojson.hep import hep, hep2marc
 
 
 def test_number_of_pages_from_300__a():
-    schema = load_schema('hep')
-    subschema = schema['properties']['number_of_pages']
+    schema = load_schema("hep")
+    subschema = schema["properties"]["number_of_pages"]
 
     snippet = (  # record/4328
         '<datafield tag="300" ind1=" " ind2=" ">'
         '  <subfield code="a">10</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
     expected = 10
     result = hep.do(create_record(snippet))
 
-    assert validate(result['number_of_pages'], subschema) is None
-    assert expected == result['number_of_pages']
+    assert validate(result["number_of_pages"], subschema) is None
+    assert expected == result["number_of_pages"]
 
-    expected = {'a': 10}
+    expected = {"a": 10}
     result = hep2marc.do(result)
 
-    assert expected == result['300']
+    assert expected == result["300"]
 
 
 def test_number_of_pages_from_300__a_malformed():
     snippet = (  # record/67556
         '<datafield tag="300" ind1=" " ind2=" ">'
         '  <subfield code="a">216+337</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    assert 'number_of_pages' not in hep.do(create_record(snippet))
+    assert "number_of_pages" not in hep.do(create_record(snippet))
 
 
 def test_number_of_pages_from_300__a_nonpositive():
     snippet = (  # record/1511769
         '<datafield tag="300" ind1=" " ind2=" ">'
         '  <subfield code="a">0</subfield>'
-        '</datafield>'
+        "</datafield>"
     )
 
-    assert 'number_of_pages' not in hep.do(create_record(snippet))
+    assert "number_of_pages" not in hep.do(create_record(snippet))

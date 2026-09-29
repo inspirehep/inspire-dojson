@@ -29,21 +29,21 @@ from dojson import utils
 from inspire_dojson.hep.model import hep, hep2marc
 
 
-@hep.over('book_series', '^490..')
+@hep.over("book_series", "^490..")
 @utils.for_each_value
 def book_series(self, key, value):
     """Populate the ``book_series`` key."""
     return {
-        'title': value.get('a'),
-        'volume': value.get('v'),
+        "title": value.get("a"),
+        "volume": value.get("v"),
     }
 
 
-@hep2marc.over('490', '^book_series$')
+@hep2marc.over("490", "^book_series$")
 @utils.for_each_value
 def book_series2marc(self, key, value):
     """Populate the ``490`` MARC field."""
     return {
-        'a': value.get('title'),
-        'v': value.get('volume'),
+        "a": value.get("title"),
+        "v": value.get("volume"),
     }
