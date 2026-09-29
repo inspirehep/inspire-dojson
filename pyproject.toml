@@ -1,6 +1,6 @@
 [project]
 name = "inspire-dojson"
-version = "63.2.36"
+version = "63.2.37"
 description = "INSPIRE-specific rules to transform from MARCXML to JSON and back."
 authors = [
     { name = "CERN", email = "admin@inspirehep.net" },
